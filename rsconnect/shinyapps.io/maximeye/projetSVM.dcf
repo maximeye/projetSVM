@@ -1,0 +1,12 @@
+name: projetSVM
+title: projetSVM
+username:
+account: maximeye
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 1146223
+bundleId: 2384743
+url: https://maximeye.shinyapps.io/projetSVM/
+when: 1567608530.9986
+asMultiple: FALSE
+asStatic: FALSE
