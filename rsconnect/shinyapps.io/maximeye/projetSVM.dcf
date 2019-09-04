@@ -5,8 +5,8 @@ account: maximeye
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 1146223
-bundleId: 2384743
+bundleId: 2384763
 url: https://maximeye.shinyapps.io/projetSVM/
-when: 1567608530.9986
+when: 1567608993.60967
 asMultiple: FALSE
 asStatic: FALSE
