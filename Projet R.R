@@ -15,67 +15,54 @@ dat=read.csv("C:/Users/kevas/Desktop/Cours/M2/Support_Vector_Machine/Dossier_SVM
 
 attach(dat)
 
-# On change le type de la variable de r�ponse "Class" (integer -> factor)
+set.seed(12345)
+
+# On change le type de la variable de réponse "Class" (integer -> factor)
 dat$Class=as.factor(dat$Class)
 
-# Process de s�lection de variables les plus significatives
+# Process de sélection de variables les plus significatives
 regs=regsubsets(Class~.,data=dat,nvmax = 10)
 summary(regs)
 # V17, V12 et V14 sont les variables les plus significatives
 dat.signif=dat[,c(18,15,13,31)]
 
-# On change le type de la variable de r�ponse "Class" (integer -> factor)
+# On change le type de la variable de réponse "Class" (integer -> factor)
 dat.signif$Class=as.factor(dat.signif$Class)
 
 
 
+# Rééchantillonnage afin d'obtenir 50% de class = 0, 50% de class=1
 
-
-n=10000
-dat.signif=dat.signif[1:n,]
-
-set.seed(123456)
-dat.signif.split=sample.split(dat.signif,SplitRatio = 0.3) # splits the data
-# in the ratio mentioned in SplitRatio. After splitting marks these rows as
-# logical TRUE and the the remaining are marked as logical FALSE.
-
-
-# subsetting into Train data
-train =subset(dat.signif,dat.signif.split==FALSE) # creates a training
-# dataset named train1 with rows which are marked as TRUE
-
-
-
-# subsetting into Test data
-test =subset(dat.signif,dat.signif.split==TRUE)
-
-
-
-
-
-
-
-
-
-#R????chantillonnage afin d'obtenir 50% de class = 0, 50% de class=1
-
-newdat <- SMOTE(dat[,1:3],dat[,4],K=3,dup_size = 0)
+newdat <- SMOTE(dat.signif[,1:3],dat.signif[,4],K=3,dup_size = 0)
 
 #Transformation du type de variable de class en factor (auparavant character)
 newdat$data$class=as.factor(newdat$data$class)
 
+
+
 #Exportation de la nouvelle table en CSV (optionnelle), utile pour ne pas avoir ?? refaire l'??tape de r????chantillonnage chaque fois
 
-write.csv(newdat$data,"/Users/Maxime/Documents/Cours/Master/M2/S1/SVM/Docs Projet/newdat.csv")
-head(newdat)
-table(newdat$Class)
+#write.csv(newdat$data,"/Users/Maxime/Documents/Cours/Master/M2/S1/SVM/Docs Projet/newdat.csv")
+write.csv(newdat$data,"C:/Users/kevas/Desktop/Cours/M2/Support_Vector_Machine/Dossier_SVM/newdat.csv")
+table(newdat$data$class) # 284315 Class=0
+                         # 283884 Class=1
+
+
+
+
+
 
 ###########################DEBUT#####################
-#Chargement de la table r??echantillonn??e
 
-data=read.csv("/Users/Maxime/Documents/Cours/Master/M2/S1/SVM/Docs Projet/newdat.csv",header=T,sep=",")
+# Chargement de la table r??echantillonn??e
+
+#data=read.csv("/Users/Maxime/Documents/Cours/Master/M2/S1/SVM/Docs Projet/newdat.csv",header=T,sep=",")
+data=read.csv("C:/Users/kevas/Desktop/Cours/M2/Support_Vector_Machine/Dossier_SVM/newdat.csv",header=T,sep=",")
 data$class=as.factor(data$class)
+set.seed(12345)
 
+
+## Début de partitionnage Apprentissage / Test
 
 
 #Creation d'un ??chantillon d'apprentissage (70%) et test (30%) :
@@ -87,20 +74,28 @@ data$class=as.factor(data$class)
 #test=data[-testindex,]
 #attach(train)
 
+
+
+## Echantillon apprentissage pour faire tourner le svm rapidement
+
+taille_ech=10000
+index=1:nrow(data)
+trainindex=sample(index,round(taille_ech*0.7))
+train=data[trainindex,]
+itest=sample(index,round(taille_ech*0.3))
+test=data[itest,]
+attach(train)
+
+
+
+
+
 ###########################################################
 
 
-##Echantillon apprentissage pour faire tourner le svm rapidement
-#taille_ech=10000
-#index=1:nrow(data)
-#testindex=sample(index,round(taille_ech*0.7))
-#train=data[testindex,]
-#itest=sample(index,round(taille_ech*0.3))
-#test=data[itest,]
-#test=data[-testindex,]
-#attach(train)
 
-#SVM
+
+###############  SVM
 
 
 model=svm(class~.,data=train,kernel="radial",scale=F,cost=105)
@@ -116,6 +111,17 @@ table(test$class,Y)
 mean(test$class==Y)
 mean(test$class!=Y)
 
+
+
+#Taux de bonnes/mauvaises classifications sur ??chantillon complet:
+dataa=data[1:60000,]
+Y=predict(model,newdata = dataa)
+
+#list(cbind(test, Y), model$index)
+
+table(dataa$class,Y)
+mean(dataa$class==Y)
+mean(dataa$class!=Y)
 
 
 #Plot ??chantillon APPRENTISSAGE
