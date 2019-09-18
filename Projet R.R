@@ -4,21 +4,52 @@ library(ggplot2)
 library(rgl)
 library(misc3d)
 library(ROCR)
+library(leaps)
+library(caTools)
 
 #Chargement de la table de donn??es :
 
-dat=read.csv("/Users/Maxime/Documents/Cours/Master/M2/S1/SVM/Docs Projet/creditcard.csv",header=T,sep=",")
+#dat=read.csv("/Users/Maxime/Documents/Cours/Master/M2/S1/SVM/Docs Projet/creditcard.csv",header=T,sep=",")
+dat=read.csv("C:/Users/kevas/Desktop/Cours/M2/Support_Vector_Machine/Dossier_SVM/creditcard.csv",header=T,sep=",")
 
 
 attach(dat)
 
-#On change le type de la variable de r??ponse "Class" (integer -> factor)
+# On change le type de la variable de réponse "Class" (integer -> factor)
 dat$Class=as.factor(dat$Class)
 
+# Process de sélection de variables les plus significatives
+regs=regsubsets(Class~.,data=dat,nvmax = 10)
+summary(regs)
+# V17, V12 et V14 sont les variables les plus significatives
+dat.signif=dat[,c(18,15,13,31)]
 
-#On supprime les variables moins significatives: 
-summary(dat)
-dat=dat[,c(13,15,18,31)]
+# On change le type de la variable de réponse "Class" (integer -> factor)
+dat.signif$Class=as.factor(dat.signif$Class)
+
+
+
+
+
+n=10000
+dat.signif=dat.signif[1:n,]
+
+set.seed(123456)
+dat.signif.split=sample.split(dat.signif,SplitRatio = 0.3)
+
+# subsetting into Train data
+train =subset(dat.signif,dat.signif.split==FALSE)
+
+# subsetting into Test data
+test =subset(dat.signif,dat.signif.split==TRUE)
+
+
+
+
+
+
+
+
 
 #R????chantillonnage afin d'obtenir 50% de class = 0, 50% de class=1
 
@@ -44,24 +75,24 @@ data$class=as.factor(data$class)
 #Creation d'un ??chantillon d'apprentissage (70%) et test (30%) :
 ################NE PAS EXECUTER CE QUI SUIT  ############
 
-index=1:nrow(data)
-testindex=sample(index,397740)
-train=data[testindex,]
-test=data[-testindex,]
-attach(train)
+#index=1:nrow(data)
+#testindex=sample(index,397740)
+#train=data[testindex,]
+#test=data[-testindex,]
+#attach(train)
 
 ###########################################################
 
 
 ##Echantillon apprentissage pour faire tourner le svm rapidement
-taille_ech=10000
-index=1:nrow(data)
-testindex=sample(index,round(taille_ech*0.7))
-train=data[testindex,]
-itest=sample(index,round(taille_ech*0.3))
-test=data[itest,]
+#taille_ech=10000
+#index=1:nrow(data)
+#testindex=sample(index,round(taille_ech*0.7))
+#train=data[testindex,]
+#itest=sample(index,round(taille_ech*0.3))
+#test=data[itest,]
 #test=data[-testindex,]
-attach(train)
+#attach(train)
 
 #SVM
 
