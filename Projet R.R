@@ -61,7 +61,7 @@ table(newdat$data$class) # 284315 Class=0
 
 # Chargement de la table r??echantillonn??e
 
-#data=read.csv("/Users/Maxime/Documents/Cours/Master/M2/S1/SVM/Docs Projet/newdat.csv",header=T,sep=",")
+data=read.csv("/Users/Maxime/Documents/Cours/Master/M2/S1/SVM/Docs Projet/newdat.csv",header=T,sep=",")
 data=read.csv("C:/Users/kevas/Desktop/Cours/M2/Support_Vector_Machine/Dossier_SVM/newdat.csv",header=T,sep=",")
 data$class=as.factor(data$class)
 set.seed(12345)
@@ -154,7 +154,7 @@ text3d(test$V12, test$V14, test$V17, cex=0.5, adj = 1)
 
 
 
-length() = 100                                                                                                                                                                 
+length = 100                                                                                                                                                                 
 grid = expand.grid(seq(from=min(train$V17),to=max(train$V17),length.out=length),                                                                                                         
                     seq(from=min(train$V14),to=max(train$V14),length.out=length))                                                                                                         
 z = (model$rho- w[1,1]*grid[,1] - w[1,2]*grid[,2]) / w[1,3]
@@ -163,5 +163,18 @@ plot3d(grid[,1],grid[,2],z)  # this will draw plane.
 # adding of points to the graphics.
 points3d(train$V17[which(train$class==0)], train$V14[which(train$class==0)], train$V12[which(train$class==0)], col='red')
 points3d(train$V17[which(train$class==1)], train$V14[which(train$class==1)], train$V12[which(train$class==1)], col='blue')
+
+
+
+attach(train)
+tuned <- tune.svm(class~., data = train, gamma = 10^(-6:-1), cost = 10^(1:2))
+summary(tuned)
+
+
+
+
+
+
+
 
 
