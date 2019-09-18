@@ -9,22 +9,22 @@ library(caTools)
 
 #Chargement de la table de donn??es :
 
-#dat=read.csv("/Users/Maxime/Documents/Cours/Master/M2/S1/SVM/Docs Projet/creditcard.csv",header=T,sep=",")
-dat=read.csv("C:/Users/kevas/Desktop/Cours/M2/Support_Vector_Machine/Dossier_SVM/creditcard.csv",header=T,sep=",")
+dat=read.csv("/Users/Maxime/Documents/Cours/Master/M2/S1/SVM/Docs Projet/creditcard.csv",header=T,sep=",")
+#dat=read.csv("C:/Users/kevas/Desktop/Cours/M2/Support_Vector_Machine/Dossier_SVM/creditcard.csv",header=T,sep=",")
 
 
 attach(dat)
 
-# On change le type de la variable de réponse "Class" (integer -> factor)
+# On change le type de la variable de r?ponse "Class" (integer -> factor)
 dat$Class=as.factor(dat$Class)
 
-# Process de sélection de variables les plus significatives
+# Process de s?lection de variables les plus significatives
 regs=regsubsets(Class~.,data=dat,nvmax = 10)
 summary(regs)
 # V17, V12 et V14 sont les variables les plus significatives
 dat.signif=dat[,c(18,15,13,31)]
 
-# On change le type de la variable de réponse "Class" (integer -> factor)
+# On change le type de la variable de r?ponse "Class" (integer -> factor)
 dat.signif$Class=as.factor(dat.signif$Class)
 
 
