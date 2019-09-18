@@ -65,7 +65,7 @@ table(newdat$data$class) # 284315 Class=0
 data=read.csv("C:/Users/kevas/Desktop/Cours/M2/Support_Vector_Machine/Dossier_SVM/newdat.csv",header=T,sep=",")
 data$class=as.factor(data$class)
 set.seed(12345)
-
+data=data[,-1]
 
 ## Début de partitionnage Apprentissage / Test
 
@@ -100,11 +100,11 @@ attach(train)
 
 
 
-###############  SVM
+###############  SVM kernel linéaire  ###############
 
 
 model=svm(class~.,data=train,kernel="radial",scale=F,cost=105)
-
+w <- t(model$coefs) %*% model$SV
 
 #Taux de bonnes/mauvaises classifications sur ??chantillon test:
 
@@ -152,86 +152,16 @@ text3d(test$V12, test$V14, test$V17, cex=0.5, adj = 1)
 
 
 
-################################################################
 
 
-
-
-################################################################
-
-
-
-library(e1071)
-library(rgl)
-library(misc3d)
-
-n    = 100
-nnew = 50
-
-# Simulate some data
-set.seed(12345)
-group = sample(2, n, replace=T)
-dat   = data.frame(group=factor(group), matrix(rnorm(n*3, rep(group, each=3)), ncol=3, byrow=T))
-
-# Fit SVM
-fit = svm(group ~ ., data=dat)
-
-# Plot original data
-plot3d(dat[,-1], col=dat$group)
-
-# Get decision values for a new data grid
-newdat.list = lapply(train[,-c(1,5)], function(x) seq(min(x), max(x),len=nnew))
-newdat      = expand.grid(newdat.list)
-newdat.pred = predict(model, newdata=newdat, decision.values=T)
-Y=predict(model,newdata = test,decision.values = T)
-newdat.dv   = attr(Y, 'decision.values')
-newdat.dv   = array(newdat.dv, dim=rep(nnew,3))
-
-# Fit/plot an isosurface to the decision boundary
-contour3d(newdat.dv, level=-1, x=newdat.list$V12, y=newdat.list$V14, z=newdat.list$V17, add=T)
-
-
-
-##########
-
-c=t(model$coefs) %*% model$SV
-detalization=100
-g=expand.grid(seq(from=min(test$V12),to=max(test$V12),length.out=detalization),                                                                                                         
-              seq(from=min(test$V17),to=max(test$V17),length.out=detalization),
-              seq(from=min(test$V14),to=max(test$V14),length.out=detalization) )
-z <- (model$rho- c[1,2]*g[,1] - c[1,4]*g[,2]) / c[1,3]
-
-
-plot3d(g[,1],g[,2],g[,3])  # this will draw plane.
-# adding of points to the graphics.
-points3d(test$V12[which(test$class==0)], test$V17[which(test$class==0)], test$V14[which(test$class==0)], col='red')
-points3d(test$V12[which(test$class==1)], test$V17[which(test$class==1)], test$V14[which(test$class==1)], col='blue')
-
-
-
-#w <- t(svm_model$coefs) %*% svm_model$SV
-
-#detalization <- 100                                                                                                                                                                 
-#grid <- expand.grid(seq(from=min(test$V12),to=max(test$V12),length.out=detalization),                                                                                                         
-              #      seq(from=min(test$V17),to=max(test$V17),length.out=detalization))                                                                                                         
-#z <- (svm_model$rho- w[1,1]*grid[,1] - w[1,2]*grid[,2]) / w[1,3]
+length() = 100                                                                                                                                                                 
+grid = expand.grid(seq(from=min(train$V17),to=max(train$V17),length.out=length),                                                                                                         
+                    seq(from=min(train$V14),to=max(train$V14),length.out=length))                                                                                                         
+z = (model$rho- w[1,1]*grid[,1] - w[1,2]*grid[,2]) / w[1,3]
 
 plot3d(grid[,1],grid[,2],z)  # this will draw plane.
 # adding of points to the graphics.
-points3d(t$x[which(t$cl==-1)], t$y[which(t$cl==-1)], t$z[which(t$cl==-1)], col='red')
-points3d(t$x[which(t$cl==1)], t$y[which(t$cl==1)], t$z[which(t$cl==1)], col='blue')
+points3d(train$V17[which(train$class==0)], train$V14[which(train$class==0)], train$V12[which(train$class==0)], col='red')
+points3d(train$V17[which(train$class==1)], train$V14[which(train$class==1)], train$V12[which(train$class==1)], col='blue')
 
 
-tune()
-dataaa=cbind(data[itest,],Y)
-pp=dataaa$class
-ll=dataaa$labels
-p=performance(Y,)
-
-
-
-dataa=data[1:60000,]
-Y=predict(model,newdata = dataa)
-table(dataa$class,Y)
-mean(dataa$class==Y)
-mean(dataa$class!=Y)
