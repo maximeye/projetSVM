@@ -103,7 +103,7 @@ attach(train)
 ###############  SVM kernel linéaire  ###############
 
 
-model=svm(class~.,data=train,kernel="radial",scale=F,cost=105)
+model=svm(class~.,data=train,kernel="linear",scale=F,cost=105)
 w <- t(model$coefs) %*% model$SV
 
 #Taux de bonnes/mauvaises classifications sur ??chantillon test:
@@ -154,7 +154,7 @@ text3d(test$V12, test$V14, test$V17, cex=0.5, adj = 1)
 
 
 
-length() = 100                                                                                                                                                                 
+length = 100                                                                                                                                                                 
 grid = expand.grid(seq(from=min(train$V17),to=max(train$V17),length.out=length),                                                                                                         
                     seq(from=min(train$V14),to=max(train$V14),length.out=length))                                                                                                         
 z = (model$rho- w[1,1]*grid[,1] - w[1,2]*grid[,2]) / w[1,3]
@@ -165,3 +165,20 @@ points3d(train$V17[which(train$class==0)], train$V14[which(train$class==0)], tra
 points3d(train$V17[which(train$class==1)], train$V14[which(train$class==1)], train$V12[which(train$class==1)], col='blue')
 
 
+
+
+###############  SVM kernel Radial Basis  ###############
+
+attach(train)
+tuned=tune.svm(class~.,data=train,gamma=10^(-6:-1),cost=10^(-1:1))
+summary(tuned)
+# Best parameters : gamma = 0.001 & cost = 100
+
+model=svm(Class~., data=train, kernel="radial",gamma = 0.001, cost = 100) 
+
+prediction=predict(model, test[,-4])
+(tab=table(pred = prediction, true=test[,4]))
+
+attach(train)
+tuned <- tune.svm(class~., data = train, gamma = 10^(-6:-1), cost = 10^(1:2))
+summary(tuned)
