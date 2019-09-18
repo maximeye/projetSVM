@@ -35,10 +35,16 @@ n=10000
 dat.signif=dat.signif[1:n,]
 
 set.seed(123456)
-dat.signif.split=sample.split(dat.signif,SplitRatio = 0.3)
+dat.signif.split=sample.split(dat.signif,SplitRatio = 0.3) # splits the data
+# in the ratio mentioned in SplitRatio. After splitting marks these rows as
+# logical TRUE and the the remaining are marked as logical FALSE.
+
 
 # subsetting into Train data
-train =subset(dat.signif,dat.signif.split==FALSE)
+train =subset(dat.signif,dat.signif.split==FALSE) # creates a training
+# dataset named train1 with rows which are marked as TRUE
+
+
 
 # subsetting into Test data
 test =subset(dat.signif,dat.signif.split==TRUE)
