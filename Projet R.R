@@ -154,7 +154,7 @@ grid = expand.grid(seq(from=min(train$V17),to=max(train$V17),length.out=length),
 z = (model$rho- w[1,1]*grid[,1] - w[1,2]*grid[,2]) / w[1,3]
 #z=(w[1,1]*grid[,1] + w[1,2]*grid[,2])
 
-plot3d(grid[,1],grid[,2],z)  # this will draw plane.
+plot3d(grid[,1],grid[,2],z)  # this will draw the plane
 # adding of points to the graphics.
 points3d(train$V17[which(train$class==0)], train$V14[which(train$class==0)], train$V12[which(train$class==0)], col='red')
 points3d(train$V17[which(train$class==1)], train$V14[which(train$class==1)], train$V12[which(train$class==1)], col='blue')
@@ -168,12 +168,16 @@ points3d(train$V17[which(train$class==1)], train$V14[which(train$class==1)], tra
 #10 Fold cross validation to determine the optimal gamma and C (cost) in the SVM
 #Best parameters : Gamma : 0.01  / Cost (C) : 10
 attach(train)
-tuned <- tune.svm(class~., data = train, gamma = 10^(-6:-1), cost = 10^(-1:1))
+tuned = tune.svm(class~., data = train, gamma = 10^(-6:-1), cost = 10^(-1:1))
 summary(tuned)
 
 gamma=0.01
 C=10
+
+
+
 ###############  SVM kernel Radial Basis  ###############
+
 
 model=svm(class~., data=train, kernel="radial",gamma = 0.01, cost = 10) 
 w <- t(model$coefs) %*% model$SV
@@ -216,19 +220,21 @@ text3d(test$V12, test$V14, test$V17, cex=0.5, adj = 1)
 
 
 
-length = 100                                                                                                                                                                 
+length = 50                                                                                                                                                                
 grid = expand.grid(seq(from=min(train$V17),to=max(train$V17),length.out=length),                                                                                                         
                    seq(from=min(train$V14),to=max(train$V14),length.out=length))                                                                                                         
-#z = (model$rho- w[1,1]*grid[,1] - w[1,2]*grid[,2]) / w[1,3]
 z= exp((-gamma)*(model$rho- w[1,1]*grid[,1] - w[1,2]*grid[,2])^2)
 
-plot3d(grid[,1],grid[,2],z)  # this will draw plane.
-# adding of points to the graphics.
+plot3d(grid[,1],grid[,2],z)
+
 points3d(train$V17[which(train$class==0)], train$V14[which(train$class==0)], train$V12[which(train$class==0)], col='red')
 points3d(train$V17[which(train$class==1)], train$V14[which(train$class==1)], train$V12[which(train$class==1)], col='blue')
 
 
+
+
 ###############  SVM kernel Polynomial  ###############
+
 
 model=svm(class~., data=train, kernel="polynomial",gamma = 0.01, cost = 10) 
 w <- t(model$coefs) %*% model$SV
@@ -286,6 +292,8 @@ prediction=predict(model, test[,-4])
 (tab=table(pred = prediction, true=test[,4]))
 
 
+
+
 ###############  SVM kernel sigmoid  ###############
 
 model=svm(class~., data=train, kernel="sigmoid",gamma = 0.01, cost = 10) 
@@ -333,9 +341,9 @@ length = 100
 grid = expand.grid(seq(from=min(train$V17),to=max(train$V17),length.out=length),                                                                                                         
                    seq(from=min(train$V14),to=max(train$V14),length.out=length))                                                                                                         
 
-z=tan((gamma*(w[1,1]*grid[,1] + w[1,2]*grid[,2]))+model$coef0)
-plot3d(grid[,1],grid[,2],z)  # this will draw plane.
-# adding of points to the graphics.
+z=tanh((gamma*(w[1,1]*grid[,1] + w[1,2]*grid[,2]))+model$coef0)
+plot3d(grid[,1],grid[,2],z)
+
 points3d(train$V17[which(train$class==0)], train$V14[which(train$class==0)], train$V12[which(train$class==0)], col='red')
 points3d(train$V17[which(train$class==1)], train$V14[which(train$class==1)], train$V12[which(train$class==1)], col='blue')
 
