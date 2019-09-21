@@ -162,7 +162,7 @@ points3d(train$V17[which(train$class==1)], train$V14[which(train$class==1)], tra
 
 
 
-###############  Optimal Gamma/Cost  ###############
+###############  Optimal Gamma/Cost (Ne pas exécuter à chaque session, on a déjà les résultats) ###############
 
 
 #10 Fold cross validation to determine the optimal gamma and C (cost) in the SVM
