@@ -220,12 +220,12 @@ text3d(test$V12, test$V14, test$V17, cex=0.5, adj = 1)
 
 
 
-length = 50                                                                                                                                                                
+length = 75                                                                                                                                                                
 grid = expand.grid(seq(from=min(train$V17),to=max(train$V17),length.out=length),                                                                                                         
                    seq(from=min(train$V14),to=max(train$V14),length.out=length))                                                                                                         
-z= exp((-gamma)*(model$rho- w[1,1]*grid[,1] - w[1,2]*grid[,2])^2)
+z= exp((-gamma)*(w[1,1]*grid[,1] - w[1,2]*grid[,2])^2) ##(model$rho-*w[1,1]*grid[,1] - w[1,2]*grid[,2])^2)
 
-plot3d(grid[,1],grid[,2],z)
+plot3d(grid[,1],grid[,2],z,aspect = F)
 
 points3d(train$V17[which(train$class==0)], train$V14[which(train$class==0)], train$V12[which(train$class==0)], col='red')
 points3d(train$V17[which(train$class==1)], train$V14[which(train$class==1)], train$V12[which(train$class==1)], col='blue')
@@ -338,17 +338,22 @@ text3d(test$V12, test$V14, test$V17, cex=0.5, adj = 1)
 
 
 length = 100                                                                                                                                                                 
-grid = expand.grid(seq(from=min(train$V17),to=max(train$V17),length.out=length),                                                                                                         
-                   seq(from=min(train$V14),to=max(train$V14),length.out=length))                                                                                                         
+grid = expand.grid(seq(from=min(train$V17),to=max(train$V17)),                                                                                                         
+                   seq(from=min(train$V14),to=max(train$V14)))                                                                                                         
 
 z=tanh((gamma*(w[1,1]*grid[,1] + w[1,2]*grid[,2]))+model$coef0)
-plot3d(grid[,1],grid[,2],z)
+plot3d(grid[,1],grid[,2],z,aspect = F)
 
 points3d(train$V17[which(train$class==0)], train$V14[which(train$class==0)], train$V12[which(train$class==0)], col='red')
 points3d(train$V17[which(train$class==1)], train$V14[which(train$class==1)], train$V12[which(train$class==1)], col='blue')
 
+prediction=predict(model, test[,-4])
+(tab=table(pred = prediction, true=test[,4]))
 
 
 
 #Polynomial / Lineaire : OK
-#RBF / Sigmoid NON
+#RBF NON
+#Sigmoid ?
+
+#formule ligne 226 ?
