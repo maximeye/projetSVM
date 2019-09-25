@@ -67,7 +67,6 @@ mainPanel(
 dataTableOutput("tablesvm"),
 textOutput('text1'),
 textOutput("predsvm"),
-plotOutput('plot3d')
 )
 )
 )
@@ -77,6 +76,8 @@ sidebarLayout(
 sidebarPanel(
 sliderInput(inputId="n1","Sample size:",min = 1,max = 600000, value=10000),
 selectInput(inputId='Model', label='choose the model', choices=c('logistic regression','linear discriminant analysis','quadratic discriminant analysis','tree') ,multiple = F, selected='logistic regression'),
+selectInput(inputId="kernel2",label="choose the kernel type",choices=c('linear','polynomial','radial basis','sigmoid'),multiple = F,selected = 'linear'),
+sliderInput(inputId='c2', label='Cost parameter',min=0,max=1000,value=10,step=1),
 actionButton("submit2" ,"submit", icon("refresh"))
 ),
 mainPanel(
@@ -296,66 +297,7 @@ output$predsvm <- renderText({
 })
 
 
-output$plot3d <- renderPlot({
-    input$submit
-    length = 100
-    trainindex=sample(index,round(isolate(input$n)*0.7))
-    train=data[trainindex,]
-    dataa=data[1:isolate(input$n),]
-    attach(train)
-    model.linear=svm(class~.,data=train,kernel='linear',scale=F,cost= isolate(input$c))
-    w.linear = t(model.linear$coefs) %*% model.linear$SV
-    z.linear = (model.linear$rho- w.linear[1,1]*grid[,1] - w.linear[1,2]*grid[,2]) / w.linear[1,3]
-    model.poly=svm(class~., data=train, kernel="polynomial",gamma = 0.01, cost = isolate(input$c))
-    w.poly = t(model.poly$coefs) %*% model.poly$SV
-    z.poly=((gamma*(w.poly[1,1]*grid[,1] + w.poly[1,2]*grid[,2])+model.poly$coef0))^2
-    model.radial=svm(class~., data=train, kernel="radial",gamma = 0.01, cost = isolate(input$c))
-    w.radial = t(model.radial$coefs) %*% model.radial$SV
-    z.radial= exp((-gamma)*(model.radial$rho- w.radial[1,1]*grid[,1] - w.radial[1,2]*grid[,2])^2)
-    model.sigmoid=svm(class~., data=train, kernel="sigmoid",gamma = 0.01, cost = isolate(input$c))
-    w.sigmoid = t(model.sigmoid$coefs) %*% model.sigmoid$SV
-    z.sigmoid=tanh((gamma*(w.sigmoid[1,1]*grid[,1] + w.sigmoid[1,2]*grid[,2]))+model.sigmoid$coef0)
-    if (input$kernel=='linear'){
-        grid = expand.grid(seq(from=min(train$V17),to=max(train$V17),length.out=length),
-        seq(from=min(train$V14),to=max(train$V14),length.out=length))
-        colors =c("blue","red")
-        plot3d(train$V12, train$V14, train$V17, xlab="V12", ylab="V14", zlab="V17",type="s",radius =0.3, col=as.integer(train$class) , box=FALSE, size=5)
-        text3d(train$V12, train$V14, train$V17,texts = 'hyperplane', cex=0.5, adj = 1)
-        plot3d(grid[,1],grid[,2],z.linear)
-        points3d(train$V17[which(train$class==0)], train$V14[which(train$class==0)], train$V12[which(train$class==0)], col='red')
-        points3d(train$V17[which(train$class==1)], train$V14[which(train$class==1)], train$V12[which(train$class==1)], col='blue')
-    }
-    if (input$kernel=='polynomial'){
-        grid = expand.grid(seq(from=min(train$V17),to=max(train$V17),length.out=length),
-        seq(from=min(train$V14),to=max(train$V14),length.out=length))
-        colors =c("blue","red")
-        plot3d(train$V12, train$V14, train$V17, xlab="V12", ylab="V14", zlab="V17",type="s",radius =0.3, col=as.integer(train$class) , box=FALSE, size=5)
-        text3d(train$V12, train$V14, train$V17,texts = 'hyperplane', cex=0.5, adj = 1)
-        plot3d(grid[,1],grid[,2],z.poly)
-        points3d(train$V17[which(train$class==0)], train$V14[which(train$class==0)], train$V12[which(train$class==0)], col='red')
-        points3d(train$V17[which(train$class==1)], train$V14[which(train$class==1)], train$V12[which(train$class==1)], col='blue')
-    }
-    if (input$kernel=='radial basis'){
-        grid = expand.grid(seq(from=min(train$V17),to=max(train$V17),length.out=length),
-        seq(from=min(train$V14),to=max(train$V14),length.out=length))
-        colors =c("blue","red")
-        plot3d(train$V12, train$V14, train$V17, xlab="V12", ylab="V14", zlab="V17",type="s",radius =0.3, col=as.integer(train$class) , box=FALSE, size=5)
-        text3d(train$V12, train$V14, train$V17,texts = 'hyperplane', cex=0.5, adj = 1)
-        plot3d(grid[,1],grid[,2],z.radial)
-        points3d(train$V17[which(train$class==0)], train$V14[which(train$class==0)], train$V12[which(train$class==0)], col='red')
-        points3d(train$V17[which(train$class==1)], train$V14[which(train$class==1)], train$V12[which(train$class==1)], col='blue')
-    }
-    if (input$kernel=='sigmoid'){
-        grid = expand.grid(seq(from=min(train$V17),to=max(train$V17),length.out=length),
-        seq(from=min(train$V14),to=max(train$V14),length.out=length))
-        colors =c("blue","red")
-        plot3d(train$V12, train$V14, train$V17, xlab="V12", ylab="V14", zlab="V17",type="s",radius =0.3, col=as.integer(train$class) , box=FALSE, size=5)
-        text3d(train$V12, train$V14, train$V17,texts = 'hyperplane', cex=0.5, adj = 1)
-        plot3d(grid[,1],grid[,2],z.sigmoid)
-        points3d(train$V17[which(train$class==0)], train$V14[which(train$class==0)], train$V12[which(train$class==0)], col='red')
-        points3d(train$V17[which(train$class==1)], train$V14[which(train$class==1)], train$V12[which(train$class==1)], col='blue')
-    }
-})
+
 
 
 
@@ -379,17 +321,17 @@ output$table <- renderDataTable({
     train=data[trainindex,]
     dataa=data[1:isolate(input$n1),]
     attach(train)
-    glm.fit=glm(dataa$class~dataa$V12+dataa$V14+dataa$V17,data=data,family=binomial,subset=train)
+    glm.fit=glm(data$class~data$V12+data$V14+data$V17,data=data,family=binomial)
     glm.probs=predict(glm.fit,type='response',dataa)
     glm.pred=rep(0,nrow(dataa))
     glm.pred[glm.probs>.5]=1
-    lda.fit=lda(dataa$class~dataa$V12+dataa$V14+dataa$V17,data=data,subset = train)
-    lda.pred=predict(lda.fit, data[!train,])
-    qda.fit=qda(dataa$class~dataa$V12+dataa$V14+dataa$V17,data=data,subset=train)
-    qda.pred=predict(qda.fit,data[!train,],type='vector')
-    if (input$Model=='logistic regression'){table=table(glm.pred,dataa$class)}
-    if (input$Model=='linear discriminant analysis'){table=table(lda.pred$class,dataa$class)}
-    if (input$Model=='quadratic discriminant analysis'){table=table(qda.pred$class,dataa$class)}
+    lda.fit=lda(data$class~data$V12+data$V14+data$V17,data=data)
+    lda.pred=predict(lda.fit, dataa)
+    qda.fit=qda(data$class~data$V12+data$V14+data$V17,data=data)
+    qda.pred=predict(qda.fit,dataa,type='class')
+    if (input$Model=='logistic regression'){table=table(glm.pred,data$class)}
+    if (input$Model=='linear discriminant analysis'){table=table(lda.pred$class,data$class)}
+    if (input$Model=='quadratic discriminant analysis'){table=table(qda.pred$class,data$class)}
     table})
 output$text <- renderText({'the percent of good prediction is : '})
 output$pred <- renderText({
@@ -398,26 +340,50 @@ output$pred <- renderText({
     train=data[trainindex,]
     dataa=data[1:isolate(input$n1),]
     attach(train)
-    glm.fit=glm(dataa$class~dataa$V12+dataa$V14+dataa$V17,data=data,family=binomial,subset=train)
-    glm.probs=predict(glm.fit,type='response',data)
-    glm.pred=rep(0,nrow(data))
+    glm.fit=glm(data$class~data$V12+data$V14+data$V17,data=data,family=binomial)
+    glm.probs=predict(glm.fit,type='response',dataa)
+    glm.pred=rep(0,nrow(dataa))
     glm.pred[glm.probs>.5]=1
-    lda.fit=lda(dataa$class~dataa$V12+dataa$V14+dataa$V17,data=data,subset = train)
-    lda.pred=predict(lda.fit, data[!train,])
-    qda.fit=qda(dataa$class~dataa$V12+dataa$V14+dataa$V17,data=data,subset=train)
-    qda.pred=predict(qda.fit,data[!train,],type='vector')
+    lda.fit=lda(data$class~data$V12+data$V14+data$V17,data=data)
+    lda.pred=predict(lda.fit, dataa)
+    qda.fit=qda(data$class~data$V12+data$V14+data$V17,data=data)
+    qda.pred=predict(qda.fit,dataa,type='class')
+    
+    
+    if (input$kernel2=='linear'){
+        model.linear=svm(class~.,data=train,kernel='linear',scale=F,cost= isolate(input$c2))
+        Y.linear=predict(model.linear,newdata = dataa)
+        ex.svm=mean(dataa$class==Y.linear)
+    }
+    if (input$kernel2=='polynomial'){
+        model.poly=svm(class~., data=train, kernel="polynomial",gamma = 0.01, cost = isolate(input$c2))
+        Y.poly=predict(model.poly,newdata = dataa)
+        ex.svm=mean(dataa$class==Y.poly)
+    }
+    if (input$kernel2=='radial basis'){
+        model.radial=svm(class~., data=train, kernel="radial",gamma = 0.01, cost = isolate(input$c2))
+        Y.radial=predict(model.radial,newdata = dataa)
+        ex.svm=mean(dataa$class==Y.radial)
+    }
+    if (input$kernel2=='sigmoid'){
+        model.sigmoid=svm(class~., data=train, kernel="sigmoid",gamma = 0.01, cost = isolate(input$c2))
+        Y.sigmoid=predict(model.sigmoid,newdata = dataa)
+        ex.svm=mean(dataa$class==Y.sigmoid)
+    }
+    
+    
     if (input$Model=='logistic regression'){
-        ex=mean(glm.pred==dataa$class)*100
+        ex=mean(glm.pred==data$class)*100
         decision=ifelse(ex>ex.svm,"Selected model prefered","SVM prefered")
         output$conclusion <- renderText({decision})
     }
-    if (input$Model=='linear discriminant analysis'){ex=mean(
-        lda.pred$class==dataa$class)*100
+    if (input$Model=='linear discriminant analysis'){
+        ex=mean(lda.pred$class==data$class)*100
         decision=ifelse(ex>ex.svm,"Selected model prefered","SVM prefered")
         output$conclusion <- renderText({decision})
     }
     if (input$Model=='quadratic discriminant analysis'){
-        ex=mean(qda.pred$class==dataa$class)*100
+        ex=mean(qda.pred$class==data$class)*100
         decision=ifelse(ex>ex.svm,"Selected model prefered","SVM prefered")
         output$conclusion <- renderText({decision})
     }
@@ -425,6 +391,7 @@ output$pred <- renderText({
 
 
 ## })
+
 
 
 })
