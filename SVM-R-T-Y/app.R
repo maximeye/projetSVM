@@ -14,24 +14,80 @@ source("Projet R.R")
 
 ui <- fluidPage(
     
-    titlePanel("SVM's Parameters settings"),
-    
-    sidebarLayout(
-        sidebarPanel(
-            selectInput(inputId="k",label = 'Choice the Kernel used in the SVM',
-                        choices=c('Linear',"Radial Basis", "Polynomial","Sigmoid"),multiple=FALSE, selected='Linear'),
-            sliderInput("n","Sample size:",min = 1,max = 600000, value=10000),
-            
-            sliderInput("C", "Cost parameter", min = 0, max = 1000,value = 10),
-           
-        ),
-        mainPanel(
-            plotOutput("Scatterplot")
-        )
-    )
+(navbarPage(title="SUPPORT VECTOR MACHINE",
 
-   
+# Application title
+tabPanel("Data presentation",
+
+# Sidebar with a slider input for number of bins
+sidebarLayout(
+sidebarPanel(
+fileInput(inputId='File', label='make your choice', multiple = TRUE, buttonLabel = 'Browse...',placeholder = 'not file selected'),
+actionButton(inputId="click",label="MANUAL",helpText='Please open the manual to understand how the application works')
+),
+
+# Show a plot of the generated distribution
+mainPanel(
+textOutput('presentation'),
+tableOutput("dim"),
+tableOutput("name"),
+dataTableOutput('sum')
+
 )
+)
+),
+tabPanel("Description of SVM",
+sidebarLayout(
+sidebarPanel(
+selectInput(inputId="kernel1",label="choose the kernel type",choices=c('linear','polynomial','radial basis','sigmoid'),multiple = F,selected = 'linear'),
+numericInput(inputId='degree1', label='degree',value=3,min=0),
+numericInput(inputId='coef01', label='b',value=0,min=0),
+sliderInput(inputId='c1', label='C',min=1,max=100,value=50,step=1),
+actionButton("submit1" ,"submit", icon("refresh"))
+),
+mainPanel(
+plotOutput('plot1'),
+textOutput('explication1'),
+textOutput('sv1'),
+plotOutput('plot2'),
+textOutput('explication2')
+)
+)
+)
+,
+tabPanel("SVM's Parameters settings",
+sidebarLayout(
+sidebarPanel(
+selectInput(inputId="kernel",label="choose the kernel type",choices=c('linear','polynomial','radial basis','sigmoid'),multiple = F,selected = 'linear'),
+sliderInput(inputId='c', label='Cost parameter',min=0,max=1000,value=10,step=1),
+sliderInput(inputId="n","Sample size:",min = 1,max = 600000, value=10000),
+actionButton("submit" ,"submit", icon("refresh"))
+),
+mainPanel(
+dataTableOutput("tablesvm"),
+textOutput('text1'),
+textOutput("predsvm"),
+plotOutput('plot3d')
+)
+)
+)
+,
+tabPanel("Comparison",
+sidebarLayout(
+sidebarPanel(
+sliderInput(inputId="n1","Sample size:",min = 1,max = 600000, value=10000),
+selectInput(inputId='Model', label='choose the model', choices=c('logistic regression','linear discriminant analysis','quadratic discriminant analysis','tree') ,multiple = F, selected='logistic regression'),
+actionButton("submit2" ,"submit", icon("refresh"))
+),
+mainPanel(
+dataTableOutput("table"),
+textOutput("text"),
+textOutput("pred"),
+textOutput("conclusion")
+)
+)
+)
+)))
 
 
 
@@ -39,121 +95,340 @@ ui <- fluidPage(
 
 server <- function(input, output) {
 
-    values<- reactiveValues(x="")
-    observeEvent({input$k
-        input$n},
-        
-        {k=input$k
-        if (input$k=="Linear") {values$x="linear"}
-        if (input$k=="Radial Basis") {values$x="radial"}
-        if (input$k=="Polynomial") {values$x="polynomial"}
-        if (input$k=="Sigmoid") {values$x="sigmoid"}
+observeEvent(input$click,{file.show("D:/PC/M2/SVM/projet/projet_final/notice.html")})
+##observeEvent(input$File,{ data=read.csv(input$File,header=T,sep=",")
+data1=read.csv("/Volumes/CALAMITY/PC/M2/SVM/projet/creditcard.csv",header=T,sep=",")
+attach(data1)
+set.seed(12345)
+# On change le type de la variable de reponse "Class" (integer -> factor)
+data1$Class=as.factor(data1$Class)
+# Process de selection de variables les plus significatives
+regs=regsubsets(Class~.,data=data1,nvmax = 10)
+# V17, V12 et V14 sont les variables les plus significatives
+dat=data1[,c(18,15,13,31)]
+# On change le type de la variable de reponse "Class" (integer -> factor)
+dat$Class=as.factor(dat$Class)
+# Reechantillonnage afin d'obtenir 50% de class = 0, 50% de class=1
+newdat <- SMOTE(dat[,1:3],dat[,4],K=3,dup_size = 0)
+#Transformation du type de variable de class en factor (auparavant character)
+newdat$data$class=as.factor(newdat$data$class)
+data=newdat$data
+index=1:nrow(data)
 
-        }
-    )
-}
+
+
+gamma=0.01
+C=10
+
+
+
+
+
+#p1
+
+output$presentation <- renderText({
+    'The dataset presents transactions that occured in two days made by credit cards in September 2013 by european cardholders.
+    We have first the number of observation, and after the number of variables. Then the names of variables and Statisitics of the dataset by variables selected among the most significant, and the variable of response. '
+})
+output$dim <- renderTable({
+    dim(data1)
+})
+output$name <- renderTable({
+    names(data)
+})
+output$sum <- renderDataTable({summary(data)
     
-    output$Scatterplot <- renderPlot({
-  
-        dat=read.csv("/Users/Maxime/Documents/Cours/Master/M2/S1/SVM/Docs Projet/creditcard.csv",header=T,sep=",")
-        attach(dat)
-        dat$Class=as.factor(dat$Class)
-        set.seed(12345)
-        dat$Class=as.factor(dat$Class)
-        dat.signif$Class=as.factor(dat.signif$Class)
-        newdat <- SMOTE(dat.signif[,1:3],dat.signif[,4],K=3,dup_size = 0)
-        
-        newdat$data$class=as.factor(newdat$data$class)
-        
-        data=newdat$data
-        data=data[,-1]
-        
-        taille_ech=input$n
-        index=1:nrow(data)
-        trainindex=sample(index,round(taille_ech*0.7))
-        train=data[trainindex,]
-        itest=sample(index,round(taille_ech*0.3))
-        test=data[itest,]
-        attach(train)
-        ker=input$k
-        
-        gam=0.01
-        C=10
-        
-        length = 100                                                                                                                                                                 
-        grid = expand.grid(seq(from=min(train$V17),to=max(train$V17),length.out=length),                                                                                                         
-                           seq(from=min(train$V14),to=max(train$V14),length.out=length))
-        
-        
-        
-        model=svm(class~.,data=train,kernel=kernel,scale=F,cost=105)
-        w <- t(model$coefs) %*% model$SV
-        #Taux de bonnes/mauvaises classifications sur echantillon test:
-        
-        Y=predict(model,newdata = test)
-        
-        #list(cbind(test, Y), model$index)
-        
-        table(test$class,Y)
-        mean(test$class==Y)
-        mean(test$class!=Y)
-        
-        
-        
-        #Taux de bonnes/mauvaises classifications sur echantillon complet:
-        dataa=data[1:60000,]
-        Y=predict(model,newdata = dataa)
-        
-        #list(cbind(test, Y), model$index)
-        
-        table(dataa$class,Y)
-        mean(dataa$class==Y)
-        mean(dataa$class!=Y)
-        
-        
-        #Plot echantillon APPRENTISSAGE
-        
+})
+
+
+
+
+
+
+
+
+
+
+#p2
+
+set.seed(10111)
+x = matrix(rnorm(40), 20, 2)
+y = rep(c(-1, 1), c(10, 10))
+x[y == 1,] = x[y == 1,] + 1
+plot(x, col = y + 3, pch = 19)
+dat = data.frame(x, y = as.factor(y))
+output$plot1 <- renderPlot({
+    input$submit1
+    if (input$kernel1=='linear'){
+        svmfit = svm(y ~ ., data = dat, kernel = "linear", cost = isolate(input$c1), scale = FALSE)
+        plot(svmfit, dat)
+    }
+    if (input$kernel1=='polynomial'){
+        svmfit = svm(y ~ ., data = dat, kernel = "polynomial", degree=isolate(input$degree1), coef0=isolate(input$coef01), cost = isolate(input$c1), scale = FALSE)
+        plot(svmfit, dat)
+    }
+    if (input$kernel1=='radial basis'){
+        svmfit = svm(y ~ ., data = dat, kernel = "radial", cost = isolate(input$c1), scale = FALSE)
+        plot(svmfit, dat)
+    }
+    if (input$kernel1=='sigmoid'){
+        svmfit = svm(y ~ ., data = dat, kernel = "sigmoid",coef0=isolate(input$coef01), cost = isolate(input$c1), scale = FALSE)
+        plot(svmfit, dat)
+    }
+})
+output$explication1 <- renderText({
+    'We can observe that the SVM create a line who separate data in two parts, we have above points where realisations are 1 and below realisations wich are -1. And the number of support vector is for each side of the line :'
+    
+})
+output$sv1 <- renderText({
+    input$submit1
+    if (input$kernel1=='linear'){
+        svmfit = svm(y ~ ., data = dat, kernel = "linear", cost = isolate(input$c1), scale = FALSE)
+    }
+    if (input$kernel1=='polynomial'){
+        svmfit = svm(y ~ ., data = dat, kernel = "polynomial", degree=isolate(input$degree1), coef0=isolate(input$coef01), cost = isolate(input$c1), scale = FALSE)
+    }
+    if (input$kernel1=='radial basis'){
+        svmfit = svm(y ~ ., data = dat, kernel = "radial", cost = isolate(input$c1), scale = FALSE)
+    }
+    if (input$kernel1=='sigmoid'){
+        svmfit = svm(y ~ ., data = dat, kernel = "sigmoid",coef0=isolate(input$coef01), cost = isolate(input$c1), scale = FALSE)
+    }
+    svmfit$nSV
+})
+svmfit = svm(y ~ ., data = dat, kernel = "linear", cost = isolate(input$c1), scale = FALSE)
+make.grid = function(x, n = 75) {
+    grange = apply(x, 2, range)
+    x1 = seq(from = grange[1,1], to = grange[2,1], length = n)
+    x2 = seq(from = grange[1,2], to = grange[2,2], length = n)
+    expand.grid(X1 = x1, X2 = x2)
+}
+xgrid = make.grid(x)
+xgrid[1:10,]
+ygrid = predict(svmfit, xgrid)
+plot(xgrid, col = c("red","blue")[as.numeric(ygrid)], pch = 20, cex = .2)
+points(x, col = y + 3, pch = 19)
+points(x[svmfit$index,], pch = 5, cex = 2)
+beta = drop(t(svmfit$coefs)%*%x[svmfit$index,])
+beta0 = svmfit$rho
+
+output$plot2 <- renderPlot({
+    input$submit1
+    if (input$kernel1=='linear'){
+        plot(xgrid, col = c("red", "blue")[as.numeric(ygrid)], pch = 20, cex = .2)
+        points(x, col = y + 3, pch = 19)
+        points(x[svmfit$index,], pch = 5, cex = 2)
+        abline(beta0 / beta[2], -beta[1] / beta[2])
+        abline((beta0 - 1) / beta[2], -beta[1] / beta[2], lty = 2)
+        abline((beta0 + 1) / beta[2], -beta[1] / beta[2], lty = 2)
+    }
+})
+
+
+
+
+
+
+
+#p3
+
+
+
+
+
+
+output$tablesvm <- renderDataTable({
+    input$submit
+    trainindex=sample(index,round(isolate(input$n)*0.7))
+    train=data[trainindex,]
+    attach(train)
+    dataa=data[1:isolate(input$n),]
+    model.linear=svm(class~.,data=train,kernel='linear',scale=F,cost= isolate(input$c))
+    Y.linear=predict(model.linear,newdata = dataa)
+    model.poly=svm(class~., data=train, kernel="polynomial",gamma = 0.01, cost = isolate(input$c))
+    Y.poly=predict(model.poly,newdata = dataa)
+    model.radial=svm(class~., data=train, kernel="radial",gamma = 0.01, cost = isolate(input$c))
+    Y.radial=predict(model.radial,newdata = dataa)
+    model.sigmoid=svm(class~., data=train, kernel="sigmoid",gamma = 0.01, cost = isolate(input$c))
+    Y.sigmoid=predict(model.sigmoid,newdata = dataa)
+    if (input$kernel=='linear'){
+        table=table(dataa$class,Y.linear)}
+    if (input$kernel=='polynomial'){
+        table=table(dataa$class,Y.poly)}
+    if (input$kernel=='radial basis'){
+        table=table(dataa$class,Y.radial)}
+    if (input$kernel=='sigmoid'){
+        table=table(dataa$class,Y.sigmoid)}
+    table
+})
+
+output$text1 <- renderText({input$submit
+    'the percent of good prediction is : '
+})
+
+output$predsvm <- renderText({
+    input$submit
+    trainindex=sample(index,round(isolate(input$n)*0.7))
+    train=data[trainindex,]
+    dataa=data[1:isolate(input$n),]
+    attach(train)
+    if (input$kernel=='linear'){
+        model.linear=svm(class~.,data=train,kernel='linear',scale=F,cost= isolate(input$c))
+        Y.linear=predict(model.linear,newdata = dataa)
+        ex.svm=mean(dataa$class==Y.linear)
+    }
+    if (input$kernel=='polynomial'){
+        model.poly=svm(class~., data=train, kernel="polynomial",gamma = 0.01, cost = isolate(input$c))
+        Y.poly=predict(model.poly,newdata = dataa)
+        ex.svm=mean(dataa$class==Y.poly)
+    }
+    if (input$kernel=='radial basis'){
+        model.radial=svm(class~., data=train, kernel="radial",gamma = 0.01, cost = isolate(input$c))
+        Y.radial=predict(model.radial,newdata = dataa)
+        ex.svm=mean(dataa$class==Y.radial)
+    }
+    if (input$kernel=='sigmoid'){
+        model.sigmoid=svm(class~., data=train, kernel="sigmoid",gamma = 0.01, cost = isolate(input$c))
+        Y.sigmoid=predict(model.sigmoid,newdata = dataa)
+        ex.svm=mean(dataa$class==Y.sigmoid)
+    }
+    ex.svm
+})
+
+
+output$plot3d <- renderPlot({
+    input$submit
+    length = 100
+    trainindex=sample(index,round(isolate(input$n)*0.7))
+    train=data[trainindex,]
+    dataa=data[1:isolate(input$n),]
+    attach(train)
+    model.linear=svm(class~.,data=train,kernel='linear',scale=F,cost= isolate(input$c))
+    w.linear = t(model.linear$coefs) %*% model.linear$SV
+    z.linear = (model.linear$rho- w.linear[1,1]*grid[,1] - w.linear[1,2]*grid[,2]) / w.linear[1,3]
+    model.poly=svm(class~., data=train, kernel="polynomial",gamma = 0.01, cost = isolate(input$c))
+    w.poly = t(model.poly$coefs) %*% model.poly$SV
+    z.poly=((gamma*(w.poly[1,1]*grid[,1] + w.poly[1,2]*grid[,2])+model.poly$coef0))^2
+    model.radial=svm(class~., data=train, kernel="radial",gamma = 0.01, cost = isolate(input$c))
+    w.radial = t(model.radial$coefs) %*% model.radial$SV
+    z.radial= exp((-gamma)*(model.radial$rho- w.radial[1,1]*grid[,1] - w.radial[1,2]*grid[,2])^2)
+    model.sigmoid=svm(class~., data=train, kernel="sigmoid",gamma = 0.01, cost = isolate(input$c))
+    w.sigmoid = t(model.sigmoid$coefs) %*% model.sigmoid$SV
+    z.sigmoid=tanh((gamma*(w.sigmoid[1,1]*grid[,1] + w.sigmoid[1,2]*grid[,2]))+model.sigmoid$coef0)
+    if (input$kernel=='linear'){
+        grid = expand.grid(seq(from=min(train$V17),to=max(train$V17),length.out=length),
+        seq(from=min(train$V14),to=max(train$V14),length.out=length))
         colors =c("blue","red")
-        p3d<- plot3d(train$V12, train$V14, train$V17, xlab="V12", ylab="V14",
-                     zlab="V17",type="s",radius =0.3,
-                     col=as.integer(train$class) ,
-                     box=FALSE, size=5)
-        
-        text3d(train$V12, train$V14, train$V17, cex=0.5, adj = 1)
-SV=function(ker){
-      
-        if ker="linear" {
-            z = (model$rho- w[1,1]*grid[,1] - w[1,2]*grid[,2]) / w[1,3]
-        }
-        else if ker="radial" {
-            z= exp((-gamma)*(model$rho- w[1,1]*grid[,1] - w[1,2]*grid[,2])^2)
-            
-        }
-        else if ker="polynomial" {
-            z=((gamma*(w[1,1]*grid[,1] + w[1,2]*grid[,2])+model$coef0))^2
-            
-        }
-        else if ker="sigmoid" {
-            z=tanh((gamma*(w[1,1]*grid[,1] + w[1,2]*grid[,2]))+model$coef0)
-            
-        }
-    
-}
-        
-        plot3d(grid[,1],grid[,2],z)  
-       
+        plot3d(train$V12, train$V14, train$V17, xlab="V12", ylab="V14", zlab="V17",type="s",radius =0.3, col=as.integer(train$class) , box=FALSE, size=5)
+        text3d(train$V12, train$V14, train$V17,texts = 'hyperplane', cex=0.5, adj = 1)
+        plot3d(grid[,1],grid[,2],z.linear)
         points3d(train$V17[which(train$class==0)], train$V14[which(train$class==0)], train$V12[which(train$class==0)], col='red')
         points3d(train$V17[which(train$class==1)], train$V14[which(train$class==1)], train$V12[which(train$class==1)], col='blue')
-        
-        
-        
-        
-        
-    })
-    
+    }
+    if (input$kernel=='polynomial'){
+        grid = expand.grid(seq(from=min(train$V17),to=max(train$V17),length.out=length),
+        seq(from=min(train$V14),to=max(train$V14),length.out=length))
+        colors =c("blue","red")
+        plot3d(train$V12, train$V14, train$V17, xlab="V12", ylab="V14", zlab="V17",type="s",radius =0.3, col=as.integer(train$class) , box=FALSE, size=5)
+        text3d(train$V12, train$V14, train$V17,texts = 'hyperplane', cex=0.5, adj = 1)
+        plot3d(grid[,1],grid[,2],z.poly)
+        points3d(train$V17[which(train$class==0)], train$V14[which(train$class==0)], train$V12[which(train$class==0)], col='red')
+        points3d(train$V17[which(train$class==1)], train$V14[which(train$class==1)], train$V12[which(train$class==1)], col='blue')
+    }
+    if (input$kernel=='radial basis'){
+        grid = expand.grid(seq(from=min(train$V17),to=max(train$V17),length.out=length),
+        seq(from=min(train$V14),to=max(train$V14),length.out=length))
+        colors =c("blue","red")
+        plot3d(train$V12, train$V14, train$V17, xlab="V12", ylab="V14", zlab="V17",type="s",radius =0.3, col=as.integer(train$class) , box=FALSE, size=5)
+        text3d(train$V12, train$V14, train$V17,texts = 'hyperplane', cex=0.5, adj = 1)
+        plot3d(grid[,1],grid[,2],z.radial)
+        points3d(train$V17[which(train$class==0)], train$V14[which(train$class==0)], train$V12[which(train$class==0)], col='red')
+        points3d(train$V17[which(train$class==1)], train$V14[which(train$class==1)], train$V12[which(train$class==1)], col='blue')
+    }
+    if (input$kernel=='sigmoid'){
+        grid = expand.grid(seq(from=min(train$V17),to=max(train$V17),length.out=length),
+        seq(from=min(train$V14),to=max(train$V14),length.out=length))
+        colors =c("blue","red")
+        plot3d(train$V12, train$V14, train$V17, xlab="V12", ylab="V14", zlab="V17",type="s",radius =0.3, col=as.integer(train$class) , box=FALSE, size=5)
+        text3d(train$V12, train$V14, train$V17,texts = 'hyperplane', cex=0.5, adj = 1)
+        plot3d(grid[,1],grid[,2],z.sigmoid)
+        points3d(train$V17[which(train$class==0)], train$V14[which(train$class==0)], train$V12[which(train$class==0)], col='red')
+        points3d(train$V17[which(train$class==1)], train$V14[which(train$class==1)], train$V12[which(train$class==1)], col='blue')
+    }
+})
 
+
+
+
+
+
+
+
+
+
+
+
+#p4
+
+
+
+
+output$table <- renderDataTable({
+    input$submit2
+    trainindex=sample(index,round(isolate(input$n1)*0.7))
+    train=data[trainindex,]
+    dataa=data[1:isolate(input$n1),]
+    attach(train)
+    glm.fit=glm(dataa$class~dataa$V12+dataa$V14+dataa$V17,data=data,family=binomial,subset=train)
+    glm.probs=predict(glm.fit,type='response',dataa)
+    glm.pred=rep(0,nrow(dataa))
+    glm.pred[glm.probs>.5]=1
+    lda.fit=lda(dataa$class~dataa$V12+dataa$V14+dataa$V17,data=data,subset = train)
+    lda.pred=predict(lda.fit, data[!train,])
+    qda.fit=qda(dataa$class~dataa$V12+dataa$V14+dataa$V17,data=data,subset=train)
+    qda.pred=predict(qda.fit,data[!train,],type='vector')
+    if (input$Model=='logistic regression'){table=table(glm.pred,dataa$class)}
+    if (input$Model=='linear discriminant analysis'){table=table(lda.pred$class,dataa$class)}
+    if (input$Model=='quadratic discriminant analysis'){table=table(qda.pred$class,dataa$class)}
+    table})
+output$text <- renderText({'the percent of good prediction is : '})
+output$pred <- renderText({
+    input$submit2
+    trainindex=sample(index,round(isolate(input$n1)*0.7))
+    train=data[trainindex,]
+    dataa=data[1:isolate(input$n1),]
+    attach(train)
+    glm.fit=glm(dataa$class~dataa$V12+dataa$V14+dataa$V17,data=data,family=binomial,subset=train)
+    glm.probs=predict(glm.fit,type='response',data)
+    glm.pred=rep(0,nrow(data))
+    glm.pred[glm.probs>.5]=1
+    lda.fit=lda(dataa$class~dataa$V12+dataa$V14+dataa$V17,data=data,subset = train)
+    lda.pred=predict(lda.fit, data[!train,])
+    qda.fit=qda(dataa$class~dataa$V12+dataa$V14+dataa$V17,data=data,subset=train)
+    qda.pred=predict(qda.fit,data[!train,],type='vector')
+    if (input$Model=='logistic regression'){
+        ex=mean(glm.pred==dataa$class)*100
+        decision=ifelse(ex>ex.svm,"Selected model prefered","SVM prefered")
+        output$conclusion <- renderText({decision})
+    }
+    if (input$Model=='linear discriminant analysis'){ex=mean(
+        lda.pred$class==dataa$class)*100
+        decision=ifelse(ex>ex.svm,"Selected model prefered","SVM prefered")
+        output$conclusion <- renderText({decision})
+    }
+    if (input$Model=='quadratic discriminant analysis'){
+        ex=mean(qda.pred$class==dataa$class)*100
+        decision=ifelse(ex>ex.svm,"Selected model prefered","SVM prefered")
+        output$conclusion <- renderText({decision})
+    }
+    ex})
+
+
+## })
+
+
+})
 }
-
 
 
 
