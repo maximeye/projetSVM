@@ -9,8 +9,8 @@ library(caTools)
 
 #Chargement de la table de donnees :
 
-dat=read.csv("/Users/Maxime/Documents/Cours/Master/M2/S1/SVM/Docs Projet/creditcard.csv",header=T,sep=",")
-#dat=read.csv("C:/Users/kevas/Desktop/Cours/M2/Support_Vector_Machine/Dossier_SVM/creditcard.csv",header=T,sep=",")
+#dat=read.csv("/Users/Maxime/Documents/Cours/Master/M2/S1/SVM/Docs Projet/creditcard.csv",header=T,sep=",")
+dat=read.csv("C:/Users/kevas/Desktop/Cours/M2/Support_Vector_Machine/Dossier_SVM/creditcard.csv",header=T,sep=",")
 
 
 attach(dat)
@@ -105,7 +105,7 @@ attach(train)
                     ###############  SVM kernel lineaire  ###############
 
 
-model=svm(class~.,data=train,kernel="linear",scale=F,cost=105)
+model=svm(class~.,data=train,kernel="linear",scale=F,cost=100)
 w = t(model$coefs) %*% model$SV
 
 # Taux de bonnes/mauvaises classifications sur echantillon TEST :
@@ -153,7 +153,7 @@ p3d<- plot3d(test$V12, test$V14, test$V17, xlab="V12", ylab="V14",
 length = 100                                                                                                                                                                 
 grid = expand.grid(seq(from=min(train$V17),to=max(train$V17),length.out=length),                                                                                                         
                     seq(from=min(train$V14),to=max(train$V14),length.out=length))                                                                                                         
-z = (model$rho- w[1,1]*grid[,1] - w[1,2]*grid[,2]) / w[1,3]
+z = (model$rho - w[1,1]*grid[,1] - w[1,2]*grid[,2])
 #z=(w[1,1]*grid[,1] + w[1,2]*grid[,2])
 
 
@@ -228,13 +228,16 @@ p3d = plot3d(test$V12, test$V14, test$V17, xlab="V12", ylab="V14",
 
 
 
-length = 75                                                                                                                                                                
+length = 100
 grid = expand.grid(seq(from=min(train$V17),to=max(train$V17),length.out=length),                                                                                                         
-                   seq(from=min(train$V14),to=max(train$V14),length.out=length))                                                                                                         
-z= exp((-gamma)*(w[1,1]*grid[,1] - w[1,2]*grid[,2])^2) ##(model$rho-*w[1,1]*grid[,1] - w[1,2]*grid[,2])^2)
+                   seq(from=min(train$V14),to=max(train$V14),length.out=length))  
+z= exp((-0.000001)*(((w[1,1]*grid[,1]) - (w[1,2]*grid[,2]))^2))
+
+
 
 # Drawing the plane &nd adding points to the graphic
-plot3d(grid[,1],grid[,2],z,aspect = F)
+plot3d(grid[,1],grid[,2],z,aspect = T)
+
 
 points3d(train$V17[which(train$class==0)], train$V14[which(train$class==0)], train$V12[which(train$class==0)], col='red')
 points3d(train$V17[which(train$class==1)], train$V14[which(train$class==1)], train$V12[which(train$class==1)], col='blue')
@@ -281,7 +284,7 @@ p3d = plot3d(train$V12, train$V14, train$V17, xlab="V12", ylab="V14",
 colors =c("blue","red")
 p3d = plot3d(test$V12, test$V14, test$V17, xlab="V12", ylab="V14",
              zlab="V17",type="s",radius =0.3,
-             col=as.integer(train$class) ,
+             col=as.integer(test$class) ,
              box=FALSE, size=5)
 
 # text3d(test$V12, test$V14, test$V17, cex=0.5, adj = 1)
