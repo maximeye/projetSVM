@@ -119,7 +119,7 @@ mean(test$class!=Y) #8,6% de mauvaise classification
 
 
 # Taux de bonnes/mauvaises classifications sur echantillon COMPLET :
-dataa=data[,] # Ici, on choisit le nombre de lignes qui définiera l'échantillon complet
+dataa=data[,] # Ici, on choisit le nombre de lignes qui d?finiera l'?chantillon complet
 Y=predict(model,newdata = dataa)
 
 table(dataa$class,Y)
@@ -198,7 +198,7 @@ mean(test$class!=Y) # 8,6% de mauvaise classification
 
 
 #### Taux de bonnes/mauvaises classifications sur echantillon COMPLET :
-dataa=data[,] # Ici, on choisit le nombre de lignes qui définiera l'échantillon complet
+dataa=data[,] # Ici, on choisit le nombre de lignes qui d?finiera l'?chantillon complet
 Y=predict(model,newdata = dataa)
 
 table(dataa$class,Y)
@@ -262,7 +262,7 @@ mean(test$class==Y) # 64,6% de bonne classification
 mean(test$class!=Y) # 35,4% de mauvaise classification
 
 #### Taux de bonnes/mauvaises classifications sur echantillon COMPLET :
-dataa=data[,]  # Ici, on choisit le nombre de lignes qui définiera l'échantillon complet
+dataa=data[,]  # Ici, on choisit le nombre de lignes qui d?finiera l'?chantillon complet
 Y=predict(model,newdata = dataa)
 
 table(dataa$class,Y)
@@ -323,7 +323,7 @@ mean(test$class==Y) # 91,5% de bonne classification
 mean(test$class!=Y) # 8,5% de mauvaise classification
 
 #### Taux de bonnes/mauvaises classifications sur echantillon COMPLET :
-dataa=data[,] # Ici, on choisit le nombre de lignes qui définiera l'échantillon complet
+dataa=data[,] # Ici, on choisit le nombre de lignes qui d?finiera l'?chantillon complet
 Y=predict(model,newdata = dataa)
 
 table(dataa$class,Y)
@@ -370,9 +370,66 @@ prediction=predict(model, test[,-4])
 
 
 
-#Polynomial / Lineaire : OK
-#RBF NON
-#Sigmoid ?
 
-#formule ligne 226 ?
-#ligne 345, col=colors non ?
+
+#############PASSAGE EN 2D
+
+data=read.csv("/Users/Maxime/Documents/Cours/Master/M2/S1/SVM/Docs Projet/newdat.csv",header=T,sep=",")
+data=read.csv("C:/Users/kevas/Desktop/Cours/M2/Support_Vector_Machine/Dossier_SVM/newdat.csv",header=T,sep=",")
+data$class=as.factor(data$class)
+set.seed(12345)
+data=data[,-c(1,4)]
+
+
+
+taille_ech=15000
+index=1:nrow(data)
+trainindex=sample(index,round(taille_ech*0.7))
+train=data[trainindex,]
+itest=sample(index,round(taille_ech*0.3))
+test=data[itest,]
+attach(train)
+
+###LINEAIRE
+model=svm(class~.,data=train,kernel="linear",scale=F,cost=100)
+###RBF
+model=svm(class~., data=train, kernel="radial",gamma = 0.01, cost = 10) 
+###POLYNOMIAL
+model=svm(class~., data=train, kernel="polynomial",gamma = 0.01, cost = 10) 
+###SIGMOID
+model=svm(class~., data=train, kernel="sigmoid",gamma = 0.01, cost = 10) 
+
+
+
+
+
+# Taux de bonnes/mauvaises classifications sur echantillon TEST :
+Y=predict(model,newdata = test)
+
+table(test$class,Y)
+mean(test$class==Y) 
+mean(test$class!=Y) 
+
+
+
+#PLOT
+
+plot(train$V17,train$V14,type="p",col=c("blue","red")[train$class])
+
+beta0 = model$rho
+beta1 = sum(model$coefs*train$V17[model$index])
+beta2 = sum(model$coefs*train$V14[model$index])
+
+##Marges
+#abline(-beta0/beta2,-beta1/beta2,col="green")
+#abline((-beta0-5.0)/beta2,-beta1/beta2,col="gray")
+#abline((-beta0+5.0)/beta2,-beta1/beta2,col="gray")
+
+
+plot(model,train,col=c("bisque","lightblue"))
+
+
+
+
+
+
