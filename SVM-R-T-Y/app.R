@@ -66,7 +66,7 @@ actionButton("submit" ,"submit", icon("refresh"))
 mainPanel(
 dataTableOutput("tablesvm"),
 textOutput('text1'),
-textOutput("predsvm"),
+textOutput("predsvm")
 )
 )
 )
@@ -98,7 +98,8 @@ server <- function(input, output) {
 
 observeEvent(input$click,{file.show("D:/PC/M2/SVM/projet/projet_final/notice.html")})
 ##observeEvent(input$File,{ data=read.csv(input$File,header=T,sep=",")
-data1=read.csv("/Volumes/CALAMITY/PC/M2/SVM/projet/creditcard.csv",header=T,sep=",")
+data1=read.csv("/Users/Maxime/Documents/Cours/Master/M2/S1/SVM/Docs Projet/creditcard.csv",header=T,sep=",")
+#data1=read.csv("/Volumes/CALAMITY/PC/M2/SVM/projet/creditcard.csv",header=T,sep=",")
 attach(data1)
 set.seed(12345)
 # On change le type de la variable de reponse "Class" (integer -> factor)
