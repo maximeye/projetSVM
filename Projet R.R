@@ -429,6 +429,14 @@ beta2 = sum(model$coefs*train$V14[model$index])
 plot(model,train,col=c("bisque","lightblue"))
 
 
+###Test read.csv repo
+?httr
+library(httr)
+file="https://raw.githubusercontent.com/maximeye/projetSVM/master/newdat.csv"
+data=read.csv(file=url(file),header=T,sep=",")
+
+
+
 
 
 
