@@ -1,0 +1,76 @@
+---
+title: "Notice"
+author: "ROBLIN Caroline, TELLIER Kevin, YE Maxime"
+date: '`r format(Sys.time(), "%d %B %Y")`'
+output: html_document
+
+
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+    
+### Data presentation
+
+The goal is to present the data credit cards by 
+
+* dimension
+* name of variables
+* and some statistics.
+
+
+###Description of SVM
+
+Here, we have an example of support vector machine with a little sample.
+you can select your choice into the type of kernel :
+
+* _linear_
+* _polynomial_
+* _radial basis_
+* _sigmoid_
+
+and after choosing parameters which you need, you have to push the button submit to display the results.
+
+###SVM
+
+In this section you can observe the application of support vector machine into the sample
+It's possible to change parameters in default and submit after.  
+You can choice : 
+
+1. __the kernel : __
+
+You can select into : 
+* _linear_
+* _polynomial_
+* _radial basis_
+* _sigmoid_
+
+2. __degree : __
+
+You can enter the number or choose it with the arrows.
+
+3. __b : __
+
+You can enter the number or choose it with the arrows.
+
+4. __C : __
+
+You can choose C by moving the cursor.
+
+
+###comparison
+
+It's to compare the support vector machine with others models one at a time.  
+You can select the type of model :
+
+* _logistic regression_
+* _linear discriminant analysis_
+* _quadratic discriminant analysis_
+
+We observe the contingency table and the percent of good predections of the choosen model.
+At the final we have the comparison of the percent of good prediction with the SVM model chooses compare to the percent of good prediction with the model selected.
+
+The conclusion of this app is : 
+
+

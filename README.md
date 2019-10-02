@@ -1,2 +1,2 @@
 # projetSVM
-Repo pour le projet de SVM
+Repo du groupe de Roblin C. / Tellier K. / YE M. pour le projet de SVM
