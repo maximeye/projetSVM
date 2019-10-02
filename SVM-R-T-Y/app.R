@@ -66,7 +66,7 @@ actionButton("submit" ,"submit", icon("refresh"))
 mainPanel(
 dataTableOutput("tablesvm"),
 textOutput('text1'),
-textOutput("predsvm"),
+textOutput("predsvm")
 )
 )
 )
@@ -98,25 +98,16 @@ server <- function(input, output) {
 
 observeEvent(input$click,{file.show("D:/PC/M2/SVM/projet/projet_final/notice.html")})
 ##observeEvent(input$File,{ data=read.csv(input$File,header=T,sep=",")
-data1=read.csv("/Volumes/CALAMITY/PC/M2/SVM/projet/creditcard.csv",header=T,sep=",")
-attach(data1)
+    file="https://raw.githubusercontent.com/maximeye/projetSVM/master/newdat.csv"
+    newdat=read.csv(file=url(file),header=T,sep=",")
+#data1=read.csv("/Users/Maxime/Documents/Cours/Master/M2/S1/SVM/Docs Projet/creditcard.csv",header=T,sep=",")
+#data1=read.csv("/Volumes/CALAMITY/PC/M2/SVM/projet/creditcard.csv",header=T,sep=",")
+attach(newdat)
 set.seed(12345)
-# On change le type de la variable de reponse "Class" (integer -> factor)
-data1$Class=as.factor(data1$Class)
-# Process de selection de variables les plus significatives
-regs=regsubsets(Class~.,data=data1,nvmax = 10)
-# V17, V12 et V14 sont les variables les plus significatives
-dat=data1[,c(18,15,13,31)]
-# On change le type de la variable de reponse "Class" (integer -> factor)
-dat$Class=as.factor(dat$Class)
-# Reechantillonnage afin d'obtenir 50% de class = 0, 50% de class=1
-newdat <- SMOTE(dat[,1:3],dat[,4],K=3,dup_size = 0)
-#Transformation du type de variable de class en factor (auparavant character)
+
 newdat$data$class=as.factor(newdat$data$class)
 data=newdat$data
 index=1:nrow(data)
-
-
 
 gamma=0.01
 C=10
@@ -128,8 +119,7 @@ C=10
 #p1
 
 output$presentation <- renderText({
-    'The dataset presents transactions that occured in two days made by credit cards in September 2013 by european cardholders.
-    We have first the number of observation, and after the number of variables. Then the names of variables and Statisitics of the dataset by variables selected among the most significant, and the variable of response. '
+    
 })
 output$dim <- renderTable({
     dim(data1)
@@ -394,8 +384,8 @@ output$pred <- renderText({
 
 
 
-})
 }
+
 
 
 
