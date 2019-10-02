@@ -7,16 +7,17 @@ library(misc3d)
 library(ROCR)
 library(leaps)
 library(caTools)
-source("Projet R.R")
-
+#source("Projet R.R")
+library(httr)
 
 
 
 ui <- fluidPage(
-    
+
+#Titre Programme tout à gauche
 (navbarPage(title="SUPPORT VECTOR MACHINE",
 
-# Application title
+# 1er onglet :
 tabPanel("Data presentation",
 
 # Sidebar with a slider input for number of bins
@@ -36,6 +37,7 @@ dataTableOutput('sum')
 )
 )
 ),
+#Onglet 2 : 
 tabPanel("Description of SVM",
 sidebarLayout(
 sidebarPanel(
@@ -55,6 +57,7 @@ textOutput('explication2')
 )
 )
 ,
+#Onglet 3: 
 tabPanel("SVM's Parameters settings",
 sidebarLayout(
 sidebarPanel(
@@ -71,6 +74,7 @@ textOutput("predsvm")
 )
 )
 ,
+#Onglet 4: 
 tabPanel("Comparison",
 sidebarLayout(
 sidebarPanel(
@@ -96,7 +100,7 @@ textOutput("conclusion")
 
 server <- function(input, output) {
 
-observeEvent(input$click,{file.show("D:/PC/M2/SVM/projet/projet_final/notice.html")})
+#observeEvent(input$click,{file.show("D:/PC/M2/SVM/projet/projet_final/notice.html")})
 ##observeEvent(input$File,{ data=read.csv(input$File,header=T,sep=",")
     file="https://raw.githubusercontent.com/maximeye/projetSVM/master/newdat.csv"
     newdat=read.csv(file=url(file),header=T,sep=",")
