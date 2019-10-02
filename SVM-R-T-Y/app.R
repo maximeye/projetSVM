@@ -66,7 +66,7 @@ actionButton("submit" ,"submit", icon("refresh"))
 mainPanel(
 dataTableOutput("tablesvm"),
 textOutput('text1'),
-textOutput("predsvm"),
+textOutput("predsvm")
 )
 )
 )
