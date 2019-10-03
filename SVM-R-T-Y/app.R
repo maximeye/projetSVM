@@ -7,27 +7,23 @@ library(misc3d)
 library(ROCR)
 library(leaps)
 library(caTools)
-#source("Projet R.R")
 library(httr)
-
+#source("Projet R.R")
 
 
 ui <- fluidPage(
 
 #Titre Programme tout à gauche
-(navbarPage(title="SUPPORT VECTOR MACHINE",
+(navbarPage(title="Machine Learning using SVM",
 
 # 1er onglet :
 tabPanel("Data presentation",
 
-# Sidebar with a slider input for number of bins
 sidebarLayout(
 sidebarPanel(
-fileInput(inputId='File', label='make your choice', multiple = TRUE, buttonLabel = 'Browse...',placeholder = 'not file selected'),
-actionButton(inputId="click",label="MANUAL",helpText='Please open the manual to understand how the application works')
+#actionButton(inputId="click",label="MANUAL",helpText='Please open the manual to understand how the application works')
 ),
 
-# Show a plot of the generated distribution
 mainPanel(
 textOutput('presentation'),
 tableOutput("dim"),
@@ -37,25 +33,50 @@ dataTableOutput('sum')
 )
 )
 ),
+
+
+
+
+
+
+
+
+
+
+
+
 #Onglet 2 : 
 tabPanel("Description of SVM",
 sidebarLayout(
 sidebarPanel(
-selectInput(inputId="kernel1",label="choose the kernel type",choices=c('linear','polynomial','radial basis','sigmoid'),multiple = F,selected = 'linear'),
-numericInput(inputId='degree1', label='degree',value=3,min=0),
-numericInput(inputId='coef01', label='b',value=0,min=0),
-sliderInput(inputId='c1', label='C',min=1,max=100,value=50,step=1),
-actionButton("submit1" ,"submit", icon("refresh"))
+sliderInput(inputId='n', label='Sample size',min=2,max=568199,value=10000,step=50),
+selectInput(inputId="kernel",label="Choose a kernel",choices=c('Linear','Polynomial','Radial Basis','Sigmoid'),multiple = F,selected = 'Linear'),
+sliderInput(inputId='cost', label='C',min=1,max=500,value=10,step=1),
+sliderInput(inputId='gamma', label='Gamma',min=0,max=1,value=0.01,step=0.01),
+actionButton("submit" ,"Refresh", icon("refresh"))
 ),
 mainPanel(
 plotOutput('plot1'),
-textOutput('explication1'),
-textOutput('sv1'),
-plotOutput('plot2'),
-textOutput('explication2')
+textOutput('explication1')
 )
-)
-)
+
+            )
+        )
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ,
 #Onglet 3: 
 tabPanel("SVM's Parameters settings",
@@ -95,27 +116,33 @@ textOutput("conclusion")
 )))
 
 
+###############################SERVER####################################
+########################################################################
 
-
+library(shiny)
+library(e1071)
+library(smotefamily)
+library(ggplot2)
+library(rgl)
+library(misc3d)
+library(ROCR)
+library(leaps)
+library(caTools)
+library(httr)
+#source("Projet R.R")
 
 server <- function(input, output) {
 
-#observeEvent(input$click,{file.show("D:/PC/M2/SVM/projet/projet_final/notice.html")})
-##observeEvent(input$File,{ data=read.csv(input$File,header=T,sep=",")
-    file="https://raw.githubusercontent.com/maximeye/projetSVM/master/newdat.csv"
-    newdat=read.csv(file=url(file),header=T,sep=",")
-#data1=read.csv("/Users/Maxime/Documents/Cours/Master/M2/S1/SVM/Docs Projet/creditcard.csv",header=T,sep=",")
-#data1=read.csv("/Volumes/CALAMITY/PC/M2/SVM/projet/creditcard.csv",header=T,sep=",")
-attach(newdat)
+    notice="https://raw.githubusercontent.com/maximeye/projetSVM/master/notice.Rmd"
+observeEvent(input$click,{file.show(url(notice))})
+    
+        file="https://raw.githubusercontent.com/maximeye/projetSVM/master/newdat.csv"
+    data=read.csv(file=url(file),header=T,sep=",")
+attach(data)
 set.seed(12345)
 
-newdat$data$class=as.factor(newdat$data$class)
-data=newdat$data
-index=1:nrow(data)
-
-gamma=0.01
-C=10
-
+data$class=as.factor(data$class)
+index=(1:nrow(data))
 
 
 
@@ -126,7 +153,7 @@ output$presentation <- renderText({
     
 })
 output$dim <- renderTable({
-    dim(data1)
+    dim(data)
 })
 output$name <- renderTable({
     names(data)
@@ -144,80 +171,86 @@ output$sum <- renderDataTable({summary(data)
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 #p2
 
-set.seed(10111)
-x = matrix(rnorm(40), 20, 2)
-y = rep(c(-1, 1), c(10, 10))
-x[y == 1,] = x[y == 1,] + 1
-plot(x, col = y + 3, pch = 19)
-dat = data.frame(x, y = as.factor(y))
+
+
+
 output$plot1 <- renderPlot({
-    input$submit1
-    if (input$kernel1=='linear'){
-        svmfit = svm(y ~ ., data = dat, kernel = "linear", cost = isolate(input$c1), scale = FALSE)
-        plot(svmfit, dat)
+
+    
+    taille_ech=input$n
+    index=(1:nrow(data))
+    trainindex=sample(index,round(taille_ech*0.7))
+    train=data[trainindex,]
+    itest=sample(index,round(taille_ech*0.3))
+    test=data[itest,]
+    attach(train)
+
+
+    if (input$kernel=='Linear'){
+        model=svm(class~.,data=train,kernel="linear",scale=F,cost=input$cost)
+        plot(model,train,col=c("bisque","lightblue"))
     }
-    if (input$kernel1=='polynomial'){
-        svmfit = svm(y ~ ., data = dat, kernel = "polynomial", degree=isolate(input$degree1), coef0=isolate(input$coef01), cost = isolate(input$c1), scale = FALSE)
-        plot(svmfit, dat)
+    else if (input$kernel=='Polynomial'){
+        model=svm(class~., data=train, kernel="polynomial",gamma =input$gamma, cost =input$cost) 
+        plot(model,train,col=c("bisque","lightblue"))
     }
-    if (input$kernel1=='radial basis'){
-        svmfit = svm(y ~ ., data = dat, kernel = "radial", cost = isolate(input$c1), scale = FALSE)
-        plot(svmfit, dat)
+    else if (input$kernel=='Radial Basis'){
+        model=svm(class~., data=train, kernel="radial",gamma = input$gamma, cost =input$cost) 
+        plot(model,train,col=c("bisque","lightblue"))
     }
-    if (input$kernel1=='sigmoid'){
-        svmfit = svm(y ~ ., data = dat, kernel = "sigmoid",coef0=isolate(input$coef01), cost = isolate(input$c1), scale = FALSE)
-        plot(svmfit, dat)
+    else if (input$kernel=='Sigmoid'){
+        model=svm(class~., data=train, kernel="sigmoid",gamma = input$gamma, cost =input$cost) 
+        plot(model,train,col=c("bisque","lightblue"))
     }
 })
 output$explication1 <- renderText({
-    'We can observe that the SVM create a line who separate data in two parts, we have above points where realisations are 1 and below realisations wich are -1. And the number of support vector is for each side of the line :'
+    'We can observe that the SVM create a line who separate data in two parts, we have above points where realisations are 1 (fraud) and below realisations wich are 0 (no fraud). 
+    The rate of good classification is :' 
+    Y=predict(model,newdata = test)
+    table(test$class,Y)
+    mean(test$class==Y)
     
 })
-output$sv1 <- renderText({
-    input$submit1
-    if (input$kernel1=='linear'){
-        svmfit = svm(y ~ ., data = dat, kernel = "linear", cost = isolate(input$c1), scale = FALSE)
-    }
-    if (input$kernel1=='polynomial'){
-        svmfit = svm(y ~ ., data = dat, kernel = "polynomial", degree=isolate(input$degree1), coef0=isolate(input$coef01), cost = isolate(input$c1), scale = FALSE)
-    }
-    if (input$kernel1=='radial basis'){
-        svmfit = svm(y ~ ., data = dat, kernel = "radial", cost = isolate(input$c1), scale = FALSE)
-    }
-    if (input$kernel1=='sigmoid'){
-        svmfit = svm(y ~ ., data = dat, kernel = "sigmoid",coef0=isolate(input$coef01), cost = isolate(input$c1), scale = FALSE)
-    }
-    svmfit$nSV
-})
-svmfit = svm(y ~ ., data = dat, kernel = "linear", cost = isolate(input$c1), scale = FALSE)
-make.grid = function(x, n = 75) {
-    grange = apply(x, 2, range)
-    x1 = seq(from = grange[1,1], to = grange[2,1], length = n)
-    x2 = seq(from = grange[1,2], to = grange[2,2], length = n)
-    expand.grid(X1 = x1, X2 = x2)
-}
-xgrid = make.grid(x)
-xgrid[1:10,]
-ygrid = predict(svmfit, xgrid)
-plot(xgrid, col = c("red","blue")[as.numeric(ygrid)], pch = 20, cex = .2)
-points(x, col = y + 3, pch = 19)
-points(x[svmfit$index,], pch = 5, cex = 2)
-beta = drop(t(svmfit$coefs)%*%x[svmfit$index,])
-beta0 = svmfit$rho
 
-output$plot2 <- renderPlot({
-    input$submit1
-    if (input$kernel1=='linear'){
-        plot(xgrid, col = c("red", "blue")[as.numeric(ygrid)], pch = 20, cex = .2)
-        points(x, col = y + 3, pch = 19)
-        points(x[svmfit$index,], pch = 5, cex = 2)
-        abline(beta0 / beta[2], -beta[1] / beta[2])
-        abline((beta0 - 1) / beta[2], -beta[1] / beta[2], lty = 2)
-        abline((beta0 + 1) / beta[2], -beta[1] / beta[2], lty = 2)
-    }
-})
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
