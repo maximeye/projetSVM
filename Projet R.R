@@ -6,6 +6,7 @@ library(misc3d)
 library(ROCR)
 library(leaps)
 library(caTools)
+library(MASS)
 
 #Chargement de la table de donnees :
 
@@ -63,7 +64,8 @@ table(newdat$data$class) # 284315 Class=0
 # Chargement de la table reechantillonnee
 
 data=read.csv("/Users/Maxime/Documents/Cours/Master/M2/S1/SVM/Docs Projet/newdat.csv",header=T,sep=",")
-data=read.csv("C:/Users/kevas/Desktop/Cours/M2/Support_Vector_Machine/Dossier_SVM/newdat.csv",header=T,sep=",")
+data=read.csv("C:/Users/kevas/Desktop/Cours/M2/Support_Vector_Machine/Dossier_SVM/projetSVM/newdat.csv",header=T,sep=",")
+
 data$class=as.factor(data$class)
 set.seed(12345)
 data=data[,-1]
@@ -92,6 +94,61 @@ train=data[trainindex,]
 itest=sample(index,round(taille_ech*0.3))
 test=data[itest,]
 attach(train)
+
+
+
+###Logistic Regression
+
+# The glm() function fits generalized glm()linear models, a class of models
+# that includes logistic regression.
+
+
+glm.fit=glm(class~V17+V14+V12,data=data,family=binomial)
+glm.probs=predict(glm.fit,type='response',test)
+glm.pred=rep(0,3000)
+glm.pred[glm.probs>.5]=1
+
+table(glm.pred,test$class)
+
+mean(glm.pred==test$class) #91,8% de bonnes classifications
+mean(glm.pred!=test$class) #8,2% de mauvaises classifications
+
+
+
+### Linear Discriminant Analysis
+
+lda.fit=lda(class~V17+V14+V12,data=data)
+lda.fit
+plot(lda.fit)
+
+lda.pred=predict(lda.fit, test)
+names(lda.pred)
+lda.class =lda.pred$class
+table(lda.class ,test$class)
+
+mean(lda.class==test$class) #89,8% de bonnes classifications
+mean(lda.class!=test$class) #10,2% de mauvaises classifications
+
+
+
+### Quadratic Discriminant Analysis
+
+qda.fit=qda(class~V17+V14+V12,data=data)
+qda.fit
+qda.class=predict(qda.fit,test)$class
+table(qda.class,test$class)
+
+mean(qda.class==test$class) #91,5% de bonnes classifications
+mean(qda.class!=test$class) #8,5% de mauvaises classifications
+
+
+
+### K-Nearest Neighbors
+
+
+
+
+
 
 
 
