@@ -7,6 +7,7 @@ library(ROCR)
 library(leaps)
 library(caTools)
 library(MASS)
+library(ROCR)
 
 #Chargement de la table de donnees :
 
@@ -87,7 +88,7 @@ data=data[,-c(1,4)]
 
 ## Echantillon apprentissage pour faire tourner le svm rapidement
 
-taille_ech=nrow(data)
+taille_ech=10000      #nrow(data)
 index=1:nrow(data)
 trainindex=sample(index,round(taille_ech*0.7))
 train=data[trainindex,]
@@ -109,10 +110,36 @@ glm.pred=rep(0,nrow(test))
 glm.pred[glm.probs>.5]=1
 
 table(glm.pred,test$class)
+mean(glm.pred==test$class) #91,2% de bonnes classifications
+mean(glm.pred!=test$class) #8,8% de mauvaises classifications
 
-mean(glm.pred==test$class) #92,5% de bonnes classifications
-mean(glm.pred!=test$class) #7,5% de mauvaises classifications
 
+library(ROCR)
+roclogit=predict(glm.fit,newdata=test,type="response")
+predlogit=prediction(roclogit,test[,"class"])
+perflogit=performance(predlogit, "tpr","fpr")
+plot(perflogit,colorize=TRUE,lwd=2)
+
+library(pROC)
+pROC_obj <- roc(predlogit@labels[[1]],predlogit@predictions[[1]],
+                # arguments for ci
+                ci=TRUE,
+                # arguments for plot
+                plot=TRUE, auc.polygon=TRUE, max.auc.polygon=TRUE, grid=TRUE,
+                print.auc=TRUE)
+plot(ci.sp(pROC_obj, sensitivities=seq(0, 1, .05)), type="shape")
+
+sens.ci <- ci.se(pROC_obj,specificities = seq(0,1,.05))
+plot(sens.ci, type="shape", col="lightblue")
+plot(sens.ci, type="bars")
+
+library(ROCit)
+ROCit_obj=rocit(score=predlogit@predictions[[1]],class=predlogit@labels[[1]],method='bi')
+ROCCI_obj=ciROC(ROCit_obj)
+
+plot(ROCCI_obj,YIndex=FALSE,level=0.95)
+plot(ROCCI_obj, col = c(2,9))
+plot(ROCCI_obj, col = c(2,9), legendpos = "bottom", lty = c(1,3))
 
 
 ### Linear Discriminant Analysis
@@ -126,8 +153,34 @@ names(lda.pred)
 lda.class =lda.pred$class
 table(lda.class ,test$class)
 
-mean(lda.class==test$class) #90,4% de bonnes classifications
-mean(lda.class!=test$class) #9,6% de mauvaises classifications
+mean(lda.class==test$class) #89,5% de bonnes classifications
+mean(lda.class!=test$class) #10,5% de mauvaises classifications
+
+
+roclda=predict(lda.fit,newdata=test,type="response")
+predlda=prediction(roclda$posterior[,2],test[,"class"])
+perflda=performance(predlda, "tpr","fpr")
+plot(perflda,colorize=TRUE,lwd=2)
+
+pROC_obj <- roc(predlda@labels[[1]],predlda@predictions[[1]],
+                # arguments for ci
+                ci=TRUE,
+                # arguments for plot
+                plot=TRUE, auc.polygon=TRUE, max.auc.polygon=TRUE, grid=TRUE,
+                print.auc=TRUE)
+plot(ci.sp(pROC_obj, sensitivities=seq(0, 1, .03)), type="shape")
+sens.ci <- ci.se(pROC_obj,specificities = seq(0,1,.03))
+plot(sens.ci, type="shape", col="lightblue")
+plot(sens.ci, type="bars")
+
+library(ROCit)
+ROCit_obj=rocit(score=predlda@predictions[[1]],class=predlda@labels[[1]],method='bi')
+ROCCI_obj=ciROC(ROCit_obj)
+
+plot(ROCCI_obj,YIndex=FALSE,level=0.95)
+plot(ROCCI_obj, col = c(2,9))
+plot(ROCCI_obj, col = c(2,9), legendpos = "bottom", lty = c(1,3))
+
 
 
 
@@ -138,8 +191,36 @@ qda.fit
 qda.class=predict(qda.fit,test)$class
 table(qda.class,test$class)
 
-mean(qda.class==test$class) #92,7% de bonnes classifications
-mean(qda.class!=test$class) #8,3% de mauvaises classifications
+mean(qda.class==test$class) #91,8% de bonnes classifications
+mean(qda.class!=test$class) #8,2% de mauvaises classifications
+
+
+rocqda=predict(qda.fit,newdata=test,type="response")
+predqda=prediction(rocqda$posterior[,2],test[,"class"])
+perfqda=performance(predqda, "tpr","fpr")
+plot(perfqda,colorize=TRUE,lwd=2)
+
+pROC_obj <- roc(predqda@labels[[1]],predqda@predictions[[1]],
+                # arguments for ci
+                ci=TRUE,
+                # arguments for plot
+                plot=TRUE, auc.polygon=TRUE, max.auc.polygon=TRUE, grid=TRUE,
+                print.auc=TRUE)
+plot(ci.sp(pROC_obj, sensitivities=seq(0, 1, .03)), type="shape")
+sens.ci <- ci.se(pROC_obj,specificities = seq(0,1,.03))
+plot(sens.ci, type="shape", col="lightblue")
+plot(sens.ci, type="bars")
+
+
+
+library(ROCit)
+ROCit_obj=rocit(score=predqda@predictions[[1]],class=predqda@labels[[1]],method='bi')
+ROCCI_obj=ciROC(ROCit_obj)
+
+plot(ROCCI_obj,YIndex=FALSE,level=0.95)
+plot(ROCCI_obj, col = c(2,9))
+plot(ROCCI_obj, col = c(2,9), legendpos = "bottom", lty = c(1,3))
+
 
 
 ######################################################################################
@@ -479,7 +560,6 @@ plot(model,train,col=c("bisque","lightblue"))
 library(httr)
 file="https://raw.githubusercontent.com/maximeye/projetSVM/master/newdat.csv"
 data=read.csv(file=url(file),header=T,sep=",")
-
 
 
 
