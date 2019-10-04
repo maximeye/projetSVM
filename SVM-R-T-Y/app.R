@@ -138,6 +138,7 @@ observeEvent(input$click,{file.show(url(notice))})
     
         file="https://raw.githubusercontent.com/maximeye/projetSVM/master/newdat.csv"
     data=read.csv(file=url(file),header=T,sep=",")
+    data=data[,-1]
 attach(data)
 set.seed(12345)
 
