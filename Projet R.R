@@ -8,6 +8,7 @@ library(leaps)
 library(caTools)
 library(MASS)
 
+
 #Chargement de la table de donnees :
 
 #dat=read.csv("/Users/Maxime/Documents/Cours/Master/M2/S1/SVM/Docs Projet/creditcard.csv",header=T,sep=",")
@@ -68,7 +69,7 @@ data=read.csv("C:/Users/kevas/Desktop/Cours/M2/Support_Vector_Machine/Dossier_SV
 
 data$class=as.factor(data$class)
 set.seed(12345)
-data=data[,-c(1,4)]
+#data=data[,-c(1,4)]
 
 
 #### Debut de partitionnage Apprentissage / Test ####
@@ -87,7 +88,7 @@ data=data[,-c(1,4)]
 
 ## Echantillon apprentissage pour faire tourner le svm rapidement
 
-taille_ech=nrow(data)
+taille_ech=10000
 index=1:nrow(data)
 trainindex=sample(index,round(taille_ech*0.7))
 train=data[trainindex,]
@@ -184,6 +185,23 @@ p3d<- plot3d(train$V12, train$V14, train$V17, xlab="V12", ylab="V14",
              box=FALSE, size=5)
 
 #text3d(train$V12, train$V14, train$V17, cex=0.5, adj = 1)
+
+
+###Plot3D
+
+
+nnew = 5
+newdat.list = lapply(data[,-c(1,5)], function(x) seq(min(x), max(x), len=nnew))
+newdat      = expand.grid(newdat.list)
+Y=predict(model,newdata = test)
+newdat.dv   = attr(Y, 'decision.values')
+newdat.dv   = array(newdat.dv, dim=rep(nnew, 3))
+
+# Fit/plot an isosurface to the decision boundary
+contour3d(newdat.dv, level=0, x=newdat.list$V17, y=newdat.list$V14, z=newdat.list$V12, add=T)
+
+
+####
 
 # Plot echantillon de TEST
 colors =c("blue","red")
