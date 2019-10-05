@@ -85,7 +85,7 @@ sidebarPanel(
 selectInput(inputId="kernel",label="choose the kernel type",choices=c('linear','polynomial','radial basis','sigmoid'),multiple = F,selected = 'linear'),
 sliderInput(inputId='c', label='Cost parameter',min=0,max=1000,value=10,step=1),
 sliderInput(inputId="n","Sample size:",min = 1,max = 600000, value=10000),
-actionButton("submit" ,"submit", icon("refresh"))
+actionButton("submit1" ,"submit", icon("refresh"))
 ),
 mainPanel(
 dataTableOutput("tablesvm"),
@@ -267,7 +267,7 @@ output$explication1 <- renderText({
 
 
 output$tablesvm <- renderDataTable({
-    input$submit
+    input$submit1
     trainindex=sample(index,round(isolate(input$n)*0.7))
     train=data[trainindex,]
     attach(train)
@@ -296,7 +296,7 @@ output$text1 <- renderText({input$submit
 })
 
 output$predsvm <- renderText({
-    input$submit
+    input$submit1
     trainindex=sample(index,round(isolate(input$n)*0.7))
     train=data[trainindex,]
     dataa=data[1:isolate(input$n),]
