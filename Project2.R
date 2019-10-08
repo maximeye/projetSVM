@@ -14,6 +14,11 @@ library(rpart)
 library(gbm)
 library(xgboost)
 
+library(data.table)
+library(rJava)
+
+
+
 set.seed(12345)
 #Chargement de la table de donnees :
 
@@ -49,7 +54,7 @@ table(new$data$class) # 284315 Class=0
 
 # Chargement de la table reechantillonnee
 
-data=read.csv("/Users/Maxime/Documents/Cours/Master/M2/S1/SVM/Docs Projet/new.csv",header=T,sep=",")
+data=read.csv("/Users/Maxime/Documents/Cours/Master/M2/M2S1/SVM/Docs Projet/new.csv",header=T,sep=",")
 data=read.csv("C:/Users/kevas/Desktop/Cours/M2/Support_Vector_Machine/Dossier_SVM/projetSVM/new.csv",header=T,sep=",")
 
 data$class=as.factor(data$class)
