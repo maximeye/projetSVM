@@ -11,8 +11,16 @@ library(httr)
 #source("Projet R.R")
 
 
+server <- function(input, output) {
+
 
 output$plot1 <- renderPlot({
+    
+    file="https://raw.githubusercontent.com/maximeye/projetSVM/master/newdat.csv"
+    data=read.csv(file=url(file),header=T,sep=",")
+    data=data[,-1]
+    attach(data)
+    set.seed(12345)
     
     
     taille_ech=input$n
@@ -53,9 +61,7 @@ output$explication1 <- renderText({
 
 
 
-
-
-
+}
 
 
 

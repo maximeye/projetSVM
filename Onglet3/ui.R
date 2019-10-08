@@ -25,7 +25,7 @@ shinyUI(fluidPage(
         mainPanel(
             rglwidgetOutput("plot",  width = 800, height = 600),
             textOutput('text1'),
-            textOutput("predsvm"),
+            textOutput("predsvm")
         )
     )
 )

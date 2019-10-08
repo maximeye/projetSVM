@@ -14,7 +14,7 @@ library(httr)
 shinyServer(function(input, output) {
 
     
-    data=read.csv("/Users/Maxime/Documents/Cours/Master/M2/S1/SVM/Docs Projet/newdat.csv",header=T,sep=",")
+    data=read.csv("/Users/Maxime/Documents/Cours/Master/M2/M2S1/SVM/Docs Projet/newdat.csv",header=T,sep=",")
     data$class=as.factor(data$class)
     set.seed(12345)
     data=data[,-1]
@@ -51,10 +51,7 @@ shinyServer(function(input, output) {
         
         
         colors =c("blue","red")
-        p3d<- plot3d(train$V12, train$V14, train$V17, xlab="V12", ylab="V14",
-                     zlab="V17",type="s",radius =0.3,
-                     col=as.integer(train$class) ,
-                     box=FALSE, size=5)
+        p3d<- plot3d(train$V12, train$V14, train$V17, xlab="V12", ylab="V14",zlab="V17",type="s",radius =0.3, col=as.integer(train$class) , box=FALSE, size=5)
         p3d
         
         nnew = 100
