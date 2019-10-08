@@ -70,7 +70,7 @@ data=read.csv("C:/Users/kevas/Desktop/Cours/M2/Support_Vector_Machine/Dossier_SV
 
 data$class=as.factor(data$class)
 set.seed(12345)
-#data=data[,-c(1,4)]
+data=data[,-1]
 
 
 #### Debut de partitionnage Apprentissage / Test ####
@@ -119,7 +119,8 @@ library(ROCR)
 roclogit=predict(glm.fit,newdata=test,type="response")
 predlogit=prediction(roclogit,test[,"class"])
 perflogit=performance(predlogit, "tpr","fpr")
-plot(perflogit,colorize=TRUE,lwd=2)
+
+
 
 library(pROC)
 pROC_obj <- roc(predlogit@labels[[1]],predlogit@predictions[[1]],
@@ -129,18 +130,11 @@ pROC_obj <- roc(predlogit@labels[[1]],predlogit@predictions[[1]],
                 plot=TRUE, auc.polygon=TRUE, max.auc.polygon=TRUE, grid=TRUE,
                 print.auc=TRUE)
 plot(ci.sp(pROC_obj, sensitivities=seq(0, 1, .05)), type="shape")
-
 sens.ci <- ci.se(pROC_obj,specificities = seq(0,1,.05))
 plot(sens.ci, type="shape", col="lightblue")
 plot(sens.ci, type="bars")
 
-library(ROCit)
-ROCit_obj=rocit(score=predlogit@predictions[[1]],class=predlogit@labels[[1]],method='bi')
-ROCCI_obj=ciROC(ROCit_obj)
 
-plot(ROCCI_obj,YIndex=FALSE,level=0.95)
-plot(ROCCI_obj, col = c(2,9))
-plot(ROCCI_obj, col = c(2,9), legendpos = "bottom", lty = c(1,3))
 
 
 ### Linear Discriminant Analysis
@@ -161,7 +155,9 @@ mean(lda.class!=test$class) #10,5% de mauvaises classifications
 roclda=predict(lda.fit,newdata=test,type="response")
 predlda=prediction(roclda$posterior[,2],test[,"class"])
 perflda=performance(predlda, "tpr","fpr")
-plot(perflda,colorize=TRUE,lwd=2)
+perflda=performance(predlda, "auc")
+
+
 
 pROC_obj <- roc(predlda@labels[[1]],predlda@predictions[[1]],
                 # arguments for ci
@@ -173,14 +169,6 @@ plot(ci.sp(pROC_obj, sensitivities=seq(0, 1, .03)), type="shape")
 sens.ci <- ci.se(pROC_obj,specificities = seq(0,1,.03))
 plot(sens.ci, type="shape", col="lightblue")
 plot(sens.ci, type="bars")
-
-library(ROCit)
-ROCit_obj=rocit(score=predlda@predictions[[1]],class=predlda@labels[[1]],method='bi')
-ROCCI_obj=ciROC(ROCit_obj)
-
-plot(ROCCI_obj,YIndex=FALSE,level=0.95)
-plot(ROCCI_obj, col = c(2,9))
-plot(ROCCI_obj, col = c(2,9), legendpos = "bottom", lty = c(1,3))
 
 
 
@@ -199,7 +187,8 @@ mean(qda.class!=test$class) #8,2% de mauvaises classifications
 rocqda=predict(qda.fit,newdata=test,type="response")
 predqda=prediction(rocqda$posterior[,2],test[,"class"])
 perfqda=performance(predqda, "tpr","fpr")
-plot(perfqda,colorize=TRUE,lwd=2)
+
+
 
 pROC_obj <- roc(predqda@labels[[1]],predqda@predictions[[1]],
                 # arguments for ci
@@ -214,15 +203,6 @@ plot(sens.ci, type="bars")
 
 
 
-library(ROCit)
-ROCit_obj=rocit(score=predqda@predictions[[1]],class=predqda@labels[[1]],method='bi')
-ROCCI_obj=ciROC(ROCit_obj)
-
-plot(ROCCI_obj,YIndex=FALSE,level=0.95)
-plot(ROCCI_obj, col = c(2,9))
-plot(ROCCI_obj, col = c(2,9), legendpos = "bottom", lty = c(1,3))
-
-
 
 ######################################################################################
 ######################################################################################
@@ -232,11 +212,19 @@ plot(ROCCI_obj, col = c(2,9), legendpos = "bottom", lty = c(1,3))
                     ###############  SVM kernel lineaire  ###############
 
 
-model=svm(class~.,data=train,kernel="linear",scale=F,cost=100)
+model=svm(class~.,data=train,kernel="linear",scale=F,cost=100,probability=TRUE)
 w = t(model$coefs) %*% model$SV
 
+
 # Taux de bonnes/mauvaises classifications sur echantillon TEST :
-Y=predict(model,newdata = test)
+#predicting the test data
+Ytest=predict(model,type="prob",newdata = test,type="prob",probability = TRUE)
+require(ROCR)
+Ytestprob = prediction(attr(Ytest, "probabilities")[,2], test[,4])
+Ytestperf = performance(Ytestprob, "tpr","fpr")
+plot(Ytestperf, col=5, add=TRUE)
+
+
 
 table(test$class,Y)
 mean(test$class==Y) #91,4% de bonne classification
