@@ -298,6 +298,8 @@ pssvm=makeParamSet(
   makeDiscreteParam("C", values = 2^c(-8,-4,-2,0)), #  Cost parameters
   makeDiscreteParam("sigma", values = 2^c(-8,-4,0,4))) # RBF Kernel Parameter
 
+pssvm=
+
 
 # Specify search function
 ctrl=makeTuneControlGrid()
@@ -305,6 +307,7 @@ ctrl=makeTuneControlGrid()
 # Tune model
 res=tuneParams(ksvm, task = trainTask, resampling=set_cv, par.set = pssvm, control = ctrl,measures = acc)
 # CV accuracy
+#[Tune] Result: C=1; sigma=0.0625 : acc.test.mean=0.9841423
 res$y
 
 
