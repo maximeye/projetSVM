@@ -14,24 +14,18 @@ library(rpart)
 library(gbm)
 library(xgboost)
 
-library(data.table)
-library(rJava)
-
-
-
 set.seed(12345)
-#Chargement de la table de donnees :
 
-#dat=read.csv("/Users/Maxime/Documents/Cours/Master/M2/S1/SVM/Docs Projet/creditcard.csv",header=T,sep=",")
+# Chargement de la table de donnees :
+
+# dat=read.csv("/Users/Maxime/Documents/Cours/Master/M2/S1/SVM/Docs Projet/creditcard.csv",header=T,sep=",")
 dat=read.csv("C:/Users/kevas/Desktop/Cours/M2/Support_Vector_Machine/Dossier_SVM/creditcard.csv",header=T,sep=",")
+
 # On change le type de la variable de reponse "Class" (integer -> factor)
 dat$Class=as.factor(dat$Class)
 
 
 attach(dat)
-
-# On change le type de la variable de reponse "Class" (integer -> factor)
-dat$Class=as.factor(dat$Class)
 
 
 # Reechantillonnage afin d'obtenir 50% de class = 0, 50% de class=1
@@ -41,16 +35,16 @@ new=SMOTE(dat[,-31],dat[,31],K=3,dup_size = 0)
 new$data$class=as.factor(new$data$class)
 
 
-#Exportation de la nouvelle table en CSV (optionnelle), utile pour ne pas avoir a refaire l'etape de reechantillonnage chaque fois
+# Exportation de la nouvelle table en CSV (optionnelle), utile pour ne pas avoir a refaire l'etape de reechantillonnage chaque fois
 
-#write.csv(new$data,"/Users/Maxime/Documents/Cours/Master/M2/S1/SVM/Docs Projet/newdat.csv")
+# write.csv(new$data,"/Users/Maxime/Documents/Cours/Master/M2/S1/SVM/Docs Projet/newdat.csv")
 write.csv(new$data,"C:/Users/kevas/Desktop/Cours/M2/Support_Vector_Machine/Dossier_SVM/projetSVM/new.csv")
 table(new$data$class) # 284315 Class=0
                       # 283884 Class=1
 
 
 
-########################### DEBUT ###########################
+################################## DEBUT ##################################
 
 # Chargement de la table reechantillonnee
 
@@ -89,7 +83,7 @@ test=data[itest,]
 attach(train)
 
 
-#create a task
+# create a task
 trainTask = makeClassifTask(data = train,target = "class")
 testTask = makeClassifTask(data = test, target = "class")
 
@@ -102,18 +96,15 @@ testTask = normalizeFeatures(testTask,method = "standardize")
 
 
 # Feature importance
-im_feat=generateFilterValuesData(trainTask, method = c("information.gain","chi.squared"))
-plotFilterValues(im_feat,n.show = 20)
+imp_feature=generateFilterValuesData(trainTask, method = c("information.gain","chi.squared"))
+plotFilterValues(imp_feature,n.show = 20)
 
 
 
-# Quadratic Discriminant Analysis (QDA)
 
-
-
-##############################################################################
-##########################   Loading QDA   ###################################
-##############################################################################
+##############################################################################################
+###########################################   QDA   ##########################################
+##############################################################################################
 
 
 qda=makeLearner("classif.qda", predict.type = "response")
@@ -132,10 +123,9 @@ mean(submit1$class==submit1$class_status)
 
 
 
-
-##############################################################################
-##########################   Logistic Regression   ###################################
-##############################################################################
+##############################################################################################
+##################################   Logistic Regression   ###################################
+##############################################################################################
 
 
 
@@ -288,36 +278,67 @@ mean(submit4$class==submit4$class_Status)
 ##############################################################################
 
 
-getParamSet("classif.ksvm") # do install kernlab package 
-ksvm=makeLearner("classif.ksvm", predict.type = "response")
+# list of parameters which can be tuned
+getParamSet("classif.svm")
 
 
+# LEARNERS
+learner=makeLearner("classif.svm", predict.type = "prob")
 
-# Set parameters
-pssvm=makeParamSet(
-  makeDiscreteParam("C", values = 2^c(-8,-4,-2,0)), #  Cost parameters
-  makeDiscreteParam("sigma", values = 2^c(-8,-4,0,4))) # RBF Kernel Parameter
 
 pssvm=
 
 
-# Specify search function
-ctrl=makeTuneControlGrid()
+########################################################################################
 
-# Tune model
-res=tuneParams(ksvm, task = trainTask, resampling=set_cv, par.set = pssvm, control = ctrl,measures = acc)
-# CV accuracy
-#[Tune] Result: C=1; sigma=0.0625 : acc.test.mean=0.9841423
-res$y
+# RESAMPLE
+# resampling stategy
+cv.svm = makeResampleDesc("CV", iters = 3L, stratify = TRUE)
+
+# random search
+ctrl=makeTuneControlRandom(maxit = 50)
 
 
-# Set the model with best params
-t.svm=setHyperPars(ksvm, par.vals=res$x)
+# TUNING 
 
-# Train
-par.svm=train(ksvm,trainTask)
-# Test
-predict.svm=predict(par.svm, testTask)
+#  tuning svm parameters
+# Generalized Boosted Regression Modeling (svm)
+
+
+
+# tuning the parameters
+param.svm = makeParamSet(
+  makeDiscreteLearnerParam(id = "type", default = "C-classification", values = c("C-classification", "nu-classification")),
+  makeDiscreteLearnerParam(id = "kernel", default = "radial", values = c("linear", "polynomial", "radial", "sigmoid")),
+  makeNumericLearnerParam(id = "cost", lower = 1,upper=100, requires = quote(type == "C-classification")),
+  makeNumericLearnerParam(id = "nu", lower=0,upper=1, requires = quote(type == "nu-classification")),
+  makeIntegerLearnerParam(id = "degree", lower = 1L,upper=3L ,requires = quote(kernel == "polynomial")),
+  makeNumericLearnerParam(id = "gamma", lower = 2^-5,upper=1, requires = quote(kernel != "linear")),
+  makeLogicalLearnerParam(id = "shrinking", default = TRUE)
+  )
+
+
+# research of the optimal parameters
+svm.res = tuneParams(learner, trainTask, resampling = cv.svm,
+                     par.set = param.svm, control = ctrl)
+
+# parameters optimal values
+svm.res$x
+
+# asset the parmeters to ours leaner
+final_svm = setHyperPars(learner = learner, par.vals = svm.res$x)
+
+
+########################################################################################
+
+# TRAINS
+detach("package:caret", unload = TRUE)
+svm.model = train(final_svm,trainTask)
+
+########################################################################################
+
+# PREDICTIONS
+predict.svm = predict(svm.model, testTask)
 
 # Submission file
 submit5=data.frame(class = test$class, class_status = predict.svm$data$response)
@@ -326,8 +347,8 @@ write.csv(submit5, "C:/Users/kevas/Desktop/Cours/M2/Support_Vector_Machine/Dossi
 table(submit5$class,submit5$class_status)
 mean(submit5$class==submit5$class_status)
 
-
-
+#calculateConfusionMatrix(svm.pred, relative = TRUE)
+#calculateROCMeasures(svm.pred)
 
 
 
@@ -442,3 +463,12 @@ write.csv(submit7, "C:/Users/kevas/Desktop/Cours/M2/Support_Vector_Machine/Dossi
 
 table(submit7$class,submit7$class_Status)
 mean(submit7$class==submit7$class_Status)
+
+
+
+######
+# A FAIRE !!!!!
+
+
+# comparer les méthodes de ML
+# calculer capacité prédictive de chaque modèle de ML (RSS)
