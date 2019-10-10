@@ -1,4 +1,3 @@
-library(shiny)
 library(e1071)
 library(smotefamily)
 library(ggplot2)
@@ -7,8 +6,15 @@ library(misc3d)
 library(ROCR)
 library(leaps)
 library(caTools)
-library(httr)
-#source("Projet R.R")
+library(MASS)
+library(ROCR)
+library(mlr)
+library(FSelector)
+library(rpart)
+library(gbm)
+library(xgboost)
+
+set.seed(12345)
 
 
 
