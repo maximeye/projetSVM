@@ -14,9 +14,6 @@ library(rpart)
 library(gbm)
 library(xgboost)
 
-
-
-
 #paralléliser
 library(parallelMap)
 
@@ -50,7 +47,7 @@ new$data$class=as.factor(new$data$class)
 # write.csv(new$data,"/Users/Maxime/Documents/Cours/Master/M2/S1/SVM/Docs Projet/newdat.csv")
 write.csv(new$data,"C:/Users/kevas/Desktop/Cours/M2/Support_Vector_Machine/Dossier_SVM/projetSVM/new.csv")
 table(new$data$class) # 284315 Class=0
-                      # 283884 Class=1
+# 283884 Class=1
 
 
 # Chargement de la table reechantillonnee
@@ -82,7 +79,7 @@ set.seed(12345)
 
 ## Echantillon apprentissage pour faire tourner le svm rapidement
 
-taille_ech=50000
+taille_ech=30000
 index=1:nrow(data)
 trainindex=sample(index,round(taille_ech*0.7))
 train=data[trainindex,]
@@ -127,7 +124,7 @@ pred=predict(model,testTask)
 
 # Measuring the performance
 performance(pred, measures=acc)
-# 0.9803333
+# 0.9804444
 
 # Create submission file
 submit2=data.frame(class=test$class, class_Status=pred$data$response)
@@ -152,7 +149,7 @@ getParamSet("classif.rpart")
 tree=makeLearner("classif.rpart", predict.type="response")
 
 # Set 3 fold cross validation
-set_cv=makeResampleDesc("CV", iters=3L)
+set_cv=makeResampleDesc("CV", iters=3)
 
 
 # Searching for some hyperparameters
@@ -169,20 +166,20 @@ set_cv=makeResampleDesc("CV", iters=3L)
 
 
 # Grid search
-# gridsearchcontrol=makeTuneControlGrid()
+#gridsearchcontrol=makeTuneControlGrid()
 
 # Hypertuning the parameters
-# stune=tuneParams(learner=tree, resampling=set_cv, task=trainTask, par.set=dtparam, control=gridsearchcontrol, measures=acc)
+#stune=tuneParams(learner=tree, resampling=set_cv, task=trainTask, par.set=dtparam, control=gridsearchcontrol, measures=acc)
 
 # Checking the best parameter
 stune$x
-# [Tune] Result: minsplit=25; minbucket=10; cp=0.001
+# [Tune] Result: minsplit=25; minbucket=5; cp=0.001
 
 
 # Cross validation result
 stune$y
 # acc.test.mean
-# 0.9735143
+# 0.9697619
 
 
 # Using hyperparameters for modeling
@@ -219,34 +216,35 @@ rf$par.vals=list(importance=TRUE)
 
 # Set tunable parameters
 # Grid search to find hyperparameters
-rf_param=makeParamSet(
-                      makeIntegerParam("ntree",lower=50,upper=300),
-                      makeIntegerParam("mtry",lower=15,upper=26),
-                      makeIntegerParam("nodesize", lower=5, upper=20))
+#rf_param=makeParamSet(
+#                      makeIntegerParam("ntree",lower=50,upper=200),
+#                      makeIntegerParam("mtry",lower=5,upper=20),
+#                      makeIntegerParam("nodesize", lower=10, upper=26))
 
-# Let's do random search for 50 iterations
-rancontrol=makeTuneControlRandom(maxit=10L)
+# Let's do random search for 10 iterations
+#rancontrol=makeTuneControlRandom(maxit=10)
 
 # Set 3 fold cross validation
-set_cv=makeResampleDesc("CV", iters=5L)
+#set_cv=makeResampleDesc("CV", iters=3)
+
 
 # Hypertuning
-rf_tune=tuneParams(learner=rf, resampling=set_cv, task=trainTask, par.set=rf_param, control=rancontrol, measures=acc)
+#rf_tune=tuneParams(learner=rf, resampling=set_cv, task=trainTask, par.set=rf_param, control=rancontrol, measures=acc)
+
 
 # cv accuracy
 rf_tune$y
-# acc.test.mean=0.9852853
+# acc.test.mean=0.9901429
 
 # The best parameters
 rf_tune$x
-# [Tune] Result: ntree=346; mtry=4; nodesize=1
-
+# [Tune] Result: ntree=195; mtry=16; nodesize=11
 
 
 # Building the RF model now & checking its accuracy
 
 # Using hyperparameters for modeling
-rf.tree=setHyperPars(rf, par.vals=list(ntree=346,mtry=4,nodesize=1))
+rf.tree=setHyperPars(rf, par.vals=list(ntree=195,mtry=16,nodesize=11))
 
 # Train a model
 rforest=train(rf.tree, trainTask)
@@ -256,7 +254,7 @@ getLearnerModel(tun.rpart)
 rfmodel=predict(rforest, testTask)
 
 # Submission file
-submit4=data.frame(class = test$class, class_Status = rfmodel$data$response)
+submit4=data.frame(class = test$class, class_Status=rfmodel$data$response)
 
 table(submit4$class,submit4$class_Status)
 mean(submit4$class==submit4$class_Status)
@@ -277,10 +275,10 @@ learner=makeLearner("classif.svm", predict.type="prob")
 
 
 # RESAMPLE
-cv.svm=makeResampleDesc("CV", iters=3L, stratify=TRUE)
+cv.svm=makeResampleDesc("CV", iters=3, stratify=TRUE)
 
 # Random search
-ctrl=makeTuneControlRandom(maxit=50)
+ctrl=makeTuneControlRandom(maxit=5)
 
 # TUNING SVM Parameters
 
@@ -289,14 +287,14 @@ param.svm=makeParamSet(
   makeDiscreteLearnerParam(id="kernel", values=c("linear", "polynomial", "radial", "sigmoid")),
   makeNumericLearnerParam(id="cost", lower=1,upper=100, requires=quote(type == "C-classification")),
   makeNumericLearnerParam(id="nu", lower=0,upper=1, requires=quote(type == "nu-classification")),
-  makeIntegerLearnerParam(id="degree", lower=1L,upper=3L ,requires=quote(kernel == "polynomial")),
-  makeNumericLearnerParam(id="gamma", lower=2^-5,upper=1, requires=quote(kernel != "linear")),
+  makeIntegerLearnerParam(id="degree", lower=1,upper=3 ,requires=quote(kernel == "polynomial")),
+  makeNumericLearnerParam(id="gamma", lower=2^-3,upper=1, requires=quote(kernel != "linear")),
   makeLogicalLearnerParam(id="shrinking")
-  )
+)
 
 # Searching the optimal parameters
 svm.res=tuneParams(learner, trainTask, resampling=cv.svm,
-                     par.set=param.svm, control=ctrl,measures=acc)
+                   par.set=param.svm, control=ctrl,measures=acc)
 
 # parameters optimal values
 svm.res$x
@@ -366,8 +364,8 @@ tune_gbm$y
 # Setting parameters
 final_gbm=setHyperPars(learner=g.gbm,
                        par.vals=list(distribution="bernoulli",
-                       n.trees=640,interaction.depth=8,n.minobsinnode=15,
-                       shrinkage=0.341))
+                                     n.trees=640,interaction.depth=8,n.minobsinnode=15,
+                                     shrinkage=0.341))
 
 # Train
 to.gbm=train(final_gbm, trainTask)
