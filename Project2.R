@@ -280,7 +280,7 @@ learner=makeLearner("classif.svm", predict.type="prob")
 cv.svm=makeResampleDesc("CV", iters=3, stratify=TRUE)
 
 # Random search
-ctrl=makeTuneControlRandom(maxit=5)
+ctrl=makeTuneControlRandom(maxit=3)
 
 # TUNING SVM Parameters
 
@@ -313,7 +313,6 @@ predict.svm = predict(svm.model, testTask)
 
 # Submission file
 submit5=data.frame(class = test$class, class_status = predict.svm$data$response)
-write.csv(submit5, "C:/Users/kevas/Desktop/Cours/M2/Support_Vector_Machine/Dossier_SVM/submit5.csv",row.names = F)
 
 table(submit5$class,submit5$class_status)
 mean(submit5$class==submit5$class_status)
@@ -336,26 +335,26 @@ getParamSet("classif.gbm")
 g.gbm=makeLearner("classif.gbm", predict.type="response")
 
 # Specify the tuning method
-rancontrol=makeTuneControlRandom(maxit=50L)
+rancontrol=makeTuneControlRandom(maxit=5)
 
 # 3 fold CV
-set_cv=makeResampleDesc("CV",iters=3L)
+set_cv=makeResampleDesc("CV",iters=3)
 
 
 # Set tunable parameters
-#gbm_par=makeParamSet(
-#                  makeDiscreteParam("distribution", values="bernoulli"),
-#                  makeIntegerParam("n.trees", lower=100, upper=1000),
-#                  makeIntegerParam("interaction.depth", lower = 2, upper=10),
-#                  makeIntegerParam("n.minobsinnode", lower=10, upper=80),
-#                  makeNumericParam("shrinkage",lower=0.01, upper=1))
+gbm_par=makeParamSet(
+                  makeDiscreteParam("distribution", values="bernoulli"),
+                  makeIntegerParam("n.trees", lower=100, upper=500),
+                  makeIntegerParam("interaction.depth", lower = 2, upper=10),
+                  makeIntegerParam("n.minobsinnode", lower=10, upper=80),
+                  makeNumericParam("shrinkage",lower=0.01, upper=1))
 
 # n.minobsinnode refers to the minimum number of observations in a tree node
 # shrinkage is the regulation parameter which dictates how fast / slow the algorithm should move
 
 ### Tuning parameters
-#tune_gbm=tuneParams(learner = g.gbm, task = trainTask,resampling = set_cv,
-#                    measures = acc,par.set = gbm_par,control = rancontrol)
+tune_gbm=tuneParams(learner = g.gbm, task = trainTask,resampling = set_cv,
+                    measures = acc,par.set = gbm_par,control = rancontrol)
 
 
 # Checking CV accuracy
@@ -403,24 +402,24 @@ xg_set$par.vals=list(objective = "binary:logistic",
                      nrounds = 250)
 
 # Defining parameters for tuning
-#xg_ps=makeParamSet(
-#          makeIntegerParam("nrounds",lower=200,upper=600),
-#          makeIntegerParam("max_depth",lower=3,upper=20),
-#          makeNumericParam("lambda",lower=0.55,upper=0.60),
-#          makeNumericParam("eta", lower = 0.001, upper = 0.5),
-#          makeNumericParam("subsample", lower = 0.10, upper = 0.80),
-#          makeNumericParam("min_child_weight",lower=1,upper=5),
-#          makeNumericParam("colsample_bytree",lower = 0.2,upper = 0.8))
+xg_ps=makeParamSet(
+          makeIntegerParam("nrounds",lower=200,upper=500),
+          makeIntegerParam("max_depth",lower=3,upper=20),
+          makeNumericParam("lambda",lower=0.55,upper=0.60),
+          makeNumericParam("eta", lower = 0.001, upper = 0.5),
+          makeNumericParam("subsample", lower = 0.10, upper = 0.80),
+          makeNumericParam("min_child_weight",lower=1,upper=5),
+          makeNumericParam("colsample_bytree",lower = 0.2,upper = 0.8))
 
 
 # Defining search function
-rancontrol=makeTuneControlRandom(maxit = 50L)
+rancontrol=makeTuneControlRandom(maxit=5)
 
 # 3 fold cross validation
-set_cv=makeResampleDesc("CV",iters = 3L)
+set_cv=makeResampleDesc("CV",iters=3)
 
 # Tuning parameters
-#xg_tune=tuneParams(learner=xg_set, task=trainTask, resampling=set_cv,measures=acc,par.set=xg_ps, control=rancontrol)
+xg_tune=tuneParams(learner=xg_set, task=trainTask, resampling=set_cv,measures=acc,par.set=xg_ps, control=rancontrol)
 
 # Setting parameters
 xg_new=setHyperPars(learner=xg_set, par.vals=list(nrounds=299,max_depth=18,lambda=0.564,eta=0.104,subsample=0.656,min_child_weight=1.13,colsample_bytree=0.572),xg_tune$x)
