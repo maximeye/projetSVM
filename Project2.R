@@ -442,7 +442,7 @@ xg_ps=makeParamSet(
 
 
 # Defining search function
-rancontrol=makeTuneControlRandom(maxit = 100L)
+rancontrol=makeTuneControlRandom(maxit = 50L)
 
 # 3 fold cross validation
 set_cv=makeResampleDesc("CV",iters = 3L)
