@@ -53,32 +53,36 @@ table(new$data$class) # 284315 Class=0
                       # 283884 Class=1
 
 
-
-################################## DEBUT ##################################
-
 # Chargement de la table reechantillonnee
 
-data=read.csv("/Users/Maxime/Documents/Cours/Master/M2/M2S1/SVM/Docs Projet/new.csv",header=T,sep=",")
-data=read.csv("C:/Users/kevas/Desktop/Cours/M2/Support_Vector_Machine/Dossier_SVM/projetSVM/new.csv",header=T,sep=",")
+#data=read.csv("/Users/Maxime/Documents/Cours/Master/M2/M2S1/SVM/Docs Projet/new.csv",header=T,sep=",")
+#data=read.csv("C:/Users/kevas/Desktop/Cours/M2/Support_Vector_Machine/Dossier_SVM/projetSVM/new.csv",header=T,sep=",")
 
+data=read.csv("C:/Users/kevas/Desktop/projetSVM/new.csv",header=T,sep=",")
+data=data[,c(-1,-17,-15,-27,-24,-28)] # suppression des var les moins importantes
+saveRDS(data,"C:/Users/kevas/Desktop/Cours/M2/Support_Vector_Machine/Dossier_SVM/projetSVM/new.rds",compress=TRUE)
+
+
+
+######################################################################################################
+################################## DEBUT #############################################################
+######################################################################################################
+
+
+
+data=readRDS("C:/Users/kevas/Desktop/Cours/M2/Support_Vector_Machine/Dossier_SVM/projetSVM/new.rds")
 data$class=as.factor(data$class)
 set.seed(12345)
-data=data[,-1]
 
 
 
 
 
-#### Debut de partitionnage Apprentissage / Test ####
-
-
-#Creation d'un echantillon d'apprentissage (70%) et test (30%) :
-################NE PAS EXECUTER CE QUI SUIT  ############
-
+# Creation d'un echantillon d'apprentissage (70%) et test (30%) :
 
 ## Echantillon apprentissage pour faire tourner le svm rapidement
 
-taille_ech=10000
+taille_ech=50000
 index=1:nrow(data)
 trainindex=sample(index,round(taille_ech*0.7))
 train=data[trainindex,]
@@ -99,7 +103,7 @@ trainTask=normalizeFeatures(trainTask,method="standardize")
 testTask=normalizeFeatures(testTask,method="standardize")
 
 
-# Feature importance
+# Feature importance of variables
 imp_feature=generateFilterValuesData(trainTask, method=c("information.gain","chi.squared"))
 plotFilterValues(imp_feature, n.show=20)
 
@@ -113,32 +117,26 @@ plotFilterValues(imp_feature, n.show=20)
 
 
 # Logistic regression
-logistic=makeLearner("classif.logreg", predict.type="response")
+logistic=makeLearner("classif.logreg", predict.type="prob")
 
-# Cross validation (cv) accuracy
-cv.logistic=crossval(learner=logistic, task=trainTask, iters=3, stratify=TRUE, measures=acc, show.info=F)
+# Training the model
+model=train(logistic,trainTask)
 
-# Cross validation accuracy
-cv.logistic$aggr
+# Predicting on the test set
+pred=predict(model,testTask)
 
-#cv.logistic$aggr
-#acc.test.mean 
-#0.9842862
-
-
-
-# Train model
-logtrainmodel=train(logistic, trainTask)
-getLearnerModel(logtrainmodel)
-
-# Predict on test data
-logtestpred=predict(logtrainmodel, testTask)
+# Measuring the performance
+performance(pred, measures=acc)
+# 0.9803333
 
 # Create submission file
-submit2=data.frame(class=test$class, class_Status=logtestpred$data$response)
+submit2=data.frame(class=test$class, class_Status=pred$data$response)
 
 table(submit2$class,submit2$class_Status)
 mean(submit2$class==submit2$class_Status)
+
+
+
 
 
 
@@ -159,8 +157,8 @@ set_cv=makeResampleDesc("CV", iters=3L)
 
 # Searching for some hyperparameters
 #dtparam=makeParamSet(
-#                makeIntegerParam("minsplit", lower=1, upper=50),
-#                makeIntegerParam("minbucket", lower=1, upper=50),
+#                makeIntegerParam("minsplit", lower=5, upper=50),
+#                makeIntegerParam("minbucket", lower=5, upper=50),
 #                makeNumericParam("cp", lower=0.001, upper=0.5))
 
 
@@ -171,24 +169,24 @@ set_cv=makeResampleDesc("CV", iters=3L)
 
 
 # Grid search
-#gridsearchcontrol=makeTuneControlGrid()
+# gridsearchcontrol=makeTuneControlGrid()
 
 # Hypertuning the parameters
-#stune=tuneParams(learner=tree, resampling=set_cv, task=trainTask, par.set=dtparam, control=gridsearchcontrol, measures=acc)
+# stune=tuneParams(learner=tree, resampling=set_cv, task=trainTask, par.set=dtparam, control=gridsearchcontrol, measures=acc)
 
 # Checking the best parameter
 stune$x
-# [Tune] Result: minsplit=6; minbucket=1; cp=0.001
+# [Tune] Result: minsplit=25; minbucket=10; cp=0.001
 
 
 # Cross validation result
 stune$y
-# acc.test.mean 
-# 0.9730001
+# acc.test.mean
+# 0.9735143
 
 
 # Using hyperparameters for modeling
-tun.tree=setHyperPars(tree, par.vals=list(minsplit=6,minbucket=1,cp=0.001))
+tun.tree=setHyperPars(tree, par.vals=list(minsplit=25,minbucket=10,cp=0.001))
 
 # Train the model
 tun.rpart=train(tun.tree, trainTask)
@@ -221,19 +219,19 @@ rf$par.vals=list(importance=TRUE)
 
 # Set tunable parameters
 # Grid search to find hyperparameters
-#rf_param=makeParamSet(
-#                      makeIntegerParam("ntree",lower=50, upper=500),
-#                      makeIntegerParam("mtry", lower=1, upper=30),
-#                      makeIntegerParam("nodesize", lower=1, upper=30))
+rf_param=makeParamSet(
+                      makeIntegerParam("ntree",lower=50,upper=300),
+                      makeIntegerParam("mtry",lower=15,upper=26),
+                      makeIntegerParam("nodesize", lower=5, upper=20))
 
 # Let's do random search for 50 iterations
-#rancontrol=makeTuneControlRandom(maxit=50L)
+rancontrol=makeTuneControlRandom(maxit=10L)
 
 # Set 3 fold cross validation
-set_cv=makeResampleDesc("CV", iters=3L)
+set_cv=makeResampleDesc("CV", iters=5L)
 
 # Hypertuning
-#rf_tune=tuneParams(learner=rf, resampling=set_cv, task=trainTask, par.set=rf_param, control=rancontrol, measures=acc)
+rf_tune=tuneParams(learner=rf, resampling=set_cv, task=trainTask, par.set=rf_param, control=rancontrol, measures=acc)
 
 # cv accuracy
 rf_tune$y
