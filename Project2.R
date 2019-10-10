@@ -55,7 +55,7 @@ table(new$data$class) # 284315 Class=0
 
 # Chargement de la table reechantillonnee
 
-data=read.csv("/Users/Maxime/Documents/Cours/Master/M2/S1/SVM/Docs Projet/new.csv",header=T,sep=",")
+data=read.csv("/Users/Maxime/Documents/Cours/Master/M2/M2S1/SVM/Docs Projet/new.csv",header=T,sep=",")
 data=read.csv("C:/Users/kevas/Desktop/Cours/M2/Support_Vector_Machine/Dossier_SVM/projetSVM/new.csv",header=T,sep=",")
 
 data$class=as.factor(data$class)
@@ -125,6 +125,7 @@ qtestpred=predict(qtrainm, testTask)
 # Create submission file
 submit1=data.frame(class=test$class,class_status=qtestpred$data$response)
 write.csv(submit1, "C:/Users/kevas/Desktop/Cours/M2/Support_Vector_Machine/Dossier_SVM/submit1.csv",row.names = F)
+write.csv(submit1, "/Users/Maxime/Documents/Cours/Master/M2/M2S1/SVM/Docs Projet/Submission file/submit1.csv",row.names = F)
 table(submit1$class,submit1$class_status)
 mean(submit1$class==submit1$class_status)
 
@@ -292,6 +293,8 @@ getParamSet("classif.svm")
 
 # LEARNERS
 learner=makeLearner("classif.svm", predict.type="prob")
+
+pssvm=
 
 
 # RESAMPLE

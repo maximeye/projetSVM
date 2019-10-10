@@ -25,10 +25,12 @@ ui <- fluidPage(
                              ),
                              
                              mainPanel(
-                                 textOutput('presentation'),
+                                 textOutput('txt'),
                                  tableOutput("dim"),
-                                 tableOutput("name"),
-                                 dataTableOutput('sum')
+                                 textOutput('txt1'),
+                                 plotOutput("name")
+                                 
+                              
                                  
                              )
                          )
