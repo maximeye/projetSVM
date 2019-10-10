@@ -14,6 +14,9 @@ library(rpart)
 library(gbm)
 library(xgboost)
 
+
+
+
 #paralléliser
 library(parallelMap)
 
@@ -72,12 +75,6 @@ data=data[,-1]
 #Creation d'un echantillon d'apprentissage (70%) et test (30%) :
 ################NE PAS EXECUTER CE QUI SUIT  ############
 
-#index=1:nrow(data)
-#trainindex=sample(index,397740)
-#train=data[trainindex,]
-#test=data[-trainindex,]
-#attach(train)
-
 
 ## Echantillon apprentissage pour faire tourner le svm rapidement
 
@@ -110,28 +107,6 @@ plotFilterValues(imp_feature, n.show=20)
 
 
 ##############################################################################################
-###########################################   QDA   ##########################################
-##############################################################################################
-
-
-qda=makeLearner("classif.qda", predict.type="response")
-
-# Train model
-qtrainm=train(qda, trainTask)
-
-# Predict on test data
-qtestpred=predict(qtrainm, testTask)
-
-# Create submission file
-submit1=data.frame(class=test$class,class_status=qtestpred$data$response)
-write.csv(submit1, "C:/Users/kevas/Desktop/Cours/M2/Support_Vector_Machine/Dossier_SVM/submit1.csv",row.names = F)
-write.csv(submit1, "/Users/Maxime/Documents/Cours/Master/M2/M2S1/SVM/Docs Projet/Submission file/submit1.csv",row.names = F)
-table(submit1$class,submit1$class_status)
-mean(submit1$class==submit1$class_status)
-
-
-
-##############################################################################################
 ##################################   Logistic Regression   ###################################
 ##############################################################################################
 
@@ -146,6 +121,11 @@ cv.logistic=crossval(learner=logistic, task=trainTask, iters=3, stratify=TRUE, m
 # Cross validation accuracy
 cv.logistic$aggr
 
+#cv.logistic$aggr
+#acc.test.mean 
+#0.9842862
+
+
 
 # Train model
 logtrainmodel=train(logistic, trainTask)
@@ -156,7 +136,7 @@ logtestpred=predict(logtrainmodel, testTask)
 
 # Create submission file
 submit2=data.frame(class=test$class, class_Status=logtestpred$data$response)
-write.csv(submit2, "C:/Users/kevas/Desktop/Cours/M2/Support_Vector_Machine/Dossier_SVM/submit2.csv",row.names=F)
+
 table(submit2$class,submit2$class_Status)
 mean(submit2$class==submit2$class_Status)
 
@@ -178,12 +158,11 @@ set_cv=makeResampleDesc("CV", iters=3L)
 
 
 # Searching for some hyperparameters
-dtparam=makeParamSet(
-                makeIntegerParam("minsplit", lower=1, upper=50),
-                makeIntegerParam("minbucket", lower=1, upper=50),
-                makeNumericParam("cp", lower=0.001, upper=0.5))
+#dtparam=makeParamSet(
+#                makeIntegerParam("minsplit", lower=1, upper=50),
+#                makeIntegerParam("minbucket", lower=1, upper=50),
+#                makeNumericParam("cp", lower=0.001, upper=0.5))
 
-#[Tune] Result: minsplit=12; minbucket=1; cp=0.001 : acc.test.mean=0.9728575
 
 # Minsplit represents the minimum number of observation in a node for a split to take place.
 # Minbucket says the minimum number of observation I should keep in terminal nodes.
@@ -192,22 +171,24 @@ dtparam=makeParamSet(
 
 
 # Grid search
-gridsearchcontrol=makeTuneControlGrid()
+#gridsearchcontrol=makeTuneControlGrid()
 
 # Hypertuning the parameters
-stune=tuneParams(learner=tree, resampling=set_cv, task=trainTask, par.set=dtparam, control=gridsearchcontrol, measures=acc)
+#stune=tuneParams(learner=tree, resampling=set_cv, task=trainTask, par.set=dtparam, control=gridsearchcontrol, measures=acc)
 
 # Checking the best parameter
 stune$x
+# [Tune] Result: minsplit=6; minbucket=1; cp=0.001
+
 
 # Cross validation result
 stune$y
 # acc.test.mean 
-# 0.9728575 
+# 0.9730001
 
 
 # Using hyperparameters for modeling
-tun.tree=setHyperPars(tree, par.vals=stune$x)
+tun.tree=setHyperPars(tree, par.vals=list(minsplit=6,minbucket=1,cp=0.001))
 
 # Train the model
 tun.rpart=train(tun.tree, trainTask)
@@ -218,7 +199,7 @@ treetestpred=predict(tun.rpart, testTask)
 
 # Create a submission file
 submit3=data.frame(class=test$class, class_Status=treetestpred$data$response)
-write.csv(submit3, "C:/Users/kevas/Desktop/Cours/M2/Support_Vector_Machine/Dossier_SVM/submit3.csv",row.names = F)
+
 table(submit3$class,submit3$class_Status)
 mean(submit3$class==submit3$class_Status)
 
@@ -240,32 +221,34 @@ rf$par.vals=list(importance=TRUE)
 
 # Set tunable parameters
 # Grid search to find hyperparameters
-rf_param=makeParamSet(
-                      makeIntegerParam("ntree",lower=50, upper=500),
-                      makeIntegerParam("mtry", lower=1, upper=30),
-                      makeIntegerParam("nodesize", lower=1, upper=30))
+#rf_param=makeParamSet(
+#                      makeIntegerParam("ntree",lower=50, upper=500),
+#                      makeIntegerParam("mtry", lower=1, upper=30),
+#                      makeIntegerParam("nodesize", lower=1, upper=30))
 
 # Let's do random search for 50 iterations
-rancontrol=makeTuneControlRandom(maxit=50L)
+#rancontrol=makeTuneControlRandom(maxit=50L)
 
 # Set 3 fold cross validation
 set_cv=makeResampleDesc("CV", iters=3L)
 
 # Hypertuning
-rf_tune=tuneParams(learner=rf, resampling=set_cv, task=trainTask, par.set=rf_param, control=rancontrol, measures=acc)
-# [Tune] Result: ntree=411; mtry=14; nodesize=3 : acc.test.mean=0.9852853
+#rf_tune=tuneParams(learner=rf, resampling=set_cv, task=trainTask, par.set=rf_param, control=rancontrol, measures=acc)
 
 # cv accuracy
 rf_tune$y
+# acc.test.mean=0.9852853
 
 # The best parameters
 rf_tune$x
+# [Tune] Result: ntree=346; mtry=4; nodesize=1
+
 
 
 # Building the RF model now & checking its accuracy
 
 # Using hyperparameters for modeling
-rf.tree=setHyperPars(rf, par.vals=rf_tune$x)
+rf.tree=setHyperPars(rf, par.vals=list(ntree=346,mtry=4,nodesize=1))
 
 # Train a model
 rforest=train(rf.tree, trainTask)
@@ -276,7 +259,7 @@ rfmodel=predict(rforest, testTask)
 
 # Submission file
 submit4=data.frame(class = test$class, class_Status = rfmodel$data$response)
-write.csv(submit4, "C:/Users/kevas/Desktop/Cours/M2/Support_Vector_Machine/Dossier_SVM/submit4.csv",row.names = F)
+
 table(submit4$class,submit4$class_Status)
 mean(submit4$class==submit4$class_Status)
 
@@ -294,35 +277,28 @@ getParamSet("classif.svm")
 # LEARNERS
 learner=makeLearner("classif.svm", predict.type="prob")
 
-pssvm=
-
 
 # RESAMPLE
-# Resampling stategy
 cv.svm=makeResampleDesc("CV", iters=3L, stratify=TRUE)
 
-# random search
+# Random search
 ctrl=makeTuneControlRandom(maxit=50)
 
-# TUNING 
+# TUNING SVM Parameters
 
-#  tuning svm parameters
-# Generalized Boosted Regression Modeling (svm)
-
-# tuning the parameters
 param.svm=makeParamSet(
-  makeDiscreteLearnerParam(id="type", default="C-classification", values=c("C-classification", "nu-classification")),
-  makeDiscreteLearnerParam(id="kernel", default="radial", values=c("linear", "polynomial", "radial", "sigmoid")),
+  makeDiscreteLearnerParam(id="type",values=c("C-classification", "nu-classification")),
+  makeDiscreteLearnerParam(id="kernel", values=c("linear", "polynomial", "radial", "sigmoid")),
   makeNumericLearnerParam(id="cost", lower=1,upper=100, requires=quote(type == "C-classification")),
   makeNumericLearnerParam(id="nu", lower=0,upper=1, requires=quote(type == "nu-classification")),
   makeIntegerLearnerParam(id="degree", lower=1L,upper=3L ,requires=quote(kernel == "polynomial")),
   makeNumericLearnerParam(id="gamma", lower=2^-5,upper=1, requires=quote(kernel != "linear")),
-  makeLogicalLearnerParam(id="shrinking", default=TRUE)
+  makeLogicalLearnerParam(id="shrinking")
   )
 
-# research of the optimal parameters
+# Searching the optimal parameters
 svm.res=tuneParams(learner, trainTask, resampling=cv.svm,
-                     par.set=param.svm, control=ctrl)
+                     par.set=param.svm, control=ctrl,measures=acc)
 
 # parameters optimal values
 svm.res$x
@@ -331,13 +307,8 @@ svm.res$x
 final_svm=setHyperPars(learner=learner, par.vals=svm.res$x)
 
 
-########################################################################################
-
 # TRAINS
-detach("package:caret", unload = TRUE)
 svm.model = train(final_svm,trainTask)
-
-########################################################################################
 
 # PREDICTIONS
 predict.svm = predict(svm.model, testTask)
@@ -349,8 +320,8 @@ write.csv(submit5, "C:/Users/kevas/Desktop/Cours/M2/Support_Vector_Machine/Dossi
 table(submit5$class,submit5$class_status)
 mean(submit5$class==submit5$class_status)
 
-#calculateConfusionMatrix(svm.pred, relative = TRUE)
-#calculateROCMeasures(svm.pred)
+#calculateConfusionMatrix(predict.svm, relative = TRUE)
+#calculateROCMeasures(predict.svm)
 
 
 
@@ -358,42 +329,47 @@ mean(submit5$class==submit5$class_status)
 
 
 ##############################################################################
-##########################   Gradient Boosting Machines   ###################################
+##########################   Gradient Boosting Machines   ####################
 ##############################################################################
 
 
 # Loading GBM
 getParamSet("classif.gbm")
-g.gbm=makeLearner("classif.gbm", predict.type = "response")
+g.gbm=makeLearner("classif.gbm", predict.type="response")
 
 # Specify the tuning method
-rancontrol=makeTuneControlRandom(maxit = 50L)
+rancontrol=makeTuneControlRandom(maxit=50L)
 
 # 3 fold CV
-set_cv=makeResampleDesc("CV",iters = 3L)
+set_cv=makeResampleDesc("CV",iters=3L)
 
 
 # Set tunable parameters
-gbm_par=makeParamSet(
-                  makeDiscreteParam("distribution", values = "bernoulli"),
-                  makeIntegerParam("n.trees", lower = 100, upper = 1000),
-                  makeIntegerParam("interaction.depth", lower = 2, upper = 10),
-                  makeIntegerParam("n.minobsinnode", lower = 10, upper = 80),
-                  makeNumericParam("shrinkage",lower = 0.01, upper = 1))
+#gbm_par=makeParamSet(
+#                  makeDiscreteParam("distribution", values="bernoulli"),
+#                  makeIntegerParam("n.trees", lower=100, upper=1000),
+#                  makeIntegerParam("interaction.depth", lower = 2, upper=10),
+#                  makeIntegerParam("n.minobsinnode", lower=10, upper=80),
+#                  makeNumericParam("shrinkage",lower=0.01, upper=1))
 
 # n.minobsinnode refers to the minimum number of observations in a tree node
 # shrinkage is the regulation parameter which dictates how fast / slow the algorithm should move
 
-# Tuning parameters
-tune_gbm=tuneParams(learner = g.gbm, task = trainTask,resampling = set_cv,
-                    measures = acc,par.set = gbm_par,control = rancontrol)
+### Tuning parameters
+#tune_gbm=tuneParams(learner = g.gbm, task = trainTask,resampling = set_cv,
+#                    measures = acc,par.set = gbm_par,control = rancontrol)
 
 
 # Checking CV accuracy
 tune_gbm$y
+# acc.test.mean=0.9915714
+
 
 # Setting parameters
-final_gbm=setHyperPars(learner = g.gbm, par.vals = tune_gbm$x)
+final_gbm=setHyperPars(learner=g.gbm,
+                       par.vals=list(distribution="bernoulli",
+                       n.trees=640,interaction.depth=8,n.minobsinnode=15,
+                       shrinkage=0.341))
 
 # Train
 to.gbm=train(final_gbm, trainTask)
@@ -403,8 +379,6 @@ pr.gbm=predict(to.gbm, testTask)
 
 # Submission file
 submit6=data.frame(class = test$class, class_Status = pr.gbm$data$response)
-write.csv(submit6, "C:/Users/kevas/Desktop/Cours/M2/Support_Vector_Machine/Dossier_SVM/submit6.csv",row.names = F)
-
 table(submit6$class,submit6$class_Status)
 mean(submit6$class==submit6$class_Status)
 
@@ -431,14 +405,14 @@ xg_set$par.vals=list(objective = "binary:logistic",
                      nrounds = 250)
 
 # Defining parameters for tuning
-xg_ps=makeParamSet(
-          makeIntegerParam("nrounds",lower=200,upper=600),
-          makeIntegerParam("max_depth",lower=3,upper=20),
-          makeNumericParam("lambda",lower=0.55,upper=0.60),
-          makeNumericParam("eta", lower = 0.001, upper = 0.5),
-          makeNumericParam("subsample", lower = 0.10, upper = 0.80),
-          makeNumericParam("min_child_weight",lower=1,upper=5),
-          makeNumericParam("colsample_bytree",lower = 0.2,upper = 0.8))
+#xg_ps=makeParamSet(
+#          makeIntegerParam("nrounds",lower=200,upper=600),
+#          makeIntegerParam("max_depth",lower=3,upper=20),
+#          makeNumericParam("lambda",lower=0.55,upper=0.60),
+#          makeNumericParam("eta", lower = 0.001, upper = 0.5),
+#          makeNumericParam("subsample", lower = 0.10, upper = 0.80),
+#          makeNumericParam("min_child_weight",lower=1,upper=5),
+#          makeNumericParam("colsample_bytree",lower = 0.2,upper = 0.8))
 
 
 # Defining search function
@@ -448,10 +422,15 @@ rancontrol=makeTuneControlRandom(maxit = 50L)
 set_cv=makeResampleDesc("CV",iters = 3L)
 
 # Tuning parameters
-xg_tune=tuneParams(learner=xg_set, task=trainTask, resampling=set_cv,measures=acc,par.set=xg_ps, control=rancontrol)
+#xg_tune=tuneParams(learner=xg_set, task=trainTask, resampling=set_cv,measures=acc,par.set=xg_ps, control=rancontrol)
 
 # Setting parameters
-xg_new=setHyperPars(learner=xg_set, par.vals=xg_tune$x)
+xg_new=setHyperPars(learner=xg_set, par.vals=list(nrounds=299,max_depth=18,lambda=0.564,eta=0.104,subsample=0.656,min_child_weight=1.13,colsample_bytree=0.572),xg_tune$x)
+
+# parameters optimal values
+xg_new$x
+#acc.test.mean=0.9908570
+
 
 # Train model
 xgmodel=train(xg_new, trainTask)
@@ -461,7 +440,6 @@ predict.xg=predict(xgmodel, testTask)
 
 # Submission file
 submit7=data.frame(class = test$class, class_Status = predict.xg$data$response)
-write.csv(submit7, "C:/Users/kevas/Desktop/Cours/M2/Support_Vector_Machine/Dossier_SVM/submit7.csv",row.names = F)
 
 table(submit7$class,submit7$class_Status)
 mean(submit7$class==submit7$class_Status)
@@ -471,9 +449,8 @@ mean(submit7$class==submit7$class_Status)
 ######
 # A FAIRE !!!!!
 
+# ROC et comparer les méthodes de ML
 
-# comparer les méthodes de ML
-# calculer capacité prédictive de chaque modèle de ML (RSS)
 
 
 #stopper la parallélisation
