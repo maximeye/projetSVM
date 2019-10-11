@@ -38,7 +38,7 @@ attach(dat)
 # Reechantillonnage afin d'obtenir 50% de class = 0, 50% de class=1
 new=SMOTE(dat[,-31],dat[,31],K=3,dup_size = 0)
 
-#Transformation du type de variable de class en factor (auparavant character)
+# Transformation du type de variable de class en factor (auparavant character)
 new$data$class=as.factor(new$data$class)
 
 
@@ -77,22 +77,25 @@ set.seed(12345)
 
 
 
-# Creation d'un echantillon d'apprentissage (70%) et test (30%) :
+# Creation d'un echantillon d'apprentissage (60%) et test (40%) :
 
 ## Echantillon apprentissage pour faire tourner le svm rapidement
 
-taille_ech=30000
+taille_ech=175000
 index=1:nrow(data)
-trainindex=sample(index,round(taille_ech*0.7))
+trainindex=sample(index,round(taille_ech*0.55))
 train=data[trainindex,]
-itest=sample(index,round(taille_ech*0.3))
+validateindex=sample(index,round(taille_ech*0.27))
+validate=data[validateindex,]
+itest=sample(index,round(taille_ech*0.18))
 test=data[itest,]
 attach(train)
 
 
-# create a task
+# Create a task
 trainTask=makeClassifTask(data=train, target="class")
 testTask=makeClassifTask(data=test, target="class")
+validateTask=makeClassifTask(data=validate, target="class")
 
 # Let's consider the positive class as 1
 trainTask=makeClassifTask(data=train,target="class", positive="1")
@@ -100,7 +103,7 @@ trainTask=makeClassifTask(data=train,target="class", positive="1")
 # Let's normalize the variables
 trainTask=normalizeFeatures(trainTask,method="standardize")
 testTask=normalizeFeatures(testTask,method="standardize")
-
+validateTask=normalizeFeatures(validateTask,method="standardize")
 
 # Feature importance of variables
 imp_feature=generateFilterValuesData(trainTask, method=c("information.gain","chi.squared"))
@@ -126,7 +129,7 @@ pred=predict(model,testTask)
 
 # Measuring the performance
 performance(pred, measures=acc)
-# 0.9804444
+# 0.981025
 
 # Create submission file
 submit2=data.frame(class=test$class, class_Status=pred$data$response)
@@ -155,10 +158,10 @@ set_cv=makeResampleDesc("CV", iters=3)
 
 
 # Searching for some hyperparameters
-#dtparam=makeParamSet(
-#                makeIntegerParam("minsplit", lower=5, upper=50),
-#                makeIntegerParam("minbucket", lower=5, upper=50),
-#                makeNumericParam("cp", lower=0.001, upper=0.5))
+dtparam=makeParamSet(
+                makeIntegerParam("minsplit", lower=5, upper=50),
+                makeIntegerParam("minbucket", lower=5, upper=50),
+                makeNumericParam("cp", lower=0.001, upper=0.5))
 
 
 # Minsplit represents the minimum number of observation in a node for a split to take place.
@@ -168,10 +171,10 @@ set_cv=makeResampleDesc("CV", iters=3)
 
 
 # Grid search
-#gridsearchcontrol=makeTuneControlGrid()
+gridsearchcontrol=makeTuneControlGrid()
 
 # Hypertuning the parameters
-#stune=tuneParams(learner=tree, resampling=set_cv, task=trainTask, par.set=dtparam, control=gridsearchcontrol, measures=acc)
+stune=tuneParams(learner=tree, resampling=set_cv, task=trainTask, par.set=dtparam, control=gridsearchcontrol, measures=acc)
 
 # Checking the best parameter
 stune$x
@@ -277,47 +280,48 @@ learner=makeLearner("classif.svm", predict.type="prob")
 
 
 # RESAMPLE
-cv.svm=makeResampleDesc("CV", iters=3, stratify=TRUE)
+#cv.svm=makeResampleDesc("CV", iters=3, stratify=TRUE)
 
 # Random search
-ctrl=makeTuneControlRandom(maxit=3)
+#ctrl=makeTuneControlRandom(maxit=3)
 
 # TUNING SVM Parameters
 
-param.svm=makeParamSet(
-  makeDiscreteLearnerParam(id="type",values=c("C-classification", "nu-classification")),
-  makeDiscreteLearnerParam(id="kernel", values=c("linear", "polynomial", "radial", "sigmoid")),
-  makeNumericLearnerParam(id="cost", lower=1,upper=100, requires=quote(type == "C-classification")),
-  makeNumericLearnerParam(id="nu", lower=0,upper=1, requires=quote(type == "nu-classification")),
-  makeIntegerLearnerParam(id="degree", lower=1,upper=3 ,requires=quote(kernel == "polynomial")),
-  makeNumericLearnerParam(id="gamma", lower=2^-3,upper=1, requires=quote(kernel != "linear")),
-  makeLogicalLearnerParam(id="shrinking")
-)
+#param.svm=makeParamSet(
+#  makeDiscreteLearnerParam(id="type",values=c("C-classification", "nu-classification")),
+#  makeDiscreteLearnerParam(id="kernel", values=c("linear", "polynomial", "radial", "sigmoid")),
+#  makeNumericLearnerParam(id="cost", lower=1,upper=100, requires=quote(type == "C-classification")),
+#  makeNumericLearnerParam(id="nu", lower=0,upper=1, requires=quote(type == "nu-classification")),
+#  makeIntegerLearnerParam(id="degree", lower=1,upper=3 ,requires=quote(kernel == "polynomial")),
+#  makeNumericLearnerParam(id="gamma", lower=2^-3,upper=1, requires=quote(kernel != "linear")),
+#  makeLogicalLearnerParam(id="shrinking"))
 
 # Searching the optimal parameters
-svm.res=tuneParams(learner, trainTask, resampling=cv.svm,
-                   par.set=param.svm, control=ctrl,measures=acc)
+#svm.res=tuneParams(learner, trainTask, resampling=cv.svm,
+#                   par.set=param.svm, control=ctrl,measures=acc)
 
-# parameters optimal values
-svm.res$x
+#acc.test.mean=0.935
 
-# asset the parmeters to ours leaner
-final_svm=setHyperPars(learner=learner, par.vals=svm.res$x)
+# Parameters optimal values
+#svm.res$x
+
+# Asset the parmeters to our leaner
+final_svm=setHyperPars(learner=learner, par.vals=list(type="nu-classification",kernel="sigmoid",nu=0.728,gamma=0.949,shrinking=FALSE))
 
 
 # TRAINS
-svm.model = train(final_svm,trainTask)
+svm.model=train(final_svm,trainTask)
 
 # PREDICTIONS
-predict.svm = predict(svm.model, testTask)
+predict.svm=predict(svm.model, testTask)
 
 # Submission file
-submit5=data.frame(class = test$class, class_status = predict.svm$data$response)
+submit5=data.frame(class=test$class, class_status=predict.svm$data$response)
 
 table(submit5$class,submit5$class_status)
 mean(submit5$class==submit5$class_status)
+#0.9395556 de bonne classif
 
-#calculateConfusionMatrix(predict.svm, relative = TRUE)
 #calculateROCMeasures(predict.svm)
 
 
@@ -335,38 +339,38 @@ getParamSet("classif.gbm")
 g.gbm=makeLearner("classif.gbm", predict.type="response")
 
 # Specify the tuning method
-rancontrol=makeTuneControlRandom(maxit=5)
+#rancontrol=makeTuneControlRandom(maxit=5)
 
 # 3 fold CV
-set_cv=makeResampleDesc("CV",iters=3)
+#set_cv=makeResampleDesc("CV",iters=3)
 
 
 # Set tunable parameters
-gbm_par=makeParamSet(
-                  makeDiscreteParam("distribution", values="bernoulli"),
-                  makeIntegerParam("n.trees", lower=100, upper=500),
-                  makeIntegerParam("interaction.depth", lower = 2, upper=10),
-                  makeIntegerParam("n.minobsinnode", lower=10, upper=80),
-                  makeNumericParam("shrinkage",lower=0.01, upper=1))
+#gbm_par=makeParamSet(
+#                  makeDiscreteParam("distribution", values="bernoulli"),
+#                  makeIntegerParam("n.trees", lower=100, upper=500),
+#                  makeIntegerParam("interaction.depth", lower = 2, upper=10),
+#                  makeIntegerParam("n.minobsinnode", lower=10, upper=80),
+#                  makeNumericParam("shrinkage",lower=0.01, upper=1))
 
 # n.minobsinnode refers to the minimum number of observations in a tree node
 # shrinkage is the regulation parameter which dictates how fast / slow the algorithm should move
 
 ### Tuning parameters
-tune_gbm=tuneParams(learner = g.gbm, task = trainTask,resampling = set_cv,
-                    measures = acc,par.set = gbm_par,control = rancontrol)
+#tune_gbm=tuneParams(learner = g.gbm, task = trainTask,resampling = set_cv,
+#                    measures = acc,par.set = gbm_par,control = rancontrol)
 
 
 # Checking CV accuracy
-tune_gbm$y
-# acc.test.mean=0.9915714
+#tune_gbm$y
+# acc.test.mean=0.9962381
 
 
 # Setting parameters
 final_gbm=setHyperPars(learner=g.gbm,
                        par.vals=list(distribution="bernoulli",
-                                     n.trees=640,interaction.depth=8,n.minobsinnode=15,
-                                     shrinkage=0.341))
+                                     n.trees=407,interaction.depth=9,n.minobsinnode=15,
+                                     shrinkage=0.169))
 
 # Train
 to.gbm=train(final_gbm, trainTask)
@@ -402,31 +406,31 @@ xg_set$par.vals=list(objective = "binary:logistic",
                      nrounds = 250)
 
 # Defining parameters for tuning
-xg_ps=makeParamSet(
-          makeIntegerParam("nrounds",lower=200,upper=500),
-          makeIntegerParam("max_depth",lower=3,upper=20),
-          makeNumericParam("lambda",lower=0.55,upper=0.60),
-          makeNumericParam("eta", lower = 0.001, upper = 0.5),
-          makeNumericParam("subsample", lower = 0.10, upper = 0.80),
-          makeNumericParam("min_child_weight",lower=1,upper=5),
-          makeNumericParam("colsample_bytree",lower = 0.2,upper = 0.8))
+#xg_ps=makeParamSet(
+#          makeIntegerParam("nrounds",lower=200,upper=500),
+#          makeIntegerParam("max_depth",lower=3,upper=20),
+#          makeNumericParam("lambda",lower=0.55,upper=0.60),
+#          makeNumericParam("eta", lower = 0.001, upper = 0.5),
+#          makeNumericParam("subsample", lower = 0.10, upper = 0.80),
+#          makeNumericParam("min_child_weight",lower=1,upper=5),
+#          makeNumericParam("colsample_bytree",lower = 0.2,upper = 0.8))
 
 
 # Defining search function
-rancontrol=makeTuneControlRandom(maxit=5)
+#rancontrol=makeTuneControlRandom(maxit=5)
 
 # 3 fold cross validation
-set_cv=makeResampleDesc("CV",iters=3)
+#set_cv=makeResampleDesc("CV",iters=3)
 
 # Tuning parameters
-xg_tune=tuneParams(learner=xg_set, task=trainTask, resampling=set_cv,measures=acc,par.set=xg_ps, control=rancontrol)
+#xg_tune=tuneParams(learner=xg_set, task=trainTask, resampling=set_cv,measures=acc,par.set=xg_ps, control=rancontrol)
 
 # Setting parameters
-xg_new=setHyperPars(learner=xg_set, par.vals=list(nrounds=299,max_depth=18,lambda=0.564,eta=0.104,subsample=0.656,min_child_weight=1.13,colsample_bytree=0.572),xg_tune$x)
+xg_new=setHyperPars(learner=xg_set, par.vals=list(nrounds=215,max_depth=14,lambda=0.554,eta=0.301,subsample=0.705,min_child_weight=1.1,colsample_bytree=0.554))
 
 # parameters optimal values
-xg_new$x
-#acc.test.mean=0.9908570
+#xg_new$x
+#acc.test.mean=0.9966667
 
 
 # Train model
