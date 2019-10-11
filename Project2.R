@@ -221,20 +221,20 @@ rf$par.vals=list(importance=TRUE)
 
 # Set tunable parameters
 # Grid search to find hyperparameters
-#rf_param=makeParamSet(
-#                      makeIntegerParam("ntree",lower=50,upper=200),
-#                      makeIntegerParam("mtry",lower=5,upper=20),
-#                      makeIntegerParam("nodesize", lower=10, upper=26))
+rf_param=makeParamSet(
+                  makeIntegerParam("ntree",lower=50,upper=200),
+                     makeIntegerParam("mtry",lower=5,upper=20),
+                     makeIntegerParam("nodesize", lower=10, upper=26))
 
 # Let's do random search for 10 iterations
-#rancontrol=makeTuneControlRandom(maxit=10)
+rancontrol=makeTuneControlRandom(maxit=10)
 
 # Set 3 fold cross validation
-#set_cv=makeResampleDesc("CV", iters=3)
+set_cv=makeResampleDesc("CV", iters=3)
 
 
-# Hypertuning
-#rf_tune=tuneParams(learner=rf, resampling=set_cv, task=trainTask, par.set=rf_param, control=rancontrol, measures=acc)
+Hypertuning
+rf_tune=tuneParams(learner=rf, resampling=set_cv, task=trainTask, par.set=rf_param, control=rancontrol, measures=acc)
 
 
 # cv accuracy
