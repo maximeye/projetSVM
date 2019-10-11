@@ -18,7 +18,9 @@ set.seed(12345)
 shinyServer(function(input, output) {
   
   
-  data=readRDS("C:/Users/kevas/Desktop/Cours/M2/Support_Vector_Machine/Dossier_SVM/projetSVM/new.rds")
+  #data=readRDS("C:/Users/kevas/Desktop/Cours/M2/Support_Vector_Machine/Dossier_SVM/projetSVM/new.rds")
+  data=readRDS("/Users/Maxime/Documents/Cours/Master/M2/M2S1/SVM/projetSVM/new.rds")
+  
   data$class=as.factor(data$class)
   set.seed(12345)
   taille_ech=1000
