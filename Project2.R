@@ -129,7 +129,7 @@ pred=predict(model,testTask)
 
 # Measuring the performance
 performance(pred, measures=acc)
-# 0.981025
+# 0.9811746
 
 # Create submission file
 submit2=data.frame(class=test$class, class_Status=pred$data$response)
@@ -174,25 +174,26 @@ dtparam=makeParamSet(
 gridsearchcontrol=makeTuneControlGrid()
 
 # Hypertuning the parameters
-stune=tuneParams(learner=tree, resampling=set_cv, task=trainTask, par.set=dtparam, control=gridsearchcontrol, measures=acc)
+#stune=tuneParams(learner=tree, resampling=set_cv, task=validateTask, par.set=dtparam, control=gridsearchcontrol, measures=acc)
 
 # Checking the best parameter
 stune$x
-# [Tune] Result: minsplit=25; minbucket=5; cp=0.001
+# [Tune] Result: minsplit=5; minbucket=15; cp=0.001
 
 
 # Cross validation result
 stune$y
 # acc.test.mean
-# 0.9697619
+# 0.9737143
 
 
 # Using hyperparameters for modeling
-tun.tree=setHyperPars(tree, par.vals=list(minsplit=25,minbucket=10,cp=0.001))
+tun.tree=setHyperPars(tree, par.vals=list(minsplit=5,minbucket=15,cp=0.001))
 
 # Train the model
 tun.rpart=train(tun.tree, trainTask)
 getLearnerModel(tun.rpart)
+
 
 # Make predictions
 treetestpred=predict(tun.rpart, testTask)
@@ -203,7 +204,7 @@ submit3=data.frame(class=test$class, class_Status=treetestpred$data$response)
 table(submit3$class,submit3$class_Status)
 mean(submit3$class==submit3$class_Status)
 
-
+# 0.9743492
 
 
 
@@ -233,23 +234,23 @@ rancontrol=makeTuneControlRandom(maxit=10)
 set_cv=makeResampleDesc("CV", iters=3)
 
 
-Hypertuning
-rf_tune=tuneParams(learner=rf, resampling=set_cv, task=trainTask, par.set=rf_param, control=rancontrol, measures=acc)
+# Hypertuning
+# rf_tune=tuneParams(learner=rf, resampling=set_cv, task=validateTask, par.set=rf_param, control=rancontrol, measures=acc)
 
 
 # cv accuracy
 rf_tune$y
-# acc.test.mean=0.9901429
+# acc.test.mean=0.9958942
 
 # The best parameters
 rf_tune$x
-# [Tune] Result: ntree=195; mtry=16; nodesize=11
+# [Tune] Result: ntree=157; mtry=9; nodesize=12
 
 
 # Building the RF model now & checking its accuracy
 
 # Using hyperparameters for modeling
-rf.tree=setHyperPars(rf, par.vals=list(ntree=195,mtry=16,nodesize=11))
+rf.tree=setHyperPars(rf, par.vals=list(ntree=157,mtry=9,nodesize=12))
 
 # Train a model
 rforest=train(rf.tree, trainTask)
