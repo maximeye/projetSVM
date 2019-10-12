@@ -304,25 +304,25 @@ learner=makeLearner("classif.svm", predict.type="prob")
 
 
 # RESAMPLE
-#cv.svm=makeResampleDesc("CV", iters=3, stratify=TRUE)
+cv.svm=makeResampleDesc("CV", iters=3, stratify=TRUE)
 
 # Random search
-#ctrl=makeTuneControlRandom(maxit=3)
+ctrl=makeTuneControlRandom(maxit=3)
 
 # TUNING SVM Parameters
 
-#param.svm=makeParamSet(
-#  makeDiscreteLearnerParam(id="type",values=c("C-classification", "nu-classification")),
-#  makeDiscreteLearnerParam(id="kernel", values=c("linear", "polynomial", "radial", "sigmoid")),
-#  makeNumericLearnerParam(id="cost", lower=1,upper=100, requires=quote(type == "C-classification")),
-#  makeNumericLearnerParam(id="nu", lower=0,upper=1, requires=quote(type == "nu-classification")),
-#  makeIntegerLearnerParam(id="degree", lower=1,upper=3 ,requires=quote(kernel == "polynomial")),
-#  makeNumericLearnerParam(id="gamma", lower=2^-3,upper=1, requires=quote(kernel != "linear")),
-#  makeLogicalLearnerParam(id="shrinking"))
+param.svm=makeParamSet(
+  makeDiscreteLearnerParam(id="type",values=c("C-classification", "nu-classification")),
+  makeDiscreteLearnerParam(id="kernel", values=c("linear", "polynomial", "radial", "sigmoid")),
+  makeNumericLearnerParam(id="cost", lower=1,upper=100, requires=quote(type == "C-classification")),
+  makeNumericLearnerParam(id="nu", lower=0,upper=1, requires=quote(type == "nu-classification")),
+  makeIntegerLearnerParam(id="degree", lower=1,upper=3 ,requires=quote(kernel == "polynomial")),
+  makeNumericLearnerParam(id="gamma", lower=2^-3,upper=1, requires=quote(kernel != "linear")),
+  makeLogicalLearnerParam(id="shrinking"))
 
 # Searching the optimal parameters
-#svm.res=tuneParams(learner, trainTask, resampling=cv.svm,
-#                   par.set=param.svm, control=ctrl,measures=acc)
+svm.res=tuneParams(learner, validateTask, resampling=cv.svm,
+                   par.set=param.svm, control=ctrl,measures=acc)
 
 # Parameters optimal values
 # svm.res$x
