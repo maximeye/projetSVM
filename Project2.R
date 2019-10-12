@@ -30,10 +30,7 @@ dat=read.csv("C:/Users/kevas/Desktop/Cours/M2/Support_Vector_Machine/Dossier_SVM
 
 # On change le type de la variable de reponse "Class" (integer -> factor)
 dat$Class=as.factor(dat$Class)
-
-
 attach(dat)
-
 
 # Reechantillonnage afin d'obtenir 50% de class = 0, 50% de class=1
 new=SMOTE(dat[,-31],dat[,31],K=3,dup_size = 0)
@@ -42,12 +39,12 @@ new=SMOTE(dat[,-31],dat[,31],K=3,dup_size = 0)
 new$data$class=as.factor(new$data$class)
 
 
-# Exportation de la nouvelle table en CSV (optionnelle), utile pour ne pas avoir a refaire l'etape de reechantillonnage chaque fois
+# Exportation de la nouvelle table en CSV (optionnelle), utile pour ne pas avoir à refaire l'etape de rééchantillonnage à chaque fois.
 
 # write.csv(new$data,"/Users/Maxime/Documents/Cours/Master/M2/S1/SVM/Docs Projet/newdat.csv")
 write.csv(new$data,"C:/Users/kevas/Desktop/Cours/M2/Support_Vector_Machine/Dossier_SVM/projetSVM/new.csv")
 table(new$data$class) # 284315 Class=0
-# 283884 Class=1
+                      # 283884 Class=1
 
 
 # Chargement de la table reechantillonnee
@@ -66,6 +63,9 @@ saveRDS(data,"C:/Users/kevas/Desktop/Cours/M2/Support_Vector_Machine/Dossier_SVM
 ######################################################################################################
 zozo=read.table('C:/Users/kevas/Desktop/Cours/M2/Support_Vector_Machine/Dossier_SVM/creditcard.csv',header=T,sep=",")
 zozo=zozo[,-c(16,14,26,23,27)]
+
+zozo$Class=as.factor(zozo$Class)
+
 
 data=readRDS("C:/Users/kevas/Desktop/Cours/M2/Support_Vector_Machine/Dossier_SVM/projetSVM/new.rds")
 data=readRDS("/Users/Maxime/Documents/Cours/Master/M2/M2S1/SVM/projetSVM/new.rds")
@@ -324,27 +324,35 @@ learner=makeLearner("classif.svm", predict.type="prob")
 #svm.res=tuneParams(learner, trainTask, resampling=cv.svm,
 #                   par.set=param.svm, control=ctrl,measures=acc)
 
-#acc.test.mean=0.935
-
 # Parameters optimal values
-#svm.res$x
+# svm.res$x
+# Best : type=C-classification, kernel=radial, cost=25.8, gamma=0.573, shrinking=TURE
+# acc.test.mean=0.9985397
+
 
 # Asset the parmeters to our leaner
-final_svm=setHyperPars(learner=learner, par.vals=list(type="nu-classification",kernel="sigmoid",nu=0.728,gamma=0.949,shrinking=FALSE))
+final_svm=setHyperPars(learner=learner, par.vals=list(type="C-classification", kernel="radial", cost=25.8, gamma=0.573, shrinking=FALSE))
 
+# Training a model
+svm.model=train(final_svm, trainTask)
 
-# TRAINS
-svm.model=train(final_svm,trainTask)
-
-# PREDICTIONS
+# Making some predictions on the test set
 predict.svm=predict(svm.model, testTask)
 
 # Submission file
 submit5=data.frame(class=test$class, class_status=predict.svm$data$response)
-
 table(submit5$class,submit5$class_status)
 mean(submit5$class==submit5$class_status)
-#0.9395556 de bonne classif
+# 0.999619 de bonne classif
+
+# Making some predictions on a new datset
+#predict.svm=predict(svm.model, zozoTask)
+
+# Submission file
+#submit5=data.frame(class=zozo$Class, class_status=predict.svm$data$response)
+#table(submit5$class,submit5$class_status)
+#mean(submit5$class==submit5$class_status)
+
 
 #calculateROCMeasures(predict.svm)
 
@@ -381,18 +389,19 @@ gbm_par=makeParamSet(
 # shrinkage is the regulation parameter which dictates how fast / slow the algorithm should move
 
 ### Tuning parameters
-tune_gbm=tuneParams(learner = g.gbm, task = validateTask,resampling = set_cv,
-                    measures = acc,par.set = gbm_par,control = rancontrol)
+#tune_gbm=tuneParams(learner = g.gbm, task = validateTask,resampling = set_cv,
+#                    measures = acc,par.set = gbm_par,control = rancontrol)
 
 
 # Checking CV accuracy
 #tune_gbm$y
 # acc.test.mean=0.9956825
 
+# Best : distribution="bernoulli", n.trees=256, interaction.depth=5, n.minobsinnode=33, shrinkage=0.244
 
 # Setting parameters
 final_gbm=setHyperPars(learner=g.gbm,
-                       par.vals=list(distribution="bernoulli",n.trees=256,
+                       par.vals=list(distribution="bernoulli", n.trees=256,
                                       interaction.depth=5, n.minobsinnode=33,
                                       shrinkage=0.244))
 
