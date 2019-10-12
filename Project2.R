@@ -64,8 +64,8 @@ saveRDS(data,"C:/Users/kevas/Desktop/Cours/M2/Support_Vector_Machine/Dossier_SVM
 ######################################################################################################
 ################################## DEBUT #############################################################
 ######################################################################################################
-
-
+zozo=read.table('C:/Users/kevas/Desktop/Cours/M2/Support_Vector_Machine/Dossier_SVM/creditcard.csv',header=T,sep=",")
+zozo=zozo[,-c(16,14,26,23,27)]
 
 data=readRDS("C:/Users/kevas/Desktop/Cours/M2/Support_Vector_Machine/Dossier_SVM/projetSVM/new.rds")
 data=readRDS("/Users/Maxime/Documents/Cours/Master/M2/M2S1/SVM/projetSVM/new.rds")
@@ -96,14 +96,19 @@ attach(train)
 trainTask=makeClassifTask(data=train, target="class")
 testTask=makeClassifTask(data=test, target="class")
 validateTask=makeClassifTask(data=validate, target="class")
+zozoTask=makeClassifTask(data=zozo, target="Class")
 
 # Let's consider the positive class as 1
 trainTask=makeClassifTask(data=train,target="class", positive="1")
+testTask=makeClassifTask(data=test,target="class", positive="1")
+validateTask=makeClassifTask(data=validate,target="class", positive="1")
+zozoTask=makeClassifTask(data=zozo,target="Class", positive="1")
 
 # Let's normalize the variables
 trainTask=normalizeFeatures(trainTask,method="standardize")
 testTask=normalizeFeatures(testTask,method="standardize")
 validateTask=normalizeFeatures(validateTask,method="standardize")
+zozoTask=normalizeFeatures(zozoTask,method="standardize")
 
 # Feature importance of variables
 imp_feature=generateFilterValuesData(trainTask, method=c("information.gain","chi.squared"))
@@ -119,24 +124,30 @@ plotFilterValues(imp_feature, n.show=20)
 
 
 # Logistic regression
-logistic=makeLearner("classif.logreg", predict.type="prob")
+logistic=makeLearner("classif.logreg", predict.type="response")
+
 
 # Training the model
-model=train(logistic,trainTask)
-
+model=train(logistic, trainTask)
 # Predicting on the test set
-pred=predict(model,testTask)
-
+pred=predict(model, testTask)
 # Measuring the performance
 performance(pred, measures=acc)
 # 0.9811746
-
 # Create submission file
 submit2=data.frame(class=test$class, class_Status=pred$data$response)
-
 table(submit2$class,submit2$class_Status)
 mean(submit2$class==submit2$class_Status)
 
+
+# Training the model
+model=train(logistic, trainTask)
+# Predicting on a new dataset
+pred=predict(model, zozoTask)
+# Create submission file
+submit2=data.frame(Class=zozo$Class, class_Status=pred$data$response)
+table(submit2$class,submit2$class_Status)
+mean(submit2$class==submit2$class_Status)
 
 
 
@@ -190,21 +201,28 @@ stune$y
 # Using hyperparameters for modeling
 tun.tree=setHyperPars(tree, par.vals=list(minsplit=5,minbucket=15,cp=0.001))
 
+
 # Train the model
-tun.rpart=train(tun.tree, trainTask)
-getLearnerModel(tun.rpart)
-
-
-# Make predictions
+tun.rpart=train(tun.tree, trainTask) #getLearnerModel(tun.rpart)
+# Make predictions on the test set
 treetestpred=predict(tun.rpart, testTask)
-
 # Create a submission file
 submit3=data.frame(class=test$class, class_Status=treetestpred$data$response)
-
 table(submit3$class,submit3$class_Status)
 mean(submit3$class==submit3$class_Status)
+# 0.970381
 
-# 0.9743492
+
+# Train the model
+tun.rpart=train(tun.tree, trainTask) #getLearnerModel(tun.rpart)
+# Make predictions on a a new dataset
+treetestpred=predict(tun.rpart, zozoTask)
+# Create a submission file
+submit3=data.frame(class=zozo$Class, class_Status=treetestpred$data$response)
+table(submit3$class,submit3$class_Status)
+mean(submit3$class==submit3$class_Status)
+# 0.4168121
+
 
 
 
@@ -253,15 +271,20 @@ rf_tune$x
 rf.tree=setHyperPars(rf, par.vals=list(ntree=157,mtry=9,nodesize=12))
 
 # Train a model
-rforest=train(rf.tree, trainTask)
-getLearnerModel(tun.rpart)
+rforest=train(rf.tree, trainTask) # getLearnerModel(rforest)
 
-# Making some predictions
+# Making some predictions on the test set
 rfmodel=predict(rforest, testTask)
-
 # Submission file
 submit4=data.frame(class = test$class, class_Status=rfmodel$data$response)
+table(submit4$class,submit4$class_Status)
+mean(submit4$class==submit4$class_Status)
+# 0.9982222
 
+# Making some predictions on a new database
+rfmodel=predict(rforest, zozoTask)
+# Submission file
+submit4=data.frame(class = zozo$Class, class_Status=rfmodel$data$response)
 table(submit4$class,submit4$class_Status)
 mean(submit4$class==submit4$class_Status)
 
@@ -340,55 +363,64 @@ getParamSet("classif.gbm")
 g.gbm=makeLearner("classif.gbm", predict.type="response")
 
 # Specify the tuning method
-#rancontrol=makeTuneControlRandom(maxit=5)
+rancontrol=makeTuneControlRandom(maxit=5)
 
 # 3 fold CV
-#set_cv=makeResampleDesc("CV",iters=3)
+set_cv=makeResampleDesc("CV",iters=3)
 
 
 # Set tunable parameters
-#gbm_par=makeParamSet(
-#                  makeDiscreteParam("distribution", values="bernoulli"),
-#                  makeIntegerParam("n.trees", lower=100, upper=500),
-#                  makeIntegerParam("interaction.depth", lower = 2, upper=10),
-#                  makeIntegerParam("n.minobsinnode", lower=10, upper=80),
-#                  makeNumericParam("shrinkage",lower=0.01, upper=1))
+gbm_par=makeParamSet(
+                  makeDiscreteParam("distribution", values="bernoulli"),
+                  makeIntegerParam("n.trees", lower=100, upper=500),
+                  makeIntegerParam("interaction.depth", lower = 2, upper=10),
+                  makeIntegerParam("n.minobsinnode", lower=10, upper=80),
+                  makeNumericParam("shrinkage",lower=0.01, upper=1))
 
 # n.minobsinnode refers to the minimum number of observations in a tree node
 # shrinkage is the regulation parameter which dictates how fast / slow the algorithm should move
 
 ### Tuning parameters
-#tune_gbm=tuneParams(learner = g.gbm, task = trainTask,resampling = set_cv,
-#                    measures = acc,par.set = gbm_par,control = rancontrol)
+tune_gbm=tuneParams(learner = g.gbm, task = validateTask,resampling = set_cv,
+                    measures = acc,par.set = gbm_par,control = rancontrol)
 
 
 # Checking CV accuracy
 #tune_gbm$y
-# acc.test.mean=0.9962381
+# acc.test.mean=0.9956825
 
 
 # Setting parameters
 final_gbm=setHyperPars(learner=g.gbm,
-                       par.vals=list(distribution="bernoulli",
-                                     n.trees=407,interaction.depth=9,n.minobsinnode=15,
-                                     shrinkage=0.169))
+                       par.vals=list(distribution="bernoulli",n.trees=256,
+                                      interaction.depth=5, n.minobsinnode=33,
+                                      shrinkage=0.244))
+
+
 
 # Train
 to.gbm=train(final_gbm, trainTask)
 
-# Test
+# Predicting on the test set
 pr.gbm=predict(to.gbm, testTask)
-
 # Submission file
 submit6=data.frame(class = test$class, class_Status = pr.gbm$data$response)
 table(submit6$class,submit6$class_Status)
 mean(submit6$class==submit6$class_Status)
+# 0.9973016
 
+# Predicting on a new dataset
+pr.gbm=predict(to.gbm, zozoTask)
+# Submission file
+submit6=data.frame(class=zozo$Class, class_Status=pr.gbm$data$response)
+table(submit6$class,submit6$class_Status)
+mean(submit6$class==submit6$class_Status)
+# 0.3679474
 
 
 
 ##############################################################################
-##########################   XGBoost   #######################################
+################################   XGBoost   #################################
 ##############################################################################
 
 
@@ -407,42 +439,50 @@ xg_set$par.vals=list(objective = "binary:logistic",
                      nrounds = 250)
 
 # Defining parameters for tuning
-#xg_ps=makeParamSet(
-#          makeIntegerParam("nrounds",lower=200,upper=500),
-#          makeIntegerParam("max_depth",lower=3,upper=20),
-#          makeNumericParam("lambda",lower=0.55,upper=0.60),
-#          makeNumericParam("eta", lower = 0.001, upper = 0.5),
-#          makeNumericParam("subsample", lower = 0.10, upper = 0.80),
-#          makeNumericParam("min_child_weight",lower=1,upper=5),
-#          makeNumericParam("colsample_bytree",lower = 0.2,upper = 0.8))
+xg_ps=makeParamSet(
+          makeIntegerParam("nrounds",lower=200,upper=500),
+          makeIntegerParam("max_depth",lower=3,upper=20),
+          makeNumericParam("lambda",lower=0.55,upper=0.60),
+          makeNumericParam("eta", lower = 0.001, upper = 0.5),
+          makeNumericParam("subsample", lower = 0.10, upper = 0.80),
+          makeNumericParam("min_child_weight",lower=1,upper=5),
+          makeNumericParam("colsample_bytree",lower = 0.2,upper = 0.8))
 
 
 # Defining search function
-#rancontrol=makeTuneControlRandom(maxit=5)
+rancontrol=makeTuneControlRandom(maxit=5)
 
 # 3 fold cross validation
-#set_cv=makeResampleDesc("CV",iters=3)
+set_cv=makeResampleDesc("CV",iters=3)
 
 # Tuning parameters
-#xg_tune=tuneParams(learner=xg_set, task=trainTask, resampling=set_cv,measures=acc,par.set=xg_ps, control=rancontrol)
+#xg_tune=tuneParams(learner=xg_set, task=validateTask, resampling=set_cv,measures=acc,par.set=xg_ps, control=rancontrol)
 
 # Setting parameters
-xg_new=setHyperPars(learner=xg_set, par.vals=list(nrounds=215,max_depth=14,lambda=0.554,eta=0.301,subsample=0.705,min_child_weight=1.1,colsample_bytree=0.554))
+xg_new=setHyperPars(learner=xg_set, par.vals=list(nrounds=256,max_depth=20,lambda=0.56,eta=0.278,subsample=0.56,min_child_weight=3.84,colsample_bytree=0.683))
 
 # parameters optimal values
 #xg_new$x
-#acc.test.mean=0.9966667
+#acc.test.mean=0.9978836
 
 
 # Train model
 xgmodel=train(xg_new, trainTask)
 
-# Test model
-predict.xg=predict(xgmodel, testTask)
 
+# Predicting on the test set
+predict.xg=predict(xgmodel, task=testTask)
 # Submission file
 submit7=data.frame(class = test$class, class_Status = predict.xg$data$response)
+table(submit7$class,submit7$class_Status)
+mean(submit7$class==submit7$class_Status)
+# 0.9989841
 
+
+# # Predicting on a new dataset
+predict.xg=predict(xgmodel, task=zozoTask)
+# Submission file
+submit7=data.frame(class = zozo$Class, class_Status = predict.xg$data$response)
 table(submit7$class,submit7$class_Status)
 mean(submit7$class==submit7$class_Status)
 
@@ -451,7 +491,7 @@ mean(submit7$class==submit7$class_Status)
 ######
 # A FAIRE !!!!!
 
-# ROC et comparer les méthodes de ML
+# ROC
 
 
 
