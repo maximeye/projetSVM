@@ -58,18 +58,38 @@ saveRDS(data,"C:/Users/kevas/Desktop/Cours/M2/Support_Vector_Machine/Dossier_SVM
 
 
 
+
+
+zozo=read.table('C:/Users/kevas/Desktop/Cours/M2/Support_Vector_Machine/Dossier_SVM/creditcard.csv',header=T,sep=",")
+
+# On change le type de la variable de reponse "Class" (integer -> factor)
+zozo$Class=as.factor(zozo$Class)
+attach(zozo)
+
+write.csv(zozo,"C:/Users/kevas/Desktop/Cours/M2/Support_Vector_Machine/Dossier_SVM/newcreditcard.csv")
+table(zozo$Class) # 284315 Class=0
+                  # 492 Class=1
+
+# Chargement de la table reechantillonnee
+zozo=read.csv("C:/Users/kevas/Desktop/Cours/M2/Support_Vector_Machine/Dossier_SVM/newcreditcard.csv",header=T,sep=",")
+zozo=zozo[,c(-1,-17,-15,-27,-24,-28)] # suppression des var les moins importantes
+saveRDS(zozo,"C:/Users/kevas/Desktop/Cours/M2/Support_Vector_Machine/Dossier_SVM/newcreditcard.rds",compress=TRUE)
+
+
+
+
+
+
+
 ######################################################################################################
 ################################## DEBUT #############################################################
 ######################################################################################################
-zozo=read.table('C:/Users/kevas/Desktop/Cours/M2/Support_Vector_Machine/Dossier_SVM/creditcard.csv',header=T,sep=",")
-zozo=zozo[,-c(16,14,26,23,27)]
-
+zozo=readRDS('C:/Users/kevas/Desktop/Cours/M2/Support_Vector_Machine/Dossier_SVM/newcreditcard.rds')
 zozo$Class=as.factor(zozo$Class)
 
 
 data=readRDS("C:/Users/kevas/Desktop/Cours/M2/Support_Vector_Machine/Dossier_SVM/projetSVM/new.rds")
-data=readRDS("/Users/Maxime/Documents/Cours/Master/M2/M2S1/SVM/projetSVM/new.rds")
-
+#data=readRDS("/Users/Maxime/Documents/Cours/Master/M2/M2S1/SVM/projetSVM/new.rds")
 data$class=as.factor(data$class)
 set.seed(12345)
 
@@ -77,9 +97,9 @@ set.seed(12345)
 
 
 
-# Creation d'un echantillon d'apprentissage (60%) et test (40%) :
+# Creation d'un echantillon d'apprentissage (55%), test (18%) & validation (27%) :
 
-## Echantillon apprentissage pour faire tourner le svm rapidement
+## Echantillon apprentissage pour faire tourner le svm plus rapidement
 
 taille_ech=175000
 index=1:nrow(data)
@@ -124,20 +144,24 @@ plotFilterValues(imp_feature, n.show=20)
 
 
 # Logistic regression
-logistic=makeLearner("classif.logreg", predict.type="response")
+logistic=makeLearner("classif.logreg", predict.type="prob")
 
 
 # Training the model
 model=train(logistic, trainTask)
+
 # Predicting on the test set
 pred1.test=predict(model, testTask)
 # Measuring the performance
 performance(pred1.test, measures=acc)
-# 0.9811746
+# 0.980254
 # Create submission file
 submit2=data.frame(class=test$class, class_Status=pred1.test$data$response)
 table(submit2$class,submit2$class_Status)
 mean(submit2$class==submit2$class_Status)
+# Calculating the false/true positive rates on the test set & ploting the ROC Curve
+roclog.test=generateThreshVsPerfData(pred1.test, measures = list(fpr, tpr, acc))
+plotROCCurves(roclog.test)
 
 
 # Training the model
@@ -148,9 +172,9 @@ pred1.zozo=predict(model, zozoTask)
 submit2=data.frame(Class=zozo$Class, class_Status=pred1.zozo$data$response)
 table(submit2$class,submit2$class_Status)
 mean(submit2$class==submit2$class_Status)
-
-
-
+# Calculating the false/true positive rates on a new dataset & ploting ROC Curve
+roclog.zozo=generateThreshVsPerfData(pred1.zozo, measures = list(fpr, tpr, acc))
+plotROCCurves(roclog.zozo)
 
 
 
@@ -162,7 +186,7 @@ mean(submit2$class==submit2$class_Status)
 getParamSet("classif.rpart")
 
 # Making the decision tree
-tree=makeLearner("classif.rpart", predict.type="response")
+tree=makeLearner("classif.rpart", predict.type="prob")
 
 # Set 3 fold cross validation
 set_cv=makeResampleDesc("CV", iters=3)
@@ -203,7 +227,7 @@ tun.tree=setHyperPars(tree, par.vals=list(minsplit=5,minbucket=15,cp=0.001))
 
 
 # Train the model
-tun.rpart=train(tun.tree, trainTask) #getLearnerModel(tun.rpart)
+tun.rpart=train(tun.tree, trainTask)
 # Make predictions on the test set
 treetestpred=predict(tun.rpart, testTask)
 # Create a submission file
@@ -212,9 +236,14 @@ table(submit3$class,submit3$class_Status)
 mean(submit3$class==submit3$class_Status)
 # 0.970381
 
+# Calculating the false/true positive rates on the test set & ploting the ROC Curve
+roc_dt.test = generateThreshVsPerfData(treetestpred, list(fpr, tpr, acc))
+plotROCCurves(roc_dt.test)
+
+
 
 # Train the model
-tun.rpart=train(tun.tree, trainTask) #getLearnerModel(tun.rpart)
+tun.rpart=train(tun.tree, trainTask)
 # Make predictions on a a new dataset
 treezozopred=predict(tun.rpart, zozoTask)
 # Create a submission file
@@ -222,6 +251,9 @@ submit3=data.frame(class=zozo$Class, class_Status=treezozopred$data$response)
 table(submit3$class,submit3$class_Status)
 mean(submit3$class==submit3$class_Status)
 # 0.4168121
+# Calculating the false/true positive rates on a new dataset & ploting the ROC Curve
+#roc_dt.zozo = generateThreshVsPerfData(treezozopred, list(fpr, tpr, acc))
+#plotROCCurves(roc_dt.zozo)
 
 
 
@@ -233,9 +265,8 @@ mean(submit3$class==submit3$class_Status)
 getParamSet("classif.randomForest")
 
 # Create a learner
-rf=makeLearner("classif.randomForest", predict.type="response", par.vals=list(ntree=200, mtry=3))
+rf=makeLearner("classif.randomForest", predict.type="prob", par.vals=list(ntree=200, mtry=3))
 rf$par.vals=list(importance=TRUE)
-
 
 
 # Set tunable parameters
@@ -266,12 +297,10 @@ rf_tune$x
 
 
 # Building the RF model now & checking its accuracy
-
 # Using hyperparameters for modeling
 rf.tree=setHyperPars(rf, par.vals=list(ntree=157,mtry=9,nodesize=12))
-
 # Train a model
-rforest=train(rf.tree, trainTask) # getLearnerModel(rforest)
+rforest=train(rf.tree, trainTask)
 
 # Making some predictions on the test set
 rfmodeltest=predict(rforest, testTask)
@@ -280,6 +309,10 @@ submit4=data.frame(class = test$class, class_Status=rfmodeltest$data$response)
 table(submit4$class,submit4$class_Status)
 mean(submit4$class==submit4$class_Status)
 # 0.9982222
+# Calculating the false/true positive rates on the test set & ploting the ROC Curve
+rocrf.test=generateThreshVsPerfData(rfmodeltest, measures = list(fpr, tpr, acc))
+plotROCCurves(rocrf.test)
+
 
 # Making some predictions on a new database
 rfmodelzozo=predict(rforest, zozoTask)
@@ -295,21 +328,16 @@ mean(submit4$class==submit4$class_Status)
 ################################   SVM   #####################################
 ##############################################################################
 
-
-# list of parameters which can be tuned
-getParamSet("classif.svm")
-
-# LEARNERS
+# Creating a learner
 learner=makeLearner("classif.svm", predict.type="prob")
 
-
-# RESAMPLE
+# Resampling
 cv.svm=makeResampleDesc("CV", iters=3, stratify=TRUE)
 
 # Random search
 ctrl=makeTuneControlRandom(maxit=3)
 
-# TUNING SVM Parameters
+# Tuning the SVM Parameters
 
 param.svm=makeParamSet(
   makeDiscreteLearnerParam(id="type",values=c("C-classification", "nu-classification")),
@@ -343,7 +371,11 @@ predict.svm.test=predict(svm.model, testTask)
 submit5=data.frame(class=test$class, class_status=predict.svm.test$data$response)
 table(submit5$class,submit5$class_status)
 mean(submit5$class==submit5$class_status)
-# 0.999619 de bonne classif
+# 0.9996508 de bonne classif
+# Calculating the false/true positive rates on the test set & ploting the ROC Curve
+rocsvm.test=generateThreshVsPerfData(predict.svm.test, measures = list(fpr, tpr, acc))
+plotROCCurves(rocsvm.test)
+
 
 # Making some predictions on a new datset
 #predict.svm.zozo=predict(svm.model, zozoTask)
@@ -367,8 +399,7 @@ mean(submit5$class==submit5$class_status)
 
 
 # Loading GBM
-getParamSet("classif.gbm")
-g.gbm=makeLearner("classif.gbm", predict.type="response")
+g.gbm=makeLearner("classif.gbm", predict.type="prob")
 
 # Specify the tuning method
 rancontrol=makeTuneControlRandom(maxit=5)
@@ -417,15 +448,20 @@ submit6=data.frame(class = test$class, class_Status = pr.gbm.test$data$response)
 table(submit6$class,submit6$class_Status)
 mean(submit6$class==submit6$class_Status)
 # 0.9973016
+rocgbm.test=generateThreshVsPerfData(pr.gbm.test, measures = list(fpr, tpr, acc))
+plotROCCurves(rocgbm.test)
 
+
+# Train
+to.gbm.zozo=train(final_gbm, zozoTask)
 # Predicting on a new dataset
 pr.gbm.zozo=predict(to.gbm, zozoTask)
+
 # Submission file
 submit6=data.frame(class=zozo$Class, class_Status=pr.gbm.zozo$data$response)
 table(submit6$class,submit6$class_Status)
 mean(submit6$class==submit6$class_Status)
-# 0.3679474
-
+# 0.5245201
 
 
 ##############################################################################
@@ -439,10 +475,9 @@ mean(submit6$class==submit6$class_Status)
 
 # Loading XGBoost
 set.seed(12345)
-getParamSet("classif.xgboost")
 
 # Make learner with inital parameters
-xg_set=makeLearner("classif.xgboost", predict.type = "response")
+xg_set=makeLearner("classif.xgboost", predict.type = "prob")
 xg_set$par.vals=list(objective = "binary:logistic",
                      eval_metric = "error",
                      nrounds = 250)
@@ -485,22 +520,9 @@ predict.xg.test=predict(xgmodel, task=testTask)
 submit7=data.frame(class = test$class, class_Status = predict.xg.test$data$response)
 table(submit7$class,submit7$class_Status)
 mean(submit7$class==submit7$class_Status)
-# 0.9989841
-
-
-# # Predicting on a new dataset
-predict.xg.zozo=predict(xgmodel, task=zozoTask)
-# Submission file
-submit7=data.frame(class = zozo$Class, class_Status = predict.xg.zozo$data$response)
-table(submit7$class,submit7$class_Status)
-mean(submit7$class==submit7$class_Status)
-
-
-
-######
-# A FAIRE !!!!!
-
-# ROC
+# 0.9991746
+rocxgb.test=generateThreshVsPerfData(predict.xg.test, measures = list(fpr, tpr, acc))
+plotROCCurves(rocxgb.test)
 
 
 
