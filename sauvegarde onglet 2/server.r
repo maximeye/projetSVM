@@ -13,6 +13,7 @@ library(FSelector)
 library(rpart)
 library(gbm)
 library(xgboost)
+library(ineq)
 set.seed(12345)
 
 shinyServer(function(input, output) {
@@ -43,8 +44,8 @@ shinyServer(function(input, output) {
       {
         sliderInput("minsplit",
                     "Min Split",
-                    value = 6,
-                    min = 1,
+                    value = 5,
+                    min = 5,
                     max = 50)
       }
     })
@@ -57,8 +58,8 @@ shinyServer(function(input, output) {
       {
         sliderInput("minbucket",
                     "Min Bucket",
-                    value = 1,
-                    min = 0,
+                    value = 15,
+                    min = 5,
                     max = 50)
       }
     })
@@ -84,9 +85,9 @@ shinyServer(function(input, output) {
       {
         sliderInput("ntree",
                     "Number of trees",
-                    value = 346,
+                    value = 157,
                     min = 50,
-                    max = 500)
+                    max = 200)
       }
     })
   
@@ -99,9 +100,9 @@ shinyServer(function(input, output) {
       {
         sliderInput("nodesize",
                     "Node Size",
-                    value = 4,
-                    min = 1,
-                    max = 30)
+                    value = 12,
+                    min = 10,
+                    max = 26)
       }
     })
   output$mtry= renderUI(
@@ -110,9 +111,9 @@ shinyServer(function(input, output) {
       {
         sliderInput("mtry",
                     "Mtry",
-                    value = 1,
-                    min = 1,
-                    max = 30)
+                    value = 9,
+                    min = 5,
+                    max = 20)
       }
     })
   
@@ -124,9 +125,21 @@ shinyServer(function(input, output) {
       {
         sliderInput("n.trees",
                     "N Trees",
-                    value = 640,
+                    value = 256,
                     min = 100,
-                    max = 1000)
+                    max = 500)
+      }
+    })
+  
+  output$n.trees = renderUI(
+    {
+      if (input$law=='gb')
+      {
+        sliderInput("interaction_d",
+                    "Interaction depth",
+                    value = 5,
+                    min = 2,
+                    max = 10)
       }
     })
   
@@ -136,7 +149,7 @@ shinyServer(function(input, output) {
       {
         sliderInput("minobsinnode",
                     "Min obs in node",
-                    value = 15,
+                    value = 33,
                     min = 10,
                     max = 80)
       }
@@ -148,7 +161,7 @@ shinyServer(function(input, output) {
       {
         sliderInput("schrink",
                     "Schrinkage",
-                    value = 0.341,
+                    value = 0.244,
                     min = 0.01,
                     max = 1)
       }
@@ -160,9 +173,9 @@ shinyServer(function(input, output) {
       {
         sliderInput("nround",
                     "Nround",
-                    value = 299,
+                    value = 256,
                     min = 200,
-                    max = 600)
+                    max = 500)
       }
       
     })
@@ -171,9 +184,9 @@ shinyServer(function(input, output) {
     {
       if (input$law=='xgb')
       {
-        sliderInput("Max depth",
-                    "maxdepth",
-                    value = 18,
+        sliderInput("maxdepth",
+                    "Max depth",
+                    value = 20,
                     min = 3,
                     max = 20)
       }
@@ -186,7 +199,7 @@ shinyServer(function(input, output) {
       {
         sliderInput("lambda",
                     "Lambda",
-                    value = 0.564,
+                    value = 0.56,
                     min = 0.55,
                     max = 0.60)
       }
@@ -198,7 +211,7 @@ shinyServer(function(input, output) {
       {
         sliderInput("eta",
                     "Eta",
-                    value = 0.104,
+                    value = 0.278,
                     min = 0.001,
                     max = 0.5)
       }
@@ -212,7 +225,7 @@ shinyServer(function(input, output) {
       {
         sliderInput("subsample",
                     "Sub sample",
-                    value = 0.656,
+                    value = 0.56,
                     min = 0.1,
                     max = 0.8)
       }
@@ -224,7 +237,7 @@ shinyServer(function(input, output) {
       {
         sliderInput("minweight",
                     "Min child weight",
-                    value = 1.13,
+                    value = 3.84,
                     min = 1,
                     max = 5)
       }
@@ -236,7 +249,7 @@ shinyServer(function(input, output) {
       {
         sliderInput("coltree",
                     "Col sample by tree",
-                    value = 0.572,
+                    value = 0.683,
                     min = 0.2,
                     max = 0.8)
       }
@@ -535,24 +548,415 @@ shinyServer(function(input, output) {
     
   })
   
- # output$i4=renderPrint({
- # })
+  output$i4=renderPrint({
+    law=input$law
+    gini.model=function(law){
+      
+      if (input$law=='logit'){
+        set.seed(12345)
+        logistic=makeLearner("classif.logreg", predict.type="response")
+        model=train(logistic, trainTask)
+        pred=predict(model, testTask)
+        performance(pred, measures=acc)
+        gini=Gini(pred$data$response)
+        submit2=data.frame(class=test$class, class_Status=pred$data$response)
+        tab=table(submit2$class,submit2$class_Status)
+        clas= mean(submit2$class==submit2$class_Status)
+      }
+      if (input$law=='tree'){
+        set.seed(12345)
+        minsplit=input$minsplit
+        minbucket=input$minbucket
+        cp=input$cp
+        
+        getParamSet("classif.rpart")
+        tree=makeLearner("classif.rpart", predict.type="response")
+        set_cv=makeResampleDesc("CV", iters=3)
+        dtparam=makeParamSet(
+          makeIntegerParam("minsplit", lower=5, upper=50),
+          makeIntegerParam("minbucket", lower=5, upper=50),
+          makeNumericParam("cp", lower=0.001, upper=0.5))
+        gridsearchcontrol=makeTuneControlGrid()
+        tun.tree=setHyperPars(tree, par.vals=list(minsplit=minsplit,minbucket=minbucket,cp=cp))
+        tun.rpart=train(tun.tree, trainTask)
+        treetestpred=predict(tun.rpart, testTask)
+        gini=Gini(treetestpred$data$response)
+        submit3=data.frame(class=test$class, class_Status=treetestpred$data$response)
+        tab=table(submit3$class,submit3$class_Status)
+        clas=mean(submit3$class==submit3$class_Status)
+        
+      }
+      if (input$law=='rf'){
+        set.seed(12345)
+        ntree=input$ntree
+        nodesize=input$nodesize
+        mtry=input$mtry
+        
+        getParamSet("classif.randomForest")
+        rf=makeLearner("classif.randomForest", predict.type="response", par.vals=list(ntree=200, mtry=3))
+        rf$par.vals=list(importance=TRUE)
+        rf_param=makeParamSet(
+          makeIntegerParam("ntree",lower=50,upper=200),
+          makeIntegerParam("mtry",lower=5,upper=20),
+          makeIntegerParam("nodesize", lower=10, upper=26))
+        rancontrol=makeTuneControlRandom(maxit=10)
+        set_cv=makeResampleDesc("CV", iters=3)
+        rf.tree=setHyperPars(rf, par.vals=list(ntree=ntree,mtry=mtry,nodesize=nodesize))
+        rforest=train(rf.tree, trainTask) 
+        rfmodel=predict(rforest, testTask)
+        gini=Gini(rfmodel$data$response)
+        submit4=data.frame(class = test$class, class_Status=rfmodel$data$response)
+        tab=table(submit4$class,submit4$class_Status)
+        clas= mean(submit4$class==submit4$class_Status)
+        
+      }
+      if (input$law=='gb'){
+        set.seed(12345)
+        n.trees=input$n.trees
+        interaction=input$interaction_d
+        minobsinnode=input$minobsinnode
+        schrinkage=input$schrink
+        
+        getParamSet("classif.gbm")
+        g.gbm=makeLearner("classif.gbm", predict.type="response")
+        rancontrol=makeTuneControlRandom(maxit=5)
+        set_cv=makeResampleDesc("CV",iters=3)
+        gbm_par=makeParamSet(
+          makeDiscreteParam("distribution", values="bernoulli"),
+          makeIntegerParam("n.trees", lower=100, upper=500),
+          makeIntegerParam("interaction.depth", lower = 2, upper=10),
+          makeIntegerParam("n.minobsinnode", lower=10, upper=80),
+          makeNumericParam("shrinkage",lower=0.01, upper=1))
+        final_gbm=setHyperPars(learner=g.gbm,
+                               par.vals=list(distribution="bernoulli", n.trees=n.trees,
+                                             interaction.depth=interaction, n.minobsinnode=minobsinnode,
+                                             shrinkage=schrinkage))
+        to.gbm=train(final_gbm, trainTask)
+        pr.gbm=predict(to.gbm, testTask)
+        gini=Gini(pr.gbm$data$response)
+        submit6=data.frame(class = test$class, class_Status = pr.gbm$data$response)
+        tab=table(submit6$class,submit6$class_Status)
+        clas= mean(submit6$class==submit6$class_Status)
+        
+        
+      }
+      if (input$law=='xgb'){
+        set.seed(12345)
+        nround=input$nround
+        maxdepth=input$maxdepth
+        lambda=input$lambda
+        eta=input$eta
+        subsample=input$subsample
+        minchildweight=input$minweight
+        colsamplebytree=input$coltree
+        
+        
+        getParamSet("classif.xgboost")
+        xg_set=makeLearner("classif.xgboost", predict.type = "response")
+        xg_set$par.vals=list(objective = "binary:logistic",
+                             eval_metric = "error",
+                             nrounds = 250)
+        xg_ps=makeParamSet(
+          makeIntegerParam("nrounds",lower=200,upper=500),
+          makeIntegerParam("max_depth",lower=3,upper=20),
+          makeNumericParam("lambda",lower=0.55,upper=0.60),
+          makeNumericParam("eta", lower = 0.001, upper = 0.5),
+          makeNumericParam("subsample", lower = 0.10, upper = 0.80),
+          makeNumericParam("min_child_weight",lower=1,upper=5),
+          makeNumericParam("colsample_bytree",lower = 0.2,upper = 0.8))
+        rancontrol=makeTuneControlRandom(maxit=5)
+        set_cv=makeResampleDesc("CV",iters=3)
+        xg_new=setHyperPars(learner=xg_set, par.vals=list(nrounds=nround,max_depth=maxdepth,lambda=lambda,eta=eta,subsample=subsample,min_child_weight=minchildweight,colsample_bytree=colsamplebytree))
+        xgmodel=train(xg_new, trainTask)
+        predict.xg=predict(xgmodel, task=testTask)
+        gini=Gini(predict.xg$data$response)
+        submit7=data.frame(class = test$class, class_Status = predict.xg$data$response)
+        tab=table(submit7$class,submit7$class_Status)
+        clas=mean(submit7$class==submit7$class_Status)
+      }
+      return(gini)
+      
+    }
+    
+    gini.model(law)
+    
+  })
   
   output$t5 = renderText({
     "Selected model: Confusion matrix"
     
   })
   
- # output$i5=renderPrint({
- # })
+  output$i5=renderPrint({
+    law=input$law
+    matrix.model=function(law){
+      
+      if (input$law=='logit'){
+        set.seed(12345)
+        logistic=makeLearner("classif.logreg", predict.type="response")
+        model=train(logistic, trainTask)
+        pred=predict(model, testTask)
+        performance(pred, measures=acc)
+        gini=Gini(pred$data$response)
+        submit2=data.frame(class=test$class, class_Status=pred$data$response)
+        tab=table(submit2$class,submit2$class_Status)
+        clas= mean(submit2$class==submit2$class_Status)
+      }
+      if (input$law=='tree'){
+        set.seed(12345)
+        minsplit=input$minsplit
+        minbucket=input$minbucket
+        cp=input$cp
+        
+        getParamSet("classif.rpart")
+        tree=makeLearner("classif.rpart", predict.type="response")
+        set_cv=makeResampleDesc("CV", iters=3)
+        dtparam=makeParamSet(
+          makeIntegerParam("minsplit", lower=5, upper=50),
+          makeIntegerParam("minbucket", lower=5, upper=50),
+          makeNumericParam("cp", lower=0.001, upper=0.5))
+        gridsearchcontrol=makeTuneControlGrid()
+        tun.tree=setHyperPars(tree, par.vals=list(minsplit=minsplit,minbucket=minbucket,cp=cp))
+        tun.rpart=train(tun.tree, trainTask)
+        treetestpred=predict(tun.rpart, testTask)
+        gini=Gini(treetestpred$data$response)
+        submit3=data.frame(class=test$class, class_Status=treetestpred$data$response)
+        tab=table(submit3$class,submit3$class_Status)
+        clas=mean(submit3$class==submit3$class_Status)
+        
+      }
+      if (input$law=='rf'){
+        set.seed(12345)
+        ntree=input$ntree
+        nodesize=input$nodesize
+        mtry=input$mtry
+        
+        getParamSet("classif.randomForest")
+        rf=makeLearner("classif.randomForest", predict.type="response", par.vals=list(ntree=200, mtry=3))
+        rf$par.vals=list(importance=TRUE)
+        rf_param=makeParamSet(
+          makeIntegerParam("ntree",lower=50,upper=200),
+          makeIntegerParam("mtry",lower=5,upper=20),
+          makeIntegerParam("nodesize", lower=10, upper=26))
+        rancontrol=makeTuneControlRandom(maxit=10)
+        set_cv=makeResampleDesc("CV", iters=3)
+        rf.tree=setHyperPars(rf, par.vals=list(ntree=ntree,mtry=mtry,nodesize=nodesize))
+        rforest=train(rf.tree, trainTask) 
+        rfmodel=predict(rforest, testTask)
+        gini=Gini(rfmodel$data$response)
+        submit4=data.frame(class = test$class, class_Status=rfmodel$data$response)
+        tab=table(submit4$class,submit4$class_Status)
+        clas= mean(submit4$class==submit4$class_Status)
+        
+      }
+      if (input$law=='gb'){
+        set.seed(12345)
+        ntrees=input$n.trees
+        interaction=input$interaction_d
+        minobsinnode=input$minobsinnode
+        schrinkage=input$schrink
+        
+        getParamSet("classif.gbm")
+        g.gbm=makeLearner("classif.gbm", predict.type="response")
+        rancontrol=makeTuneControlRandom(maxit=5)
+        set_cv=makeResampleDesc("CV",iters=3)
+        gbm_par=makeParamSet(
+          makeDiscreteParam("distribution", values="bernoulli"),
+          makeIntegerParam("n.trees", lower=100, upper=500),
+          makeIntegerParam("interaction.depth", lower = 2, upper=10),
+          makeIntegerParam("n.minobsinnode", lower=10, upper=80),
+          makeNumericParam("shrinkage",lower=0.01, upper=1))
+        final_gbm=setHyperPars(learner=g.gbm,
+                               par.vals=list(distribution="bernoulli", n.trees=ntrees,
+                                             interaction.depth=interaction, n.minobsinnode=minobsinnode,
+                                             shrinkage=schrinkage))
+        to.gbm=train(final_gbm, trainTask)
+        pr.gbm=predict(to.gbm, testTask)
+        gini=Gini(pr.gbm$data$response)
+        submit6=data.frame(class = test$class, class_Status = pr.gbm$data$response)
+        tab=table(submit6$class,submit6$class_Status)
+        clas= mean(submit6$class==submit6$class_Status)
+        
+        
+        
+      }
+      if (input$law=='xgb'){
+        set.seed(12345)
+        nround=input$nround
+        maxdepth=input$maxdepth
+        lambda=input$lambda
+        eta=input$eta
+        subsample=input$subsample
+        minchildweight=input$minweight
+        colsamplebytree=input$coltree
+        
+        getParamSet("classif.xgboost")
+        xg_set=makeLearner("classif.xgboost", predict.type = "response")
+        xg_set$par.vals=list(objective = "binary:logistic",
+                             eval_metric = "error",
+                             nrounds = 250)
+        xg_ps=makeParamSet(
+          makeIntegerParam("nrounds",lower=200,upper=500),
+          makeIntegerParam("max_depth",lower=3,upper=20),
+          makeNumericParam("lambda",lower=0.55,upper=0.60),
+          makeNumericParam("eta", lower = 0.001, upper = 0.5),
+          makeNumericParam("subsample", lower = 0.10, upper = 0.80),
+          makeNumericParam("min_child_weight",lower=1,upper=5),
+          makeNumericParam("colsample_bytree",lower = 0.2,upper = 0.8))
+        rancontrol=makeTuneControlRandom(maxit=5)
+        set_cv=makeResampleDesc("CV",iters=3)
+        xg_new=setHyperPars(learner=xg_set, par.vals=list(nrounds=nround,max_depth=maxdepth,lambda=lambda,eta=eta,subsample=subsample,min_child_weight=minchildweight,colsample_bytree=colsamplebytree))
+        xgmodel=train(xg_new, trainTask)
+        predict.xg=predict(xgmodel, task=testTask)
+        gini=Gini(predict.xg$data$response)
+        submit7=data.frame(class = test$class, class_Status = predict.xg$data$response)
+        tab=table(submit7$class,submit7$class_Status)
+        clas=mean(submit7$class==submit7$class_Status)
+      }
+      return(tab)
+    }
+    
+    matrix.model(law)
+  })
   
   output$t6 = renderText({
     "Selected model: Good classification rate"
     
   })
   
-  #output$i6=renderPrint({
-  #})
+  output$i6=renderPrint({
+    law=input$law
+    classif.model=function(law){
+      
+      if (input$law=='logit'){
+        set.seed(12345)
+        logistic=makeLearner("classif.logreg", predict.type="response")
+        model=train(logistic, trainTask)
+        pred=predict(model, testTask)
+        performance(pred, measures=acc)
+        gini=Gini(pred$data$response)
+        submit2=data.frame(class=test$class, class_Status=pred$data$response)
+        tab=table(submit2$class,submit2$class_Status)
+        clas= mean(submit2$class==submit2$class_Status)
+      }
+      if (input$law=='tree'){
+        set.seed(12345)
+        minsplit=input$minsplit
+        minbucket=input$minbucket
+        cp=input$cp
+        
+        getParamSet("classif.rpart")
+        tree=makeLearner("classif.rpart", predict.type="response")
+        set_cv=makeResampleDesc("CV", iters=3)
+        dtparam=makeParamSet(
+          makeIntegerParam("minsplit", lower=5, upper=50),
+          makeIntegerParam("minbucket", lower=5, upper=50),
+          makeNumericParam("cp", lower=0.001, upper=0.5))
+        gridsearchcontrol=makeTuneControlGrid()
+        tun.tree=setHyperPars(tree, par.vals=list(minsplit=minsplit,minbucket=minbucket,cp=cp))
+        tun.rpart=train(tun.tree, trainTask)
+        treetestpred=predict(tun.rpart, testTask)
+        gini=Gini(treetestpred$data$response)
+        submit3=data.frame(class=test$class, class_Status=treetestpred$data$response)
+        tab=table(submit3$class,submit3$class_Status)
+        clas=mean(submit3$class==submit3$class_Status)
+        
+      }
+      if (input$law=='rf'){
+        set.seed(12345)
+        ntree=input$ntree
+        nodesize=input$nodesize
+        mtry=input$mtry
+        
+        getParamSet("classif.randomForest")
+        rf=makeLearner("classif.randomForest", predict.type="response", par.vals=list(ntree=200, mtry=3))
+        rf$par.vals=list(importance=TRUE)
+        rf_param=makeParamSet(
+          makeIntegerParam("ntree",lower=50,upper=200),
+          makeIntegerParam("mtry",lower=5,upper=20),
+          makeIntegerParam("nodesize", lower=10, upper=26))
+        rancontrol=makeTuneControlRandom(maxit=10)
+        set_cv=makeResampleDesc("CV", iters=3)
+        rf.tree=setHyperPars(rf, par.vals=list(ntree=ntree,mtry=mtry,nodesize=nodesize))
+        rforest=train(rf.tree, trainTask) 
+        rfmodel=predict(rforest, testTask)
+        gini=Gini(rfmodel$data$response)
+        submit4=data.frame(class = test$class, class_Status=rfmodel$data$response)
+        tab=table(submit4$class,submit4$class_Status)
+        clas= mean(submit4$class==submit4$class_Status)
+        
+      }
+      if (input$law=='gb'){
+        set.seed(12345)
+        ntrees=input$n.trees
+        interaction=input$interaction_d
+        minobsinnode=input$minobsinnode
+        schrinkage=input$schrink
+        
+        getParamSet("classif.gbm")
+        g.gbm=makeLearner("classif.gbm", predict.type="response")
+        rancontrol=makeTuneControlRandom(maxit=5)
+        set_cv=makeResampleDesc("CV",iters=3)
+        gbm_par=makeParamSet(
+          makeDiscreteParam("distribution", values="bernoulli"),
+          makeIntegerParam("n.trees", lower=100, upper=500),
+          makeIntegerParam("interaction.depth", lower = 2, upper=10),
+          makeIntegerParam("n.minobsinnode", lower=10, upper=80),
+          makeNumericParam("shrinkage",lower=0.01, upper=1))
+        final_gbm=setHyperPars(learner=g.gbm,
+                               par.vals=list(distribution="bernoulli", n.trees=ntrees,
+                                             interaction.depth=interaction, n.minobsinnode=minobsinnode,
+                                             shrinkage=schrinkage))
+        to.gbm=train(final_gbm, trainTask)
+        pr.gbm=predict(to.gbm, testTask)
+        gini=Gini(pr.gbm$data$response)
+        submit6=data.frame(class = test$class, class_Status = pr.gbm$data$response)
+        tab=table(submit6$class,submit6$class_Status)
+        clas= mean(submit6$class==submit6$class_Status)
+        
+        
+        
+      }
+      if (input$law=='xgb'){
+        set.seed(12345)
+        nround=input$nround
+        maxdepth=input$maxdepth
+        lambda=input$lambda
+        eta=input$eta
+        subsample=input$subsample
+        minchildweight=input$minweight
+        colsamplebytree=input$coltree
+        
+        getParamSet("classif.xgboost")
+        xg_set=makeLearner("classif.xgboost", predict.type = "response")
+        xg_set$par.vals=list(objective = "binary:logistic",
+                             eval_metric = "error",
+                             nrounds = 250)
+        xg_ps=makeParamSet(
+          makeIntegerParam("nrounds",lower=200,upper=500),
+          makeIntegerParam("max_depth",lower=3,upper=20),
+          makeNumericParam("lambda",lower=0.55,upper=0.60),
+          makeNumericParam("eta", lower = 0.001, upper = 0.5),
+          makeNumericParam("subsample", lower = 0.10, upper = 0.80),
+          makeNumericParam("min_child_weight",lower=1,upper=5),
+          makeNumericParam("colsample_bytree",lower = 0.2,upper = 0.8))
+        rancontrol=makeTuneControlRandom(maxit=5)
+        set_cv=makeResampleDesc("CV",iters=3)
+        xg_new=setHyperPars(learner=xg_set, par.vals=list(nrounds=nround,max_depth=maxdepth,lambda=lambda,eta=eta,subsample=subsample,min_child_weight=minchildweight,colsample_bytree=colsamplebytree))
+        xgmodel=train(xg_new, trainTask)
+        predict.xg=predict(xgmodel, task=testTask)
+        gini=Gini(predict.xg$data$response)
+        submit7=data.frame(class = test$class, class_Status = predict.xg$data$response)
+        tab=table(submit7$class,submit7$class_Status)
+        clas=mean(submit7$class==submit7$class_Status)
+        
+      }
+      return(clas)
+      
+    }
+    
+    classif.model(law)
+  })
  
   
   
