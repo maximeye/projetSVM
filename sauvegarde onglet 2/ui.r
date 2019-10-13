@@ -13,6 +13,7 @@ library(FSelector)
 library(rpart)
 library(gbm)
 library(xgboost)
+library(ineq)
 set.seed(12345)
 
 shinyUI(fluidPage(
