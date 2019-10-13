@@ -104,7 +104,8 @@ set.seed(12345)
 
 ## Echantillon apprentissage pour faire tourner le svm plus rapidement
 
-taille_ech=175000
+#taille_ech=175000
+taille_ech=1000
 index=1:nrow(data)
 trainindex=sample(index,round(taille_ech*0.55))
 train=data[trainindex,]
