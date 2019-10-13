@@ -130,12 +130,12 @@ logistic=makeLearner("classif.logreg", predict.type="response")
 # Training the model
 model=train(logistic, trainTask)
 # Predicting on the test set
-pred=predict(model, testTask)
+pred1.test=predict(model, testTask)
 # Measuring the performance
-performance(pred, measures=acc)
+performance(pred1.test, measures=acc)
 # 0.9811746
 # Create submission file
-submit2=data.frame(class=test$class, class_Status=pred$data$response)
+submit2=data.frame(class=test$class, class_Status=pred1.test$data$response)
 table(submit2$class,submit2$class_Status)
 mean(submit2$class==submit2$class_Status)
 
@@ -143,9 +143,9 @@ mean(submit2$class==submit2$class_Status)
 # Training the model
 model=train(logistic, trainTask)
 # Predicting on a new dataset
-pred=predict(model, zozoTask)
+pred1.zozo=predict(model, zozoTask)
 # Create submission file
-submit2=data.frame(Class=zozo$Class, class_Status=pred$data$response)
+submit2=data.frame(Class=zozo$Class, class_Status=pred1.zozo$data$response)
 table(submit2$class,submit2$class_Status)
 mean(submit2$class==submit2$class_Status)
 
@@ -216,9 +216,9 @@ mean(submit3$class==submit3$class_Status)
 # Train the model
 tun.rpart=train(tun.tree, trainTask) #getLearnerModel(tun.rpart)
 # Make predictions on a a new dataset
-treetestpred=predict(tun.rpart, zozoTask)
+treezozopred=predict(tun.rpart, zozoTask)
 # Create a submission file
-submit3=data.frame(class=zozo$Class, class_Status=treetestpred$data$response)
+submit3=data.frame(class=zozo$Class, class_Status=treezozopred$data$response)
 table(submit3$class,submit3$class_Status)
 mean(submit3$class==submit3$class_Status)
 # 0.4168121
@@ -274,17 +274,17 @@ rf.tree=setHyperPars(rf, par.vals=list(ntree=157,mtry=9,nodesize=12))
 rforest=train(rf.tree, trainTask) # getLearnerModel(rforest)
 
 # Making some predictions on the test set
-rfmodel=predict(rforest, testTask)
+rfmodeltest=predict(rforest, testTask)
 # Submission file
-submit4=data.frame(class = test$class, class_Status=rfmodel$data$response)
+submit4=data.frame(class = test$class, class_Status=rfmodeltest$data$response)
 table(submit4$class,submit4$class_Status)
 mean(submit4$class==submit4$class_Status)
 # 0.9982222
 
 # Making some predictions on a new database
-rfmodel=predict(rforest, zozoTask)
+rfmodelzozo=predict(rforest, zozoTask)
 # Submission file
-submit4=data.frame(class = zozo$Class, class_Status=rfmodel$data$response)
+submit4=data.frame(class = zozo$Class, class_Status=rfmodelzozo$data$response)
 table(submit4$class,submit4$class_Status)
 mean(submit4$class==submit4$class_Status)
 
@@ -337,19 +337,19 @@ final_svm=setHyperPars(learner=learner, par.vals=list(type="C-classification", k
 svm.model=train(final_svm, trainTask)
 
 # Making some predictions on the test set
-predict.svm=predict(svm.model, testTask)
+predict.svm.test=predict(svm.model, testTask)
 
 # Submission file
-submit5=data.frame(class=test$class, class_status=predict.svm$data$response)
+submit5=data.frame(class=test$class, class_status=predict.svm.test$data$response)
 table(submit5$class,submit5$class_status)
 mean(submit5$class==submit5$class_status)
 # 0.999619 de bonne classif
 
 # Making some predictions on a new datset
-#predict.svm=predict(svm.model, zozoTask)
+#predict.svm.zozo=predict(svm.model, zozoTask)
 
 # Submission file
-#submit5=data.frame(class=zozo$Class, class_status=predict.svm$data$response)
+#submit5=data.frame(class=zozo$Class, class_status=predict.svm.zozo$data$response)
 #table(submit5$class,submit5$class_status)
 #mean(submit5$class==submit5$class_status)
 
@@ -411,17 +411,17 @@ final_gbm=setHyperPars(learner=g.gbm,
 to.gbm=train(final_gbm, trainTask)
 
 # Predicting on the test set
-pr.gbm=predict(to.gbm, testTask)
+pr.gbm.test=predict(to.gbm, testTask)
 # Submission file
-submit6=data.frame(class = test$class, class_Status = pr.gbm$data$response)
+submit6=data.frame(class = test$class, class_Status = pr.gbm.test$data$response)
 table(submit6$class,submit6$class_Status)
 mean(submit6$class==submit6$class_Status)
 # 0.9973016
 
 # Predicting on a new dataset
-pr.gbm=predict(to.gbm, zozoTask)
+pr.gbm.zozo=predict(to.gbm, zozoTask)
 # Submission file
-submit6=data.frame(class=zozo$Class, class_Status=pr.gbm$data$response)
+submit6=data.frame(class=zozo$Class, class_Status=pr.gbm.zozo$data$response)
 table(submit6$class,submit6$class_Status)
 mean(submit6$class==submit6$class_Status)
 # 0.3679474
@@ -480,18 +480,18 @@ xgmodel=train(xg_new, trainTask)
 
 
 # Predicting on the test set
-predict.xg=predict(xgmodel, task=testTask)
+predict.xg.test=predict(xgmodel, task=testTask)
 # Submission file
-submit7=data.frame(class = test$class, class_Status = predict.xg$data$response)
+submit7=data.frame(class = test$class, class_Status = predict.xg.test$data$response)
 table(submit7$class,submit7$class_Status)
 mean(submit7$class==submit7$class_Status)
 # 0.9989841
 
 
 # # Predicting on a new dataset
-predict.xg=predict(xgmodel, task=zozoTask)
+predict.xg.zozo=predict(xgmodel, task=zozoTask)
 # Submission file
-submit7=data.frame(class = zozo$Class, class_Status = predict.xg$data$response)
+submit7=data.frame(class = zozo$Class, class_Status = predict.xg.zozo$data$response)
 table(submit7$class,submit7$class_Status)
 mean(submit7$class==submit7$class_Status)
 
