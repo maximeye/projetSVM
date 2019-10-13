@@ -26,7 +26,7 @@ set.seed(12345)
 
 # Chargement de la table de donnees :
 
-# dat=read.csv("/Users/Maxime/Documents/Cours/Master/M2/S1/SVM/Docs Projet/creditcard.csv",header=T,sep=",")
+ dat=read.csv("/Users/Maxime/Documents/Cours/Master/M2/M2S1/SVM/Docs Projet/creditcard.csv",header=T,sep=",")
 dat=read.csv("C:/Users/kevas/Desktop/Cours/M2/Support_Vector_Machine/Dossier_SVM/creditcard.csv",header=T,sep=",")
 
 # On change le type de la variable de reponse "Class" (integer -> factor)
@@ -73,6 +73,8 @@ table(zozo$Class) # 284315 Class=0
 zozo=read.csv("C:/Users/kevas/Desktop/Cours/M2/Support_Vector_Machine/Dossier_SVM/newcreditcard.csv",header=T,sep=",")
 zozo=zozo[,c(-1,-17,-15,-27,-24,-28)] # suppression des var les moins importantes
 saveRDS(zozo,"C:/Users/kevas/Desktop/Cours/M2/Support_Vector_Machine/Dossier_SVM/newcreditcard.rds",compress=TRUE)
+saveRDS(zozo,"/Users/Maxime/Documents/Cours/Master/M2/M2S1/SVM/Docs Projet/creditcard.rds",compress=TRUE)
+
 
 
 
@@ -85,11 +87,13 @@ saveRDS(zozo,"C:/Users/kevas/Desktop/Cours/M2/Support_Vector_Machine/Dossier_SVM
 ######################################################################################################
 
 zozo=readRDS('C:/Users/kevas/Desktop/Cours/M2/Support_Vector_Machine/Dossier_SVM/newcreditcard.rds')
+zozo=readRDS('/Users/Maxime/Documents/Cours/Master/M2/M2S1/SVM/Docs Projet/creditcard.rds')
+
 zozo$Class=as.factor(zozo$Class)
 
 
 data=readRDS("C:/Users/kevas/Desktop/Cours/M2/Support_Vector_Machine/Dossier_SVM/projetSVM/new.rds")
-#data=readRDS("/Users/Maxime/Documents/Cours/Master/M2/M2S1/SVM/projetSVM/new.rds")
+data=readRDS("/Users/Maxime/Documents/Cours/Master/M2/M2S1/SVM/projetSVM/new.rds")
 data$class=as.factor(data$class)
 set.seed(12345)
 
