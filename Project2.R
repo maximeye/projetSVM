@@ -13,6 +13,7 @@ library(FSelector)
 library(rpart)
 library(gbm)
 library(xgboost)
+library(ineq)
 
 #paralléliser
 library(parallelMap)
