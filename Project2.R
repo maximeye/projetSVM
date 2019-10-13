@@ -58,8 +58,6 @@ saveRDS(data,"C:/Users/kevas/Desktop/Cours/M2/Support_Vector_Machine/Dossier_SVM
 
 
 
-
-
 zozo=read.table('C:/Users/kevas/Desktop/Cours/M2/Support_Vector_Machine/Dossier_SVM/creditcard.csv',header=T,sep=",")
 
 # On change le type de la variable de reponse "Class" (integer -> factor)
@@ -84,6 +82,7 @@ saveRDS(zozo,"C:/Users/kevas/Desktop/Cours/M2/Support_Vector_Machine/Dossier_SVM
 ######################################################################################################
 ################################## DEBUT #############################################################
 ######################################################################################################
+
 zozo=readRDS('C:/Users/kevas/Desktop/Cours/M2/Support_Vector_Machine/Dossier_SVM/newcreditcard.rds')
 zozo$Class=as.factor(zozo$Class)
 
@@ -92,7 +91,6 @@ data=readRDS("C:/Users/kevas/Desktop/Cours/M2/Support_Vector_Machine/Dossier_SVM
 #data=readRDS("/Users/Maxime/Documents/Cours/Master/M2/M2S1/SVM/projetSVM/new.rds")
 data$class=as.factor(data$class)
 set.seed(12345)
-
 
 
 
@@ -146,7 +144,6 @@ plotFilterValues(imp_feature, n.show=20)
 # Logistic regression
 logistic=makeLearner("classif.logreg", predict.type="prob")
 
-
 # Training the model
 model=train(logistic, trainTask)
 
@@ -165,32 +162,28 @@ plotROCCurves(roclog.test)
 
 
 # Training the model
-model=train(logistic, trainTask)
+#model=train(logistic, trainTask)
 # Predicting on a new dataset
-pred1.zozo=predict(model, zozoTask)
+#pred1.zozo=predict(model, zozoTask)
 # Create submission file
-submit2=data.frame(Class=zozo$Class, class_Status=pred1.zozo$data$response)
-table(submit2$class,submit2$class_Status)
-mean(submit2$class==submit2$class_Status)
+#submit2=data.frame(Class=zozo$Class, class_Status=pred1.zozo$data$response)
+#table(submit2$class,submit2$class_Status)
+#mean(submit2$class==submit2$class_Status)
 # Calculating the false/true positive rates on a new dataset & ploting ROC Curve
-roclog.zozo=generateThreshVsPerfData(pred1.zozo, measures = list(fpr, tpr, acc))
-plotROCCurves(roclog.zozo)
+#roclog.zozo=generateThreshVsPerfData(pred1.zozo, measures = list(fpr, tpr, acc))
+#plotROCCurves(roclog.zozo)
 
 
 
 ##############################################################################
-##########################   Decision Tree   #################################
+#############################   Decision Tree   ##############################
 ##############################################################################
-
-
-getParamSet("classif.rpart")
 
 # Making the decision tree
 tree=makeLearner("classif.rpart", predict.type="prob")
 
 # Set 3 fold cross validation
 set_cv=makeResampleDesc("CV", iters=3)
-
 
 # Searching for some hyperparameters
 dtparam=makeParamSet(
@@ -243,13 +236,13 @@ plotROCCurves(roc_dt.test)
 
 
 # Train the model
-tun.rpart=train(tun.tree, trainTask)
+#tun.rpart=train(tun.tree, trainTask)
 # Make predictions on a a new dataset
-treezozopred=predict(tun.rpart, zozoTask)
+#treezozopred=predict(tun.rpart, zozoTask)
 # Create a submission file
-submit3=data.frame(class=zozo$Class, class_Status=treezozopred$data$response)
-table(submit3$class,submit3$class_Status)
-mean(submit3$class==submit3$class_Status)
+#submit3=data.frame(class=zozo$Class, class_Status=treezozopred$data$response)
+#table(submit3$class,submit3$class_Status)
+#mean(submit3$class==submit3$class_Status)
 # 0.4168121
 # Calculating the false/true positive rates on a new dataset & ploting the ROC Curve
 #roc_dt.zozo = generateThreshVsPerfData(treezozopred, list(fpr, tpr, acc))
@@ -261,8 +254,6 @@ mean(submit3$class==submit3$class_Status)
 ##############################################################################
 ##########################   Random Forest   #################################
 ##############################################################################
-
-getParamSet("classif.randomForest")
 
 # Create a learner
 rf=makeLearner("classif.randomForest", predict.type="prob", par.vals=list(ntree=200, mtry=3))
@@ -315,11 +306,11 @@ plotROCCurves(rocrf.test)
 
 
 # Making some predictions on a new database
-rfmodelzozo=predict(rforest, zozoTask)
+#rfmodelzozo=predict(rforest, zozoTask)
 # Submission file
-submit4=data.frame(class = zozo$Class, class_Status=rfmodelzozo$data$response)
-table(submit4$class,submit4$class_Status)
-mean(submit4$class==submit4$class_Status)
+#submit4=data.frame(class = zozo$Class, class_Status=rfmodelzozo$data$response)
+#table(submit4$class,submit4$class_Status)
+#mean(submit4$class==submit4$class_Status)
 
 
 
@@ -349,8 +340,8 @@ param.svm=makeParamSet(
   makeLogicalLearnerParam(id="shrinking"))
 
 # Searching the optimal parameters
-svm.res=tuneParams(learner, validateTask, resampling=cv.svm,
-                   par.set=param.svm, control=ctrl,measures=acc)
+# svm.res=tuneParams(learner, validateTask, resampling=cv.svm,
+#                   par.set=param.svm, control=ctrl,measures=acc)
 
 # Parameters optimal values
 # svm.res$x
@@ -420,7 +411,7 @@ gbm_par=makeParamSet(
 # shrinkage is the regulation parameter which dictates how fast / slow the algorithm should move
 
 ### Tuning parameters
-#tune_gbm=tuneParams(learner = g.gbm, task = validateTask,resampling = set_cv,
+# tune_gbm=tuneParams(learner = g.gbm, task = validateTask,resampling = set_cv,
 #                    measures = acc,par.set = gbm_par,control = rancontrol)
 
 
@@ -447,21 +438,19 @@ pr.gbm.test=predict(to.gbm, testTask)
 submit6=data.frame(class = test$class, class_Status = pr.gbm.test$data$response)
 table(submit6$class,submit6$class_Status)
 mean(submit6$class==submit6$class_Status)
-# 0.9973016
+# 0.9973333
 rocgbm.test=generateThreshVsPerfData(pr.gbm.test, measures = list(fpr, tpr, acc))
 plotROCCurves(rocgbm.test)
 
 
-# Train
-to.gbm.zozo=train(final_gbm, zozoTask)
-# Predicting on a new dataset
-pr.gbm.zozo=predict(to.gbm, zozoTask)
 
+# Predicting on a new dataset
+#pr.gbm.zozo=predict(to.gbm, zozoTask)
 # Submission file
-submit6=data.frame(class=zozo$Class, class_Status=pr.gbm.zozo$data$response)
-table(submit6$class,submit6$class_Status)
-mean(submit6$class==submit6$class_Status)
-# 0.5245201
+#submit6=data.frame(class=zozo$Class, class_Status=pr.gbm.zozo$data$response)
+#table(submit6$class,submit6$class_Status)
+#mean(submit6$class==submit6$class_Status)
+
 
 
 ##############################################################################
@@ -472,9 +461,6 @@ mean(submit6$class==submit6$class_Status)
 # XGBoost is a decision-tree-based ensemble Machine Learning algorithm
 # that uses a gradient boosting framework.
 
-
-# Loading XGBoost
-set.seed(12345)
 
 # Make learner with inital parameters
 xg_set=makeLearner("classif.xgboost", predict.type = "prob")
@@ -520,11 +506,21 @@ predict.xg.test=predict(xgmodel, task=testTask)
 submit7=data.frame(class = test$class, class_Status = predict.xg.test$data$response)
 table(submit7$class,submit7$class_Status)
 mean(submit7$class==submit7$class_Status)
-# 0.9991746
+# 0.9991429
 rocxgb.test=generateThreshVsPerfData(predict.xg.test, measures = list(fpr, tpr, acc))
 plotROCCurves(rocxgb.test)
 
 
 
-#stopper la parallélisation
+####################################################################################
+################### Comparing the Roc Curves for the test dataset ##################
+####################################################################################
+
+roc_compare=generateThreshVsPerfData(list(Logistic=pred1.test,Tree=treetestpred,
+                                          Random_Forest=rfmodeltest,SVM=predict.svm.test,
+                                          Gradient_Boosting=pr.gbm.test,XGBoost=predict.xg.test),
+                                          list(fpr, tpr))
+plotROCCurves(roc_compare)
+
+# Arrêter la parallélisation.
 parallelStop()
