@@ -22,20 +22,12 @@ shinyServer(function(input, output) {
   data=readRDS("/Users/Maxime/Documents/Cours/Master/M2/M2S1/SVM/projetSVM/new.rds")
   data$class=as.factor(data$class)
   set.seed(12345)
-  taille_ech=1000
-  index=1:nrow(data)
-  trainindex=sample(index,round(taille_ech*0.7))
-  train=data[trainindex,]
-  itest=sample(index,round(taille_ech*0.3))
-  test=data[itest,]
-  attach(train)
-  trainTask=makeClassifTask(data=train, target="class")
-  testTask=makeClassifTask(data=test, target="class")
-  trainTask=makeClassifTask(data=train,target="class", positive="1")
-  trainTask=normalizeFeatures(trainTask,method="standardize")
-  testTask=normalizeFeatures(testTask,method="standardize")
   
+
   
+  ###########################################################################
+  #############################     PARAMETRES
+  ###########################################################################
   
   
   output$minsplit = renderUI(
@@ -262,12 +254,27 @@ shinyServer(function(input, output) {
     "SVM: Gini coefficient"
     
   })
-  
+  ###########################################################################
+  #############################  GINI SVM
+  ###########################################################################
   output$i1=renderPrint({
     
     kernel=input$kernel
     cost=input$cost
     gamma=input$gamma
+    
+    taille_ech=input$n
+    index=1:nrow(data)
+    trainindex=sample(index,round(taille_ech*0.7))
+    train=data[trainindex,]
+    itest=sample(index,round(taille_ech*0.3))
+    test=data[itest,]
+    attach(train)
+    trainTask=makeClassifTask(data=train, target="class")
+    testTask=makeClassifTask(data=test, target="class")
+    trainTask=makeClassifTask(data=train,target="class", positive="1")
+    trainTask=normalizeFeatures(trainTask,method="standardize")
+    testTask=normalizeFeatures(testTask,method="standardize")
     
     gini.svm<- function(kernel,cost,gamma){
       
@@ -358,11 +365,28 @@ shinyServer(function(input, output) {
     "SVM: Confusion matrix"
     
   })
-  
+  ###########################################################################
+  ############################## MATRICE CONFUSION SVM
+  ###########################################################################
   output$i2=renderPrint({
     kernel=input$kernel
     cost=input$cost
     gamma=input$gamma
+    
+    
+    taille_ech=input$n
+    index=1:nrow(data)
+    trainindex=sample(index,round(taille_ech*0.7))
+    train=data[trainindex,]
+    itest=sample(index,round(taille_ech*0.3))
+    test=data[itest,]
+    attach(train)
+    trainTask=makeClassifTask(data=train, target="class")
+    testTask=makeClassifTask(data=test, target="class")
+    trainTask=makeClassifTask(data=train,target="class", positive="1")
+    trainTask=normalizeFeatures(trainTask,method="standardize")
+    testTask=normalizeFeatures(testTask,method="standardize")
+    
     
     table.svm=function(kernel,cost,gamma){
       if (input$kernel=='linear'){
@@ -452,10 +476,30 @@ shinyServer(function(input, output) {
     
   })
   
+  ###########################################################################
+  ##############################   % BONNE CLASSIF SVM
+  ###########################################################################
+  
   output$i3=renderPrint({
     kernel=input$kernel
     cost=input$cost
     gamma=input$gamma
+    
+    
+    taille_ech=input$n
+    index=1:nrow(data)
+    trainindex=sample(index,round(taille_ech*0.7))
+    train=data[trainindex,]
+    itest=sample(index,round(taille_ech*0.3))
+    test=data[itest,]
+    attach(train)
+    trainTask=makeClassifTask(data=train, target="class")
+    testTask=makeClassifTask(data=test, target="class")
+    trainTask=makeClassifTask(data=train,target="class", positive="1")
+    trainTask=normalizeFeatures(trainTask,method="standardize")
+    testTask=normalizeFeatures(testTask,method="standardize")
+    
+    
     mean.svm=function(kernel,cost,gamma){
       if (input$kernel=='linear'){
         getParamSet("classif.svm")
@@ -548,8 +592,27 @@ shinyServer(function(input, output) {
     
   })
   
+  ###########################################################################
+  ####G#######################  GINI MODEL SELECT
+  ###########################################################################
   output$i4=renderPrint({
     law=input$law
+    
+    
+    taille_ech=input$n
+    index=1:nrow(data)
+    trainindex=sample(index,round(taille_ech*0.7))
+    train=data[trainindex,]
+    itest=sample(index,round(taille_ech*0.3))
+    test=data[itest,]
+    attach(train)
+    trainTask=makeClassifTask(data=train, target="class")
+    testTask=makeClassifTask(data=test, target="class")
+    trainTask=makeClassifTask(data=train,target="class", positive="1")
+    trainTask=normalizeFeatures(trainTask,method="standardize")
+    testTask=normalizeFeatures(testTask,method="standardize")
+    
+    
     gini.model=function(law){
       
       if (input$law=='logit'){
@@ -687,8 +750,30 @@ shinyServer(function(input, output) {
     
   })
   
+  
+  ###########################################################################
+  ############################# MATRICE CONFUSION MODEL SELECT
+  ###########################################################################
+  
+  
   output$i5=renderPrint({
     law=input$law
+    
+    
+    taille_ech=input$n
+    index=1:nrow(data)
+    trainindex=sample(index,round(taille_ech*0.7))
+    train=data[trainindex,]
+    itest=sample(index,round(taille_ech*0.3))
+    test=data[itest,]
+    attach(train)
+    trainTask=makeClassifTask(data=train, target="class")
+    testTask=makeClassifTask(data=test, target="class")
+    trainTask=makeClassifTask(data=train,target="class", positive="1")
+    trainTask=normalizeFeatures(trainTask,method="standardize")
+    testTask=normalizeFeatures(testTask,method="standardize")
+    
+    
     matrix.model=function(law){
       
       if (input$law=='logit'){
@@ -824,8 +909,28 @@ shinyServer(function(input, output) {
     
   })
   
+  ###########################################################################
+  ################################ % BONNE CLASSIF MODEL SELECT
+  ###########################################################################
+  
   output$i6=renderPrint({
     law=input$law
+    
+    
+    taille_ech=input$n
+    index=1:nrow(data)
+    trainindex=sample(index,round(taille_ech*0.7))
+    train=data[trainindex,]
+    itest=sample(index,round(taille_ech*0.3))
+    test=data[itest,]
+    attach(train)
+    trainTask=makeClassifTask(data=train, target="class")
+    testTask=makeClassifTask(data=test, target="class")
+    trainTask=makeClassifTask(data=train,target="class", positive="1")
+    trainTask=normalizeFeatures(trainTask,method="standardize")
+    testTask=normalizeFeatures(testTask,method="standardize")
+    
+    
     classif.model=function(law){
       
       if (input$law=='logit'){
@@ -961,9 +1066,283 @@ shinyServer(function(input, output) {
   
   
   
+  output$t7 = renderText({
+    "ROC Curve comparison between the SVM and the selected model :"
+    
+  })
   
   
+  ###########################################################################
+  ######################### ROC COMPARATIF SVM - MODEL 
+  ###########################################################################
+  
+  output$roc1 <- renderPlot({
+    
+    kernel=input$kernel
+    cost=input$cost
+    gamma=input$gamma
+    law=input$law
+    
+    
+    taille_ech=input$n
+    index=1:nrow(data)
+    trainindex=sample(index,round(taille_ech*0.7))
+    train=data[trainindex,]
+    itest=sample(index,round(taille_ech*0.3))
+    test=data[itest,]
+    attach(train)
+    trainTask=makeClassifTask(data=train, target="class")
+    testTask=makeClassifTask(data=test, target="class")
+    trainTask=makeClassifTask(data=train,target="class", positive="1")
+    trainTask=normalizeFeatures(trainTask,method="standardize")
+    testTask=normalizeFeatures(testTask,method="standardize")
+    
+    
+    roc1=function(kernel,cost,gamma,law){
+      
+      if (input$law=='logit'){
+        getParamSet("classif.svm")
+        learner=makeLearner("classif.svm", predict.type="prob")
+        cv.svm=makeResampleDesc("CV", iters=3, stratify=TRUE)
+        ctrl=makeTuneControlRandom(maxit=3)
+        param.svm=makeParamSet(
+          makeDiscreteLearnerParam(id="type",values=c("C-classification", "nu-classification")),
+          makeDiscreteLearnerParam(id="kernel", values=c("linear", "polynomial", "radial", "sigmoid")),
+          makeNumericLearnerParam(id="cost", lower=1,upper=100, requires=quote(type == "C-classification")),
+          makeNumericLearnerParam(id="nu", lower=0,upper=1, requires=quote(type == "nu-classification")),
+          makeIntegerLearnerParam(id="degree", lower=1,upper=3 ,requires=quote(kernel == "polynomial")),
+          makeNumericLearnerParam(id="gamma", lower=2^-3,upper=1, requires=quote(kernel != "linear")),
+          makeLogicalLearnerParam(id="shrinking"))
+        final_svm=setHyperPars(learner=learner, par.vals=list(type="C-classification", kernel=kernel, cost=cost, gamma=gamma, shrinking=FALSE))
+        svm.model=train(final_svm, trainTask)
+        predict.svm=predict(svm.model, testTask)
+        submit5=data.frame(class=test$class, class_status=predict.svm$data$response)
+        matrix=table(submit5$class,submit5$class_status)
+        classif=mean(submit5$class==submit5$class_status)
+        ##
+        set.seed(12345)
+        logistic=makeLearner("classif.logreg", predict.type="prob")
+        model=train(logistic, trainTask)
+        pred=predict(model, testTask)
+        performance(pred, measures=acc)
+        gini=Gini(pred$data$response)
+        submit2=data.frame(class=test$class, class_Status=pred$data$response)
+        tab=table(submit2$class,submit2$class_Status)
+        clas= mean(submit2$class==submit2$class_Status)
+        roc_compare=generateThreshVsPerfData(list(SVM=predict.svm,Logistic=pred),
+                                             list(fpr, tpr))
+        ROC1=plotROCCurves(roc_compare)
+      }
+      if (input$law=='tree'){
+        set.seed(12345)
+        getParamSet("classif.svm")
+        learner=makeLearner("classif.svm", predict.type="prob")
+        cv.svm=makeResampleDesc("CV", iters=3, stratify=TRUE)
+        ctrl=makeTuneControlRandom(maxit=3)
+        param.svm=makeParamSet(
+          makeDiscreteLearnerParam(id="type",values=c("C-classification", "nu-classification")),
+          makeDiscreteLearnerParam(id="kernel", values=c("linear", "polynomial", "radial", "sigmoid")),
+          makeNumericLearnerParam(id="cost", lower=1,upper=100, requires=quote(type == "C-classification")),
+          makeNumericLearnerParam(id="nu", lower=0,upper=1, requires=quote(type == "nu-classification")),
+          makeIntegerLearnerParam(id="degree", lower=1,upper=3 ,requires=quote(kernel == "polynomial")),
+          makeNumericLearnerParam(id="gamma", lower=2^-3,upper=1, requires=quote(kernel != "linear")),
+          makeLogicalLearnerParam(id="shrinking"))
+        final_svm=setHyperPars(learner=learner, par.vals=list(type="C-classification", kernel=kernel, cost=cost, gamma=gamma, shrinking=FALSE))
+        svm.model=train(final_svm, trainTask)
+        predict.svm=predict(svm.model, testTask)
+        submit5=data.frame(class=test$class, class_status=predict.svm$data$response)
+        matrix=table(submit5$class,submit5$class_status)
+        classif=mean(submit5$class==submit5$class_status)
+        ##
+        minsplit=input$minsplit
+        minbucket=input$minbucket
+        cp=input$cp
+        getParamSet("classif.rpart")
+        tree=makeLearner("classif.rpart", predict.type="prob")
+        set_cv=makeResampleDesc("CV", iters=3)
+        dtparam=makeParamSet(
+          makeIntegerParam("minsplit", lower=5, upper=50),
+          makeIntegerParam("minbucket", lower=5, upper=50),
+          makeNumericParam("cp", lower=0.001, upper=0.5))
+        gridsearchcontrol=makeTuneControlGrid()
+        tun.tree=setHyperPars(tree, par.vals=list(minsplit=minsplit,minbucket=minbucket,cp=cp))
+        tun.rpart=train(tun.tree, trainTask)
+        treetestpred=predict(tun.rpart, testTask)
+        gini=Gini(treetestpred$data$response)
+        submit3=data.frame(class=test$class, class_Status=treetestpred$data$response)
+        tab=table(submit3$class,submit3$class_Status)
+        clas=mean(submit3$class==submit3$class_Status)
+        roc_compare=generateThreshVsPerfData(list(SVM=predict.svm,Tree=treetestpred),
+                                             list(fpr, tpr))
+        ROC1=plotROCCurves(roc_compare)
+        
+      }
+      if (input$law=='rf'){
+        set.seed(12345)
+        ntree=input$ntree
+        nodesize=input$nodesize
+        mtry=input$mtry
+        getParamSet("classif.svm")
+        learner=makeLearner("classif.svm", predict.type="prob")
+        cv.svm=makeResampleDesc("CV", iters=3, stratify=TRUE)
+        ctrl=makeTuneControlRandom(maxit=3)
+        param.svm=makeParamSet(
+          makeDiscreteLearnerParam(id="type",values=c("C-classification", "nu-classification")),
+          makeDiscreteLearnerParam(id="kernel", values=c("linear", "polynomial", "radial", "sigmoid")),
+          makeNumericLearnerParam(id="cost", lower=1,upper=100, requires=quote(type == "C-classification")),
+          makeNumericLearnerParam(id="nu", lower=0,upper=1, requires=quote(type == "nu-classification")),
+          makeIntegerLearnerParam(id="degree", lower=1,upper=3 ,requires=quote(kernel == "polynomial")),
+          makeNumericLearnerParam(id="gamma", lower=2^-3,upper=1, requires=quote(kernel != "linear")),
+          makeLogicalLearnerParam(id="shrinking"))
+        final_svm=setHyperPars(learner=learner, par.vals=list(type="C-classification", kernel=kernel, cost=cost, gamma=gamma, shrinking=FALSE))
+        svm.model=train(final_svm, trainTask)
+        predict.svm=predict(svm.model, testTask)
+        submit5=data.frame(class=test$class, class_status=predict.svm$data$response)
+        matrix=table(submit5$class,submit5$class_status)
+        classif=mean(submit5$class==submit5$class_status)
+        
+        getParamSet("classif.randomForest")
+        rf=makeLearner("classif.randomForest", predict.type="prob", par.vals=list(ntree=200, mtry=3))
+        rf$par.vals=list(importance=TRUE)
+        rf_param=makeParamSet(
+          makeIntegerParam("ntree",lower=50,upper=200),
+          makeIntegerParam("mtry",lower=5,upper=20),
+          makeIntegerParam("nodesize", lower=10, upper=26))
+        rancontrol=makeTuneControlRandom(maxit=10)
+        set_cv=makeResampleDesc("CV", iters=3)
+        rf.tree=setHyperPars(rf, par.vals=list(ntree=ntree,mtry=mtry,nodesize=nodesize))
+        rforest=train(rf.tree, trainTask) 
+        rfmodel=predict(rforest, testTask)
+        gini=Gini(rfmodel$data$response)
+        submit4=data.frame(class = test$class, class_Status=rfmodel$data$response)
+        tab=table(submit4$class,submit4$class_Status)
+        clas= mean(submit4$class==submit4$class_Status)
+        
+        roc_compare=generateThreshVsPerfData(list(SVM=predict.svm,Random_forest=rfmodel),
+                                             list(fpr, tpr))
+        ROC1=plotROCCurves(roc_compare)
+        
+        
+      }
+      if (input$law=='gb'){
+        set.seed(12345)
+        ntrees=input$n.trees
+        interaction=input$interaction
+        minobsinnode=input$minobsinnode
+        schrinkage=input$schrinkage
+        getParamSet("classif.svm")
+        learner=makeLearner("classif.svm", predict.type="prob")
+        cv.svm=makeResampleDesc("CV", iters=3, stratify=TRUE)
+        ctrl=makeTuneControlRandom(maxit=3)
+        param.svm=makeParamSet(
+          makeDiscreteLearnerParam(id="type",values=c("C-classification", "nu-classification")),
+          makeDiscreteLearnerParam(id="kernel", values=c("linear", "polynomial", "radial", "sigmoid")),
+          makeNumericLearnerParam(id="cost", lower=1,upper=100, requires=quote(type == "C-classification")),
+          makeNumericLearnerParam(id="nu", lower=0,upper=1, requires=quote(type == "nu-classification")),
+          makeIntegerLearnerParam(id="degree", lower=1,upper=3 ,requires=quote(kernel == "polynomial")),
+          makeNumericLearnerParam(id="gamma", lower=2^-3,upper=1, requires=quote(kernel != "linear")),
+          makeLogicalLearnerParam(id="shrinking"))
+        final_svm=setHyperPars(learner=learner, par.vals=list(type="C-classification", kernel=kernel, cost=cost, gamma=gamma, shrinking=FALSE))
+        svm.model=train(final_svm, trainTask)
+        predict.svm=predict(svm.model, testTask)
+        submit5=data.frame(class=test$class, class_status=predict.svm$data$response)
+        matrix=table(submit5$class,submit5$class_status)
+        classif=mean(submit5$class==submit5$class_status)
+        
+        getParamSet("classif.gbm")
+        g.gbm=makeLearner("classif.gbm", predict.type="prob")
+        rancontrol=makeTuneControlRandom(maxit=5)
+        set_cv=makeResampleDesc("CV",iters=3)
+        gbm_par=makeParamSet(
+          makeDiscreteParam("distribution", values="bernoulli"),
+          makeIntegerParam("n.trees", lower=100, upper=500),
+          makeIntegerParam("interaction.depth", lower = 2, upper=10),
+          makeIntegerParam("n.minobsinnode", lower=10, upper=80),
+          makeNumericParam("shrinkage",lower=0.01, upper=1))
+        final_gbm=setHyperPars(learner=g.gbm,
+                               par.vals=list(distribution="bernoulli", n.trees=ntrees,
+                                             interaction.depth=interaction, n.minobsinnode=minobsinnode,
+                                             shrinkage=schrinkage))
+        to.gbm=train(final_gbm, trainTask)
+        pr.gbm=predict(to.gbm, testTask)
+        gini=Gini(pr.gbm$data$response)
+        submit6=data.frame(class = test$class, class_Status = pr.gbm$data$response)
+        tab=table(submit6$class,submit6$class_Status)
+        clas= mean(submit6$class==submit6$class_Status)
+        
+        roc_compare=generateThreshVsPerfData(list(SVM=predict.svm,Gradient_boosting=pr.gbm),
+                                             list(fpr, tpr))
+        ROC1=plotROCCurves(roc_compare)
+        
+        
+        
+      }
+      if (input$law=='xgb'){
+        set.seed(12345)
+        nround=input$nround
+        maxdepth=input$maxdepth
+        lambda=input$lambda
+        eta=input$eta
+        subsample=input$subsample
+        minchildweight=input$minchildweight
+        colsamplebytree=input$colsamplebytree
+        getParamSet("classif.svm")
+        learner=makeLearner("classif.svm", predict.type="prob")
+        cv.svm=makeResampleDesc("CV", iters=3, stratify=TRUE)
+        ctrl=makeTuneControlRandom(maxit=3)
+        param.svm=makeParamSet(
+          makeDiscreteLearnerParam(id="type",values=c("C-classification", "nu-classification")),
+          makeDiscreteLearnerParam(id="kernel", values=c("linear", "polynomial", "radial", "sigmoid")),
+          makeNumericLearnerParam(id="cost", lower=1,upper=100, requires=quote(type == "C-classification")),
+          makeNumericLearnerParam(id="nu", lower=0,upper=1, requires=quote(type == "nu-classification")),
+          makeIntegerLearnerParam(id="degree", lower=1,upper=3 ,requires=quote(kernel == "polynomial")),
+          makeNumericLearnerParam(id="gamma", lower=2^-3,upper=1, requires=quote(kernel != "linear")),
+          makeLogicalLearnerParam(id="shrinking"))
+        final_svm=setHyperPars(learner=learner, par.vals=list(type="C-classification", kernel=kernel, cost=cost, gamma=gamma, shrinking=FALSE))
+        svm.model=train(final_svm, trainTask)
+        predict.svm=predict(svm.model, testTask)
+        submit5=data.frame(class=test$class, class_status=predict.svm$data$response)
+        matrix=table(submit5$class,submit5$class_status)
+        classif=mean(submit5$class==submit5$class_status)
+        
+        getParamSet("classif.xgboost")
+        xg_set=makeLearner("classif.xgboost", predict.type = "prob")
+        xg_set$par.vals=list(objective = "binary:logistic",
+                             eval_metric = "error",
+                             nrounds = 250)
+        xg_ps=makeParamSet(
+          makeIntegerParam("nrounds",lower=200,upper=500),
+          makeIntegerParam("max_depth",lower=3,upper=20),
+          makeNumericParam("lambda",lower=0.55,upper=0.60),
+          makeNumericParam("eta", lower = 0.001, upper = 0.5),
+          makeNumericParam("subsample", lower = 0.10, upper = 0.80),
+          makeNumericParam("min_child_weight",lower=1,upper=5),
+          makeNumericParam("colsample_bytree",lower = 0.2,upper = 0.8))
+        rancontrol=makeTuneControlRandom(maxit=5)
+        set_cv=makeResampleDesc("CV",iters=3)
+        xg_new=setHyperPars(learner=xg_set, par.vals=list(nrounds=nround,max_depth=maxdepth,lambda=lambda,eta=eta,subsample=subsample,min_child_weight=minchildweight,colsample_bytree=colsamplebytree))
+        xgmodel=train(xg_new, trainTask)
+        predict.xg=predict(xgmodel, task=testTask)
+        gini=Gini(predict.xg$data$response)
+        submit7=data.frame(class = test$class, class_Status = predict.xg$data$response)
+        tab=table(submit7$class,submit7$class_Status)
+        clas=mean(submit7$class==submit7$class_Status)
+        
+        roc_compare=generateThreshVsPerfData(list(SVM=predict.svm,Xgboost=predict.xg),
+                                             list(fpr, tpr))
+        ROC1=plotROCCurves(roc_compare)
+      }
+      return(ROC1)
+    }
+    
+    
+    roc1(kernel,cost,gamma,law)
+    
+  })
+  ###########################################################################
+  ################################## ROC GLOBALE ZOZO
+  ###########################################################################
   
   
-  
+
 })

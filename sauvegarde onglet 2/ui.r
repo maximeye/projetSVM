@@ -63,11 +63,11 @@ shinyUI(fluidPage(
       
       
       ################ sample size
-      
+     
       selectInput("kernel",
                   "SVM Kernel",
                   choices = list("Linear"='linear',"Radial Basis"="radial","Polynomial"='polynomial',"Sigmoid"='sigmoid')),
-      
+      sliderInput(inputId='n', label='Sample size (The larger the size chosen, the longer the processing time will be)',min=1000,max=30000,value=1000,step=100),
       sliderInput(inputId='cost', label='C',min=1,max=100,value=25.8,step=0.1),
       sliderInput(inputId='gamma', label='Gamma',min=0,max=1,value=0.573,step=0.001)
 
@@ -95,10 +95,9 @@ shinyUI(fluidPage(
           verbatimTextOutput("i5"),
           textOutput("t6"),
           verbatimTextOutput("i6"),
+          textOutput("t7"),
 
-  
- 
-    plotOutput("roc")
+    plotOutput("roc1")
 )
   )
   
