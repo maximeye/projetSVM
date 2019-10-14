@@ -33,7 +33,7 @@ shinyServer(function(input, output) {
      
    })
    output$dim <- renderPrint({
-     taille_ech=5000
+     taille_ech=10
      index=1:nrow(data)
      trainindex=sample(index,round(taille_ech*0.7))
      train=data[trainindex,]
@@ -54,7 +54,7 @@ shinyServer(function(input, output) {
    })
    
    output$name <- renderPlot({   
-     taille_ech=5000
+     taille_ech=10
      index=1:nrow(data)
      trainindex=sample(index,round(taille_ech*0.7))
      train=data[trainindex,]
@@ -756,10 +756,8 @@ shinyServer(function(input, output) {
          
          
          getParamSet("classif.xgboost")
-         xg_set=makeLearner("classif.xgboost", predict.type = "response")
-         xg_set$par.vals=list(objective = "binary:logistic",
-                              eval_metric = "error",
-                              nrounds = 250)
+         xg_set=makeLearner("classif.xgboost", predict.type = "prob", nrounds=250,eval_metric = "error",objective = "binary:logistic")
+         
          xg_ps=makeParamSet(
            makeIntegerParam("nrounds",lower=200,upper=500),
            makeIntegerParam("max_depth",lower=3,upper=20),
@@ -917,10 +915,8 @@ shinyServer(function(input, output) {
          colsamplebytree=input$coltree
          
          getParamSet("classif.xgboost")
-         xg_set=makeLearner("classif.xgboost", predict.type = "response")
-         xg_set$par.vals=list(objective = "binary:logistic",
-                              eval_metric = "error",
-                              nrounds = 250)
+         xg_set=makeLearner("classif.xgboost", predict.type = "prob", nrounds=250,eval_metric = "error",objective = "binary:logistic")
+         
          xg_ps=makeParamSet(
            makeIntegerParam("nrounds",lower=200,upper=500),
            makeIntegerParam("max_depth",lower=3,upper=20),
@@ -1074,10 +1070,8 @@ shinyServer(function(input, output) {
          colsamplebytree=input$coltree
          
          getParamSet("classif.xgboost")
-         xg_set=makeLearner("classif.xgboost", predict.type = "response")
-         xg_set$par.vals=list(objective = "binary:logistic",
-                              eval_metric = "error",
-                              nrounds = 250)
+         xg_set=makeLearner("classif.xgboost", predict.type = "prob", nrounds=250,eval_metric = "error",objective = "binary:logistic")
+         
          xg_ps=makeParamSet(
            makeIntegerParam("nrounds",lower=200,upper=500),
            makeIntegerParam("max_depth",lower=3,upper=20),

@@ -22,7 +22,6 @@ set.seed(12345)
 shinyUI(fluidPage(
   (navbarPage(title="Demonstrator : SVM performances",
               
-              # 1er onglet : Data presentation
               tabPanel("Data presentation",
                        
                        sidebarLayout(
@@ -41,7 +40,7 @@ shinyUI(fluidPage(
                        )
               ),
               
-              tabPanel("Comparison of SVM and another model",
+              tabPanel("Comparison between SVM and another model",
                          
                          sidebarLayout(
                            
@@ -50,13 +49,11 @@ shinyUI(fluidPage(
                            
                            
                            sidebarPanel(
-                             ################ model
                              fluidRow(
                                column(6, radioButtons("law", 
                                                       label = "Model to compare with SVM", 
                                                       choices = list("Logistic Regression"='logit',"Decision Tree" ='tree', 'Random Forest'='rf','Gradient Boosting'='gb', 'XGBoost'='xgb' ),
                                                       selected = 'logit')),
-                               ###model's parameters
                                column(6,'Parameters','',
                                       uiOutput("minsplit"),
                                       uiOutput("minbucket"),
@@ -80,13 +77,12 @@ shinyUI(fluidPage(
                              ),
                              
                              
-                             
-                             ################ sample size
+
                              
                              selectInput("kernel",
                                          "SVM Kernel",
                                          choices = list("Linear"='linear',"Radial Basis"="radial","Polynomial"='polynomial',"Sigmoid"='sigmoid')),
-                             sliderInput(inputId='n', label='Sample size (The larger the size chosen, the longer the processing time will be)',min=1000,max=30000,value=1000,step=100),
+                             sliderInput(inputId='n', label='Sample size (More the sample size is large, longer the process time will be )',min=1000,max=30000,value=1000,step=100),
                              sliderInput(inputId='cost', label='C',min=1,max=100,value=25.8,step=0.1),
                              sliderInput(inputId='gamma', label='Gamma',min=0,max=1,value=0.573,step=0.001)
                              
@@ -96,9 +92,7 @@ shinyUI(fluidPage(
                            ),
                            
                            
-                           
-                           
-                           # Show a plot of the generated distribution
+
                            mainPanel(
                              
                              textOutput("t1"),
@@ -132,7 +126,7 @@ shinyUI(fluidPage(
                 
                 sidebarLayout(
                   sidebarPanel(
-                    sliderInput(inputId='nn', label='Sample size (The larger the size chosen, the longer the processing time will be)',min=1000,max=30000,value=1000,step=100)
+                    sliderInput(inputId='nn', label='Sample size (More the sample size is large, longer the process time will be)',min=1000,max=30000,value=1000,step=100)
                     
                   ),
                   mainPanel(
