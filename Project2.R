@@ -26,7 +26,7 @@ set.seed(12345)
 
 # Chargement de la table de donnees :
 
- dat=read.csv("/Users/Maxime/Documents/Cours/Master/M2/M2S1/SVM/Docs Projet/creditcard.csv",header=T,sep=",")
+dat=read.csv("/Users/Maxime/Documents/Cours/Master/M2/M2S1/SVM/Docs Projet/creditcard.csv",header=T,sep=",")
 dat=read.csv("C:/Users/kevas/Desktop/Cours/M2/Support_Vector_Machine/Dossier_SVM/creditcard.csv",header=T,sep=",")
 
 # On change le type de la variable de reponse "Class" (integer -> factor)
