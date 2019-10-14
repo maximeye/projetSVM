@@ -61,44 +61,11 @@ saveRDS(data,"/Users/Maxime/Documents/Cours/Master/M2/M2S1/SVM/projetSVM/new.rds
 
 
 
-<<<<<<< HEAD
-=======
-zozo=read.table('C:/Users/kevas/Desktop/Cours/M2/Support_Vector_Machine/Dossier_SVM/creditcard.csv',header=T,sep=",")
-
-# On change le type de la variable de reponse "Class" (integer -> factor)
-zozo$Class=as.factor(zozo$Class)
-attach(zozo)
-
-write.csv(zozo,"C:/Users/kevas/Desktop/Cours/M2/Support_Vector_Machine/Dossier_SVM/newcreditcard.csv")
-table(zozo$Class) # 284315 Class=0
-                  # 492 Class=1
-
-# Chargement de la table reechantillonnee
-zozo=read.csv("C:/Users/kevas/Desktop/Cours/M2/Support_Vector_Machine/Dossier_SVM/newcreditcard.csv",header=T,sep=",")
-zozo=zozo[,c(-1,-17,-15,-27,-24,-28)] # suppression des var les moins importantes
-saveRDS(zozo,"C:/Users/kevas/Desktop/Cours/M2/Support_Vector_Machine/Dossier_SVM/newcreditcard.rds",compress=TRUE)
-saveRDS(zozo,"/Users/Maxime/Documents/Cours/Master/M2/M2S1/SVM/Docs Projet/creditcard.rds",compress=TRUE)
-
-
-
-
-
-
-
->>>>>>> 0971493dfc220a691b47853c0160f14f661388bf
-
 ######################################################################################################
 ################################## DEBUT #############################################################
 ######################################################################################################
 
-<<<<<<< HEAD
-=======
-zozo=readRDS('C:/Users/kevas/Desktop/Cours/M2/Support_Vector_Machine/Dossier_SVM/newcreditcard.rds')
-zozo=readRDS('/Users/Maxime/Documents/Cours/Master/M2/M2S1/SVM/Docs Projet/creditcard.rds')
 
-zozo$Class=as.factor(zozo$Class)
-
->>>>>>> 0971493dfc220a691b47853c0160f14f661388bf
 
 data=readRDS("C:/Users/kevas/Desktop/Cours/M2/Support_Vector_Machine/Dossier_SVM/projetSVM/new.rds")
 data=readRDS("/Users/Maxime/Documents/Cours/Master/M2/M2S1/SVM/projetSVM/new.rds")
@@ -469,7 +436,6 @@ rocxgb.test=generateThreshVsPerfData(predict.xg.test, measures = list(fpr, tpr, 
 plotROCCurves(rocxgb.test)
 
 
-pred.xgb=predict(xgmodel,task=zozoTask)
 
 
 
