@@ -179,63 +179,80 @@ summary {
 
 <h1 class="title toc-ignore">Notice</h1>
 <h4 class="author">ROBLIN Caroline, TELLIER Kevin, YE Maxime</h4>
-<h4 class="date">15 septembre 2019</h4>
+<h4 class="date">14 octobre 2019</h4>
 
 </div>
 
 
 <div id="data-presentation" class="section level3">
 <h3>Data presentation</h3>
-<p>The goal is to present the data credit cards by</p>
+<p>We first have the dimension of the data table : first the number of observation and after the number of the variables. We then made a significant test of the variables : first by information gain and after by chi-square test on each of the variables</p>
+</div>
+<div id="comparison-of-svm-and-another-model" class="section level3">
+<h3>comparison of SVM and another model</h3>
+<div id="inputs" class="section level4">
+<h4><strong>Inputs</strong></h4>
+<div id="model-to-compare-with-svm" class="section level5">
+<h5><em>Model to compare with svm</em></h5>
+<p>you can compare the SVM with :</p>
 <ul>
-<li>dimension</li>
-<li>name of variables</li>
-<li>and some statistics.</li>
+<li>Logistic Regression</li>
+<li>Decision Tree</li>
+<li>Random Forest</li>
+<li>Gradient Boosting</li>
+<li>XGBoost</li>
+</ul>
+<p>you have just to select the model with you would compare. Parameters of this model are already optimal</p>
+</div>
+<div id="svm-kernel" class="section level5">
+<h5><em>SVM Kernel</em></h5>
+<p>you can select your choice into the type of kernel :</p>
+<ul>
+<li>Linear</li>
+<li>Polynomial</li>
+<li>Radial Basis</li>
+<li>Sigmoid</li>
+</ul>
+<p>the best kernel is selected by default, and is the linear with optimate cost and gamma given by default but as a reminder if you would change that : C optimal is 25.8 and gamma optimal is 0.573</p>
+</div>
+<div id="sample-size-the-larger-the-size-chosenthe-longer-the-processing-time-will-be" class="section level5">
+<h5><em>Sample size (the larger the size chosen,the longer the processing time will be)</em></h5>
+<p>For more rapidity is in 1,000 observationsin the begining, but you can vary that with the cursor</p>
+</div>
+<div id="c" class="section level5">
+<h5><em>C</em></h5>
+</div>
+<div id="gamma" class="section level5">
+<h5><em>Gamma</em></h5>
+</div>
+<div id="outputs" class="section level5">
+<h5><strong>Outputs</strong></h5>
+<p>you could observe following</p>
+<ul>
+<li>SVM : Gini coefficient</li>
+<li>SVM : confusion matrix</li>
+<li>SVM : good classification rate</li>
+<li>Selected model : Gini coefficient</li>
+<li>Selected model : Confusion matrix</li>
+<li>Selected model : good classification rate</li>
+<li>ROC Curve comparison between the SVM abd the selected model</li>
 </ul>
 </div>
-<div id="description-of-svm" class="section level3">
-<h3>Description of SVM</h3>
-<p>Here, we have an example of support vector machine with a little sample. you can select your choice into the type of kernel :</p>
-<ul>
-<li><em>linear</em></li>
-<li><em>polynomial</em></li>
-<li><em>radial basis</em></li>
-<li><em>sigmoid</em></li>
-</ul>
-<p>and after choosing parameters which you need, you have to push the button submit to display the results.</p>
 </div>
-<div id="svm" class="section level3">
-<h3>SVM</h3>
-<p>In this section you can observe the application of support vector machine into the sample It’s possible to change parameters in default and submit after.<br />
-You can choice :</p>
-<ol style="list-style-type: decimal">
-<li><strong>the kernel : </strong></li>
-</ol>
-<p>You can select into : * <em>linear</em> * <em>polynomial</em> * <em>radial basis</em> * <em>sigmoid</em></p>
-<ol start="2" style="list-style-type: decimal">
-<li><strong>degree : </strong></li>
-</ol>
-<p>You can enter the number or choose it with the arrows.</p>
-<ol start="3" style="list-style-type: decimal">
-<li><strong>b : </strong></li>
-</ol>
-<p>You can enter the number or choose it with the arrows.</p>
-<ol start="4" style="list-style-type: decimal">
-<li><strong>C : </strong></li>
-</ol>
-<p>You can choose C by moving the cursor.</p>
 </div>
-<div id="comparison" class="section level3">
-<h3>comparison</h3>
-<p>It’s to compare the support vector machine with others models one at a time.<br />
-You can select the type of model :</p>
-<ul>
-<li><em>logistic regression</em></li>
-<li><em>linear discriminant analysis</em></li>
-<li><em>quadratic discriminant analysis</em></li>
-</ul>
-<p>We observe the contingency table and the percent of good predections of the choosen model. At the final we have the comparison of the percent of good prediction with the SVM model chooses compare to the percent of good prediction with the model selected.</p>
-<p>The conclusion of this app is :</p>
+<div id="comparison-of-each-models-performance---roc-curve" class="section level3">
+<h3>Comparison of each model’s performance - ROC Curve</h3>
+<div id="inputs-1" class="section level4">
+<h4><strong>Inputs</strong></h4>
+<div id="sample-size-the-larger-the-size-chosenthe-longer-the-processing-time-will-be-1" class="section level5">
+<h5><em>Sample size (the larger the size chosen,the longer the processing time will be)</em></h5>
+<p>For more rapidity is in 1,000 observationsin the begining, but you can vary that with the cursor</p>
+</div>
+<div id="outputs-1" class="section level5">
+<h5><strong>Outputs</strong></h5>
+<p>You could observe the ROC Curve for each models with optimal parameters in the same graphic, and you can remark that it isn’t easy to choose the best model regardless of the sample size because of the crossing.</p>
+</div>
+</div>
 </div>
 
 

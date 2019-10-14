@@ -13,64 +13,66 @@ knitr::opts_chunk$set(echo = TRUE)
     
 ### Data presentation
 
-The goal is to present the data credit cards by 
-
-* dimension
-* name of variables
-* and some statistics.
+We first have the dimension of the data table : first the number of observation and after the number of the variables.
+We then made a significant test of the variables : first by information gain and after by chi-square test on each of the variables
 
 
-###Description of SVM
+###comparison of SVM and another model
 
-Here, we have an example of support vector machine with a little sample.
+####__Inputs__
+
+#####_Model to compare with svm_
+you can compare the SVM with :
+
+* Logistic Regression
+* Decision Tree
+* Random Forest
+* Gradient Boosting
+* XGBoost
+
+you have just to select the model with you would compare. Parameters of this model are already optimal
+
+
+#####_SVM Kernel_
 you can select your choice into the type of kernel :
 
-* _linear_
-* _polynomial_
-* _radial basis_
-* _sigmoid_
+* Linear
+* Polynomial
+* Radial Basis
+* Sigmoid  
 
-and after choosing parameters which you need, you have to push the button submit to display the results.
+the best kernel is selected by default, and is the linear with optimate cost and gamma given by default but as a reminder if you would change that : C optimal is 25.8 and gamma optimal is 0.573
 
-###SVM
+#####_Sample size (the larger the size chosen,the longer the processing time will be)_
 
-In this section you can observe the application of support vector machine into the sample
-It's possible to change parameters in default and submit after.  
-You can choice : 
+For more rapidity is in 1,000 observationsin the begining, but you can vary that with the cursor
 
-1. __the kernel : __
+#####_C_
 
-You can select into : 
-* _linear_
-* _polynomial_
-* _radial basis_
-* _sigmoid_
-
-2. __degree : __
-
-You can enter the number or choose it with the arrows.
-
-3. __b : __
-
-You can enter the number or choose it with the arrows.
-
-4. __C : __
-
-You can choose C by moving the cursor.
+#####_Gamma_
 
 
-###comparison
+#####__Outputs__
+you could observe following
 
-It's to compare the support vector machine with others models one at a time.  
-You can select the type of model :
-
-* _logistic regression_
-* _linear discriminant analysis_
-* _quadratic discriminant analysis_
-
-We observe the contingency table and the percent of good predections of the choosen model.
-At the final we have the comparison of the percent of good prediction with the SVM model chooses compare to the percent of good prediction with the model selected.
-
-The conclusion of this app is : 
+* SVM : Gini coefficient
+* SVM : confusion matrix
+* SVM : good classification rate
+* Selected model : Gini coefficient
+* Selected model : Confusion matrix
+* Selected model : good classification rate
+* ROC Curve comparison between the SVM abd the selected model
 
 
+
+###Comparison of each model's performance - ROC Curve
+
+####__Inputs__
+
+#####_Sample size (the larger the size chosen,the longer the processing time will be)_
+
+For more rapidity is in 1,000 observationsin the begining, but you can vary that with the cursor
+
+#####__Outputs__
+
+You could observe the ROC Curve for each models with optimal parameters in the same graphic, and you can remark that it isn't easy to choose the best model regardless of the sample size because of the crossing. 
