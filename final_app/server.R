@@ -33,7 +33,7 @@ shinyServer(function(input, output) {
      
    })
    output$dim <- renderPrint({
-     taille_ech=10
+     taille_ech=5000
      index=1:nrow(data)
      trainindex=sample(index,round(taille_ech*0.7))
      train=data[trainindex,]
@@ -54,7 +54,7 @@ shinyServer(function(input, output) {
    })
    
    output$name <- renderPlot({   
-     taille_ech=10
+     taille_ech=5000
      index=1:nrow(data)
      trainindex=sample(index,round(taille_ech*0.7))
      train=data[trainindex,]
