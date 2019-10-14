@@ -54,8 +54,10 @@ table(new$data$class) # 284315 Class=0
 #data=read.csv("C:/Users/kevas/Desktop/Cours/M2/Support_Vector_Machine/Dossier_SVM/projetSVM/new.csv",header=T,sep=",")
 
 data=read.csv("C:/Users/kevas/Desktop/projetSVM/new.csv",header=T,sep=",")
+data=read.csv("/Users/Maxime/Documents/Cours/Master/M2/M2S1/SVM/Docs Projet/new.csv",header=T,sep=',')
 data=data[,c(-1,-17,-15,-27,-24,-28)] # suppression des var les moins importantes
 saveRDS(data,"C:/Users/kevas/Desktop/Cours/M2/Support_Vector_Machine/Dossier_SVM/projetSVM/new.rds",compress=TRUE)
+saveRDS(data,"/Users/Maxime/Documents/Cours/Master/M2/M2S1/SVM/projetSVM/new.rds",compress=TRUE)
 
 
 
