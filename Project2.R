@@ -92,6 +92,8 @@ zozo=readRDS('C:/Users/kevas/Desktop/Cours/M2/Support_Vector_Machine/Dossier_SVM
 zozo=readRDS('/Users/Maxime/Documents/Cours/Master/M2/M2S1/SVM/Docs Projet/creditcard.rds')
 
 zozo$Class=as.factor(zozo$Class)
+zozo$class=zozo$Class
+zozo=zozo[,-31]
 
 
 data=readRDS("C:/Users/kevas/Desktop/Cours/M2/Support_Vector_Machine/Dossier_SVM/projetSVM/new.rds")
@@ -122,13 +124,13 @@ attach(train)
 trainTask=makeClassifTask(data=train, target="class")
 testTask=makeClassifTask(data=test, target="class")
 validateTask=makeClassifTask(data=validate, target="class")
-zozoTask=makeClassifTask(data=zozo, target="Class")
+zozoTask=makeClassifTask(data=zozo, target="class")
 
 # Let's consider the positive class as 1
 trainTask=makeClassifTask(data=train,target="class", positive="1")
 testTask=makeClassifTask(data=test,target="class", positive="1")
 validateTask=makeClassifTask(data=validate,target="class", positive="1")
-zozoTask=makeClassifTask(data=zozo,target="Class", positive="1")
+zozoTask=makeClassifTask(data=zozo,target="class", positive="1")
 
 # Let's normalize the variables
 trainTask=normalizeFeatures(trainTask,method="standardize")
@@ -517,6 +519,9 @@ mean(submit7$class==submit7$class_Status)
 # 0.9991429
 rocxgb.test=generateThreshVsPerfData(predict.xg.test, measures = list(fpr, tpr, acc))
 plotROCCurves(rocxgb.test)
+
+
+pred.xgb=predict(xgmodel,task=zozoTask)
 
 
 
