@@ -123,7 +123,7 @@ shinyServer(function(input, output) {
       }
     })
   
-  output$interaction_d = renderUI(
+  output$n.trees = renderUI(
     {
       if (input$law=='gb')
       {
@@ -1227,9 +1227,9 @@ shinyServer(function(input, output) {
       if (input$law=='gb'){
         set.seed(12345)
         ntrees=input$n.trees
-        interaction=input$interaction_d
+        interaction=input$interaction
         minobsinnode=input$minobsinnode
-        schrinkage=input$schrink
+        schrinkage=input$schrinkage
         getParamSet("classif.svm")
         learner=makeLearner("classif.svm", predict.type="prob")
         cv.svm=makeResampleDesc("CV", iters=3, stratify=TRUE)
@@ -1284,8 +1284,8 @@ shinyServer(function(input, output) {
         lambda=input$lambda
         eta=input$eta
         subsample=input$subsample
-        minchildweight=input$minweight
-        colsamplebytree=input$coltree
+        minchildweight=input$minchildweight
+        colsamplebytree=input$colsamplebytree
         getParamSet("classif.svm")
         learner=makeLearner("classif.svm", predict.type="prob")
         cv.svm=makeResampleDesc("CV", iters=3, stratify=TRUE)
