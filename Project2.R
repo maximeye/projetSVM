@@ -29,7 +29,7 @@ set.seed(12345)
  dat=read.csv("/Users/Maxime/Documents/Cours/Master/M2/M2S1/SVM/Docs Projet/creditcard.csv",header=T,sep=",")
 dat=read.csv("C:/Users/kevas/Desktop/Cours/M2/Support_Vector_Machine/Dossier_SVM/creditcard.csv",header=T,sep=",")
 
-# On change le type de la variable de reponse "class" (integer -> factor)
+# On change le type de la variable de reponse "Class" (integer -> factor)
 dat$Class=as.factor(dat$Class)
 attach(dat)
 
@@ -64,11 +64,11 @@ saveRDS(data,"/Users/Maxime/Documents/Cours/Master/M2/M2S1/SVM/projetSVM/new.rds
 zozo=read.table('C:/Users/kevas/Desktop/Cours/M2/Support_Vector_Machine/Dossier_SVM/creditcard.csv',header=T,sep=",")
 
 # On change le type de la variable de reponse "Class" (integer -> factor)
-zozo$class=as.factor(zozo$class)
+zozo$Class=as.factor(zozo$Class)
 attach(zozo)
 
 write.csv(zozo,"C:/Users/kevas/Desktop/Cours/M2/Support_Vector_Machine/Dossier_SVM/newcreditcard.csv")
-table(zozo$class) # 284315 Class=0
+table(zozo$Class) # 284315 Class=0
                   # 492 Class=1
 
 # Chargement de la table reechantillonnee
@@ -91,9 +91,7 @@ saveRDS(zozo,"/Users/Maxime/Documents/Cours/Master/M2/M2S1/SVM/Docs Projet/credi
 zozo=readRDS('C:/Users/kevas/Desktop/Cours/M2/Support_Vector_Machine/Dossier_SVM/newcreditcard.rds')
 zozo=readRDS('/Users/Maxime/Documents/Cours/Master/M2/M2S1/SVM/Docs Projet/creditcard.rds')
 
-zozo$class=as.factor(zozo$class)
-zozo$class=zozo$class
-zozo=zozo[,-31]
+zozo$Class=as.factor(zozo$Class)
 
 
 data=readRDS("C:/Users/kevas/Desktop/Cours/M2/Support_Vector_Machine/Dossier_SVM/projetSVM/new.rds")
@@ -124,13 +122,13 @@ attach(train)
 trainTask=makeClassifTask(data=train, target="class")
 testTask=makeClassifTask(data=test, target="class")
 validateTask=makeClassifTask(data=validate, target="class")
-zozoTask=makeClassifTask(data=zozo, target="class")
+zozoTask=makeClassifTask(data=zozo, target="Class")
 
 # Let's consider the positive class as 1
 trainTask=makeClassifTask(data=train,target="class", positive="1")
 testTask=makeClassifTask(data=test,target="class", positive="1")
 validateTask=makeClassifTask(data=validate,target="class", positive="1")
-zozoTask=makeClassifTask(data=zozo,target="class", positive="1")
+zozoTask=makeClassifTask(data=zozo,target="Class", positive="1")
 
 # Let's normalize the variables
 trainTask=normalizeFeatures(trainTask,method="standardize")
@@ -176,7 +174,7 @@ plotROCCurves(roclog.test)
 # Predicting on a new dataset
 #pred1.zozo=predict(model, zozoTask)
 # Create submission file
-#submit2=data.frame(Class=zozo$class, class_Status=pred1.zozo$data$response)
+#submit2=data.frame(Class=zozo$Class, class_Status=pred1.zozo$data$response)
 #table(submit2$class,submit2$class_Status)
 #mean(submit2$class==submit2$class_Status)
 # Calculating the false/true positive rates on a new dataset & ploting ROC Curve
@@ -250,7 +248,7 @@ plotROCCurves(roc_dt.test)
 # Make predictions on a a new dataset
 #treezozopred=predict(tun.rpart, zozoTask)
 # Create a submission file
-#submit3=data.frame(class=zozo$class, class_Status=treezozopred$data$response)
+#submit3=data.frame(class=zozo$Class, class_Status=treezozopred$data$response)
 #table(submit3$class,submit3$class_Status)
 #mean(submit3$class==submit3$class_Status)
 # 0.4168121
@@ -318,7 +316,7 @@ plotROCCurves(rocrf.test)
 # Making some predictions on a new database
 #rfmodelzozo=predict(rforest, zozoTask)
 # Submission file
-#submit4=data.frame(class = zozo$class, class_Status=rfmodelzozo$data$response)
+#submit4=data.frame(class = zozo$Class, class_Status=rfmodelzozo$data$response)
 #table(submit4$class,submit4$class_Status)
 #mean(submit4$class==submit4$class_Status)
 
@@ -382,7 +380,7 @@ plotROCCurves(rocsvm.test)
 #predict.svm.zozo=predict(svm.model, zozoTask)
 
 # Submission file
-#submit5=data.frame(class=zozo$class, class_status=predict.svm.zozo$data$response)
+#submit5=data.frame(class=zozo$Class, class_status=predict.svm.zozo$data$response)
 #table(submit5$class,submit5$class_status)
 #mean(submit5$class==submit5$class_status)
 
@@ -457,7 +455,7 @@ plotROCCurves(rocgbm.test)
 # Predicting on a new dataset
 #pr.gbm.zozo=predict(to.gbm, zozoTask)
 # Submission file
-#submit6=data.frame(class=zozo$class, class_Status=pr.gbm.zozo$data$response)
+#submit6=data.frame(class=zozo$Class, class_Status=pr.gbm.zozo$data$response)
 #table(submit6$class,submit6$class_Status)
 #mean(submit6$class==submit6$class_Status)
 
