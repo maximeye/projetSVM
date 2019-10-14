@@ -524,3 +524,6 @@ plotROCCurves(roc_compare)
 
 # Arrêter la parallélisation.
 parallelStop()
+
+
+### Compute AUC !!!
