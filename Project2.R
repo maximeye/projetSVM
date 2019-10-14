@@ -13,6 +13,7 @@ library(FSelector)
 library(rpart)
 library(gbm)
 library(xgboost)
+library(ineq)
 
 #paralléliser
 library(parallelMap)
@@ -25,7 +26,7 @@ set.seed(12345)
 
 # Chargement de la table de donnees :
 
-# dat=read.csv("/Users/Maxime/Documents/Cours/Master/M2/S1/SVM/Docs Projet/creditcard.csv",header=T,sep=",")
+ dat=read.csv("/Users/Maxime/Documents/Cours/Master/M2/M2S1/SVM/Docs Projet/creditcard.csv",header=T,sep=",")
 dat=read.csv("C:/Users/kevas/Desktop/Cours/M2/Support_Vector_Machine/Dossier_SVM/creditcard.csv",header=T,sep=",")
 
 # On change le type de la variable de reponse "Class" (integer -> factor)
@@ -53,19 +54,54 @@ table(new$data$class) # 284315 Class=0
 #data=read.csv("C:/Users/kevas/Desktop/Cours/M2/Support_Vector_Machine/Dossier_SVM/projetSVM/new.csv",header=T,sep=",")
 
 data=read.csv("C:/Users/kevas/Desktop/projetSVM/new.csv",header=T,sep=",")
+data=read.csv("/Users/Maxime/Documents/Cours/Master/M2/M2S1/SVM/Docs Projet/new.csv",header=T,sep=',')
 data=data[,c(-1,-17,-15,-27,-24,-28)] # suppression des var les moins importantes
 saveRDS(data,"C:/Users/kevas/Desktop/Cours/M2/Support_Vector_Machine/Dossier_SVM/projetSVM/new.rds",compress=TRUE)
+saveRDS(data,"/Users/Maxime/Documents/Cours/Master/M2/M2S1/SVM/projetSVM/new.rds",compress=TRUE)
 
 
 
+<<<<<<< HEAD
+=======
+zozo=read.table('C:/Users/kevas/Desktop/Cours/M2/Support_Vector_Machine/Dossier_SVM/creditcard.csv',header=T,sep=",")
+
+# On change le type de la variable de reponse "Class" (integer -> factor)
+zozo$Class=as.factor(zozo$Class)
+attach(zozo)
+
+write.csv(zozo,"C:/Users/kevas/Desktop/Cours/M2/Support_Vector_Machine/Dossier_SVM/newcreditcard.csv")
+table(zozo$Class) # 284315 Class=0
+                  # 492 Class=1
+
+# Chargement de la table reechantillonnee
+zozo=read.csv("C:/Users/kevas/Desktop/Cours/M2/Support_Vector_Machine/Dossier_SVM/newcreditcard.csv",header=T,sep=",")
+zozo=zozo[,c(-1,-17,-15,-27,-24,-28)] # suppression des var les moins importantes
+saveRDS(zozo,"C:/Users/kevas/Desktop/Cours/M2/Support_Vector_Machine/Dossier_SVM/newcreditcard.rds",compress=TRUE)
+saveRDS(zozo,"/Users/Maxime/Documents/Cours/Master/M2/M2S1/SVM/Docs Projet/creditcard.rds",compress=TRUE)
+
+
+
+
+
+
+
+>>>>>>> 0971493dfc220a691b47853c0160f14f661388bf
 
 ######################################################################################################
 ################################## DEBUT #############################################################
 ######################################################################################################
 
+<<<<<<< HEAD
+=======
+zozo=readRDS('C:/Users/kevas/Desktop/Cours/M2/Support_Vector_Machine/Dossier_SVM/newcreditcard.rds')
+zozo=readRDS('/Users/Maxime/Documents/Cours/Master/M2/M2S1/SVM/Docs Projet/creditcard.rds')
+
+zozo$Class=as.factor(zozo$Class)
+
+>>>>>>> 0971493dfc220a691b47853c0160f14f661388bf
 
 data=readRDS("C:/Users/kevas/Desktop/Cours/M2/Support_Vector_Machine/Dossier_SVM/projetSVM/new.rds")
-#data=readRDS("/Users/Maxime/Documents/Cours/Master/M2/M2S1/SVM/projetSVM/new.rds")
+data=readRDS("/Users/Maxime/Documents/Cours/Master/M2/M2S1/SVM/projetSVM/new.rds")
 data$class=as.factor(data$class)
 set.seed(12345)
 
@@ -75,7 +111,8 @@ set.seed(12345)
 
 ## Echantillon apprentissage pour faire tourner le svm plus rapidement
 
-taille_ech=175000
+#taille_ech=175000
+taille_ech=1000
 index=1:nrow(data)
 trainindex=sample(index,round(taille_ech*0.55))
 train=data[trainindex,]
@@ -430,6 +467,9 @@ mean(submit7$class==submit7$class_Status)
 # 0.9991746
 rocxgb.test=generateThreshVsPerfData(predict.xg.test, measures = list(fpr, tpr, acc))
 plotROCCurves(rocxgb.test)
+
+
+pred.xgb=predict(xgmodel,task=zozoTask)
 
 
 
