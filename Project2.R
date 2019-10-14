@@ -58,40 +58,16 @@ saveRDS(data,"C:/Users/kevas/Desktop/Cours/M2/Support_Vector_Machine/Dossier_SVM
 
 
 
-zozo=read.table('C:/Users/kevas/Desktop/Cours/M2/Support_Vector_Machine/Dossier_SVM/creditcard.csv',header=T,sep=",")
-
-# On change le type de la variable de reponse "Class" (integer -> factor)
-zozo$Class=as.factor(zozo$Class)
-attach(zozo)
-
-write.csv(zozo,"C:/Users/kevas/Desktop/Cours/M2/Support_Vector_Machine/Dossier_SVM/newcreditcard.csv")
-table(zozo$Class) # 284315 Class=0
-                  # 492 Class=1
-
-# Chargement de la table reechantillonnee
-zozo=read.csv("C:/Users/kevas/Desktop/Cours/M2/Support_Vector_Machine/Dossier_SVM/newcreditcard.csv",header=T,sep=",")
-zozo=zozo[,c(-1,-17,-15,-27,-24,-28)] # suppression des var les moins importantes
-saveRDS(zozo,"C:/Users/kevas/Desktop/Cours/M2/Support_Vector_Machine/Dossier_SVM/newcreditcard.rds",compress=TRUE)
-
-
-
-
-
-
 
 ######################################################################################################
 ################################## DEBUT #############################################################
 ######################################################################################################
-
-zozo=readRDS('C:/Users/kevas/Desktop/Cours/M2/Support_Vector_Machine/Dossier_SVM/newcreditcard.rds')
-zozo$Class=as.factor(zozo$Class)
 
 
 data=readRDS("C:/Users/kevas/Desktop/Cours/M2/Support_Vector_Machine/Dossier_SVM/projetSVM/new.rds")
 #data=readRDS("/Users/Maxime/Documents/Cours/Master/M2/M2S1/SVM/projetSVM/new.rds")
 data$class=as.factor(data$class)
 set.seed(12345)
-
 
 
 
@@ -114,19 +90,16 @@ attach(train)
 trainTask=makeClassifTask(data=train, target="class")
 testTask=makeClassifTask(data=test, target="class")
 validateTask=makeClassifTask(data=validate, target="class")
-zozoTask=makeClassifTask(data=zozo, target="Class")
 
 # Let's consider the positive class as 1
 trainTask=makeClassifTask(data=train,target="class", positive="1")
 testTask=makeClassifTask(data=test,target="class", positive="1")
 validateTask=makeClassifTask(data=validate,target="class", positive="1")
-zozoTask=makeClassifTask(data=zozo,target="Class", positive="1")
 
 # Let's normalize the variables
 trainTask=normalizeFeatures(trainTask,method="standardize")
 testTask=normalizeFeatures(testTask,method="standardize")
 validateTask=normalizeFeatures(validateTask,method="standardize")
-zozoTask=normalizeFeatures(zozoTask,method="standardize")
 
 # Feature importance of variables
 imp_feature=generateFilterValuesData(trainTask, method=c("information.gain","chi.squared"))
@@ -161,17 +134,6 @@ roclog.test=generateThreshVsPerfData(pred1.test, measures = list(fpr, tpr, acc))
 plotROCCurves(roclog.test)
 
 
-# Training the model
-#model=train(logistic, trainTask)
-# Predicting on a new dataset
-#pred1.zozo=predict(model, zozoTask)
-# Create submission file
-#submit2=data.frame(Class=zozo$Class, class_Status=pred1.zozo$data$response)
-#table(submit2$class,submit2$class_Status)
-#mean(submit2$class==submit2$class_Status)
-# Calculating the false/true positive rates on a new dataset & ploting ROC Curve
-#roclog.zozo=generateThreshVsPerfData(pred1.zozo, measures = list(fpr, tpr, acc))
-#plotROCCurves(roclog.zozo)
 
 
 
@@ -235,20 +197,6 @@ plotROCCurves(roc_dt.test)
 
 
 
-# Train the model
-#tun.rpart=train(tun.tree, trainTask)
-# Make predictions on a a new dataset
-#treezozopred=predict(tun.rpart, zozoTask)
-# Create a submission file
-#submit3=data.frame(class=zozo$Class, class_Status=treezozopred$data$response)
-#table(submit3$class,submit3$class_Status)
-#mean(submit3$class==submit3$class_Status)
-# 0.4168121
-# Calculating the false/true positive rates on a new dataset & ploting the ROC Curve
-#roc_dt.zozo = generateThreshVsPerfData(treezozopred, list(fpr, tpr, acc))
-#plotROCCurves(roc_dt.zozo)
-
-
 
 
 ##############################################################################
@@ -304,13 +252,6 @@ mean(submit4$class==submit4$class_Status)
 rocrf.test=generateThreshVsPerfData(rfmodeltest, measures = list(fpr, tpr, acc))
 plotROCCurves(rocrf.test)
 
-
-# Making some predictions on a new database
-#rfmodelzozo=predict(rforest, zozoTask)
-# Submission file
-#submit4=data.frame(class = zozo$Class, class_Status=rfmodelzozo$data$response)
-#table(submit4$class,submit4$class_Status)
-#mean(submit4$class==submit4$class_Status)
 
 
 
@@ -368,24 +309,10 @@ rocsvm.test=generateThreshVsPerfData(predict.svm.test, measures = list(fpr, tpr,
 plotROCCurves(rocsvm.test)
 
 
-# Making some predictions on a new datset
-#predict.svm.zozo=predict(svm.model, zozoTask)
-
-# Submission file
-#submit5=data.frame(class=zozo$Class, class_status=predict.svm.zozo$data$response)
-#table(submit5$class,submit5$class_status)
-#mean(submit5$class==submit5$class_status)
-
-
-#calculateROCMeasures(predict.svm)
-
-
-
-
 
 
 ##############################################################################
-##########################   Gradient Boosting Machines   ####################
+########################   Gradient Boosting Machines   ######################
 ##############################################################################
 
 
@@ -444,14 +371,6 @@ plotROCCurves(rocgbm.test)
 
 
 
-# Predicting on a new dataset
-#pr.gbm.zozo=predict(to.gbm, zozoTask)
-# Submission file
-#submit6=data.frame(class=zozo$Class, class_Status=pr.gbm.zozo$data$response)
-#table(submit6$class,submit6$class_Status)
-#mean(submit6$class==submit6$class_Status)
-
-
 
 ##############################################################################
 ################################   XGBoost   #################################
@@ -463,10 +382,12 @@ plotROCCurves(rocgbm.test)
 
 
 # Make learner with inital parameters
-xg_set=makeLearner("classif.xgboost", predict.type = "prob")
-xg_set$par.vals=list(objective = "binary:logistic",
-                     eval_metric = "error",
-                     nrounds = 250)
+xg_set=makeLearner("classif.xgboost", predict.type = "prob", nrounds=250,eval_metric = "error",objective = "binary:logistic")
+
+# eval_metric : Evaluation metrics for validation data, a default metric will be
+# assigned according to objective (rmse for regression, and error for classification,
+# mean average precision for ranking).
+
 
 # Defining parameters for tuning
 xg_ps=makeParamSet(
@@ -506,7 +427,7 @@ predict.xg.test=predict(xgmodel, task=testTask)
 submit7=data.frame(class = test$class, class_Status = predict.xg.test$data$response)
 table(submit7$class,submit7$class_Status)
 mean(submit7$class==submit7$class_Status)
-# 0.9991429
+# 0.9991746
 rocxgb.test=generateThreshVsPerfData(predict.xg.test, measures = list(fpr, tpr, acc))
 plotROCCurves(rocxgb.test)
 
