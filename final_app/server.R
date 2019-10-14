@@ -29,7 +29,7 @@ shinyServer(function(input, output) {
    set.seed(12345)
   
    output$txt <- renderText({
-     "Dimensions of the dataset we used : Numbers of observations & Numbers of variables"
+     "Dimensions of the dataset : Numbers of observations & Numbers of variables"
      
    })
    output$dim <- renderPrint({
@@ -49,7 +49,7 @@ shinyServer(function(input, output) {
    })
    
    output$txt1 <- renderText({
-     "Significance of each variables in the dataset : "
+     "Significance of each explanatory variables in the dataset : "
      
    })
    
