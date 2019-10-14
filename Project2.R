@@ -386,7 +386,8 @@ plotROCCurves(rocgbm.test)
 
 
 # Make learner with inital parameters
-xg_set=makeLearner("classif.xgboost", predict.type = "prob", nrounds=250,eval_metric = "error",objective = "binary:logistic")
+xg_set=makeLearner("classif.xgboost", predict.type = "prob",
+                   nrounds=250, eval_metric = "error", objective = "binary:logistic")
 
 # eval_metric : Evaluation metrics for validation data, a default metric will be
 # assigned according to objective (rmse for regression, and error for classification,
