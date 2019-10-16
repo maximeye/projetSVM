@@ -2,7 +2,10 @@
 title: "MANUAL"
 author: "ROBLIN Caroline, TELLIER Kevin, YE Maxime"
 date: '`r format(Sys.time(), "%d %B %Y")`'
-output: html_document
+output: 
+  html_document:
+    theme: journal
+    highlight: tango
 
 ---
 
@@ -11,7 +14,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 
-### Data presentation
+###Data presentation
 
 &nbsp;
 ```{r echo = FALSE,  out.width = "45%", fig.align = 'center', fig.cap = "Data presentation"}
@@ -23,7 +26,7 @@ We first have the dimension of the data table : first the number of observation 
 We then made a significant test of the variables : first by information gain and after by chi-square test on each of the variables.
 &nbsp;
 
-###Comparison of SVM and another model
+###Comparison of SVM and another model 
 
 &nbsp;
 ```{r echo = FALSE,  out.width = "45%", fig.align = 'center', fig.cap = "comparison of SVM and another model"}
@@ -114,7 +117,7 @@ You could observe following
 You have to be patient when you change the model selected to compare : Warning message can appear, but it's just for the loading time.
 &nbsp;
 
-###Comparison of each model's performance - ROC Curve
+###Comparison of each model's performance - ROC Curve 
 
 &nbsp;
 ```{r echo = FALSE,  out.width = "45%", fig.align = 'center', fig.cap = "Comparison of each model's performance - ROC Curve"}
@@ -133,5 +136,5 @@ For more rapidity is in 1,000 observations in the begining, but you can vary tha
 ####__Outputs__
 &nbsp;
 
-You can observe in the same graphic the ROC Curve for each models with optimal parameters , and you can remark that it isn't easy to choose the best model regardless of the sample size because of the crossing. It's better to refer to the gini index or the good classification rate we have in the previous tab.
+You can observe in the same graphic the ROC Curve for each models with optimal parameters , and you can remark that it isn't easy to choose the best model regardless of the sample size because of the crossing. It's better to refer to the gini index or the good classification rate we have in the previous tab.  
 &nbsp;
