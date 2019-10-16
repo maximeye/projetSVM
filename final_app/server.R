@@ -22,7 +22,7 @@ shinyServer(function(input, output) {
   
    file="https://raw.githubusercontent.com/maximeye/projetSVM/master/new.rds"
     data=readRDS(file=url(file))
-   
+
    
    #data=readRDS("/Users/Maxime/Documents/Cours/Master/M2/M2S1/SVM/projetSVM/new.rds")
    data$class=as.factor(data$class)
