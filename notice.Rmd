@@ -2,11 +2,11 @@
 title: "MANUAL"
 author: "ROBLIN Caroline, TELLIER Kevin, YE Maxime"
 date: '`r format(Sys.time(), "%d %B %Y")`'
-output: 
+output:
   html_document:
-    theme: journal
     highlight: tango
-
+    theme: journal
+  pdf_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -14,42 +14,97 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 
-###Data presentation
+###<span style="color: #127063">Data presentation</span>
 
 &nbsp;
 ```{r echo = FALSE,  out.width = "45%", fig.align = 'center', fig.cap = "Data presentation"}
 knitr::include_graphics("C:/Users/Caroline/Documents/M2/SVM/projet/projetSVM/onglet1.png")
 ```
 &nbsp;
+<p style="text-align:justify";>You have in the first place the dimension of the data table : first the number of observation and after the number of the variables.
+You then made a significant test of the variables : first by information gain and after by chi-square test on each of the variables.</p>
 
-We first have the dimension of the data table : first the number of observation and after the number of the variables.
-We then made a significant test of the variables : first by information gain and after by chi-square test on each of the variables.
+
+<p style="text-align:justify";>Before continuing it is important to note that for models to work properly,the  <span style="color: #127063">SMOTE</span> function was used to resample the sample that had rare default (when class value is 1). This function creating other default observations using the probability to determine the values of the other variables. So you go from 284315 with the value of class 0 and 492 with the value of class 1 to 284315 with the value of class 0 and 283884 with the value of class 1.</p>
 &nbsp;
 
-###Comparison of SVM and another model 
+###<span style="color: #127063">Comparison of SVM and another model</span>
 
 &nbsp;
 ```{r echo = FALSE,  out.width = "45%", fig.align = 'center', fig.cap = "comparison of SVM and another model"}
 knitr::include_graphics("C:/Users/Caroline/Documents/M2/SVM/projet/projetSVM/onglet2.png")
 ```
 &nbsp;
+<p style="text-align:justify";>Definition : the SVM model permit to partition the data creating a hyperplane who separate at best in 2 parts with the creation of a margin allowing sorting errrors. This model can use diferent kernel (linear, polynomial, radial basis, sigmoid).</p>
+&nbsp;
+```{r echo=FALSE,  out.width = "45%", fig.align = 'center'}
+  set.seed(10111)
+library(e1071)
+  x = matrix(rnorm(40), 20, 2)
+  y = rep(c(-1, 1), c(10, 10))
+  x[y == 1,] = x[y == 1,] + 1
+  dat = data.frame(x, y = as.factor(y))
+    svmfit = svm(y ~ ., data = dat, kernel = "linear", cost = 50, scale = FALSE) 
+  make.grid = function(x, n = 75) {
+    grange = apply(x, 2, range)
+    x1 = seq(from = grange[1,1], to = grange[2,1], length = n)
+    x2 = seq(from = grange[1,2], to = grange[2,2], length = n)
+    expand.grid(X1 = x1, X2 = x2)
+  }
+  xgrid = make.grid(x)
+  ygrid = predict(svmfit, xgrid)
+  beta = drop(t(svmfit$coefs)%*%x[svmfit$index,])
+  beta0 = svmfit$rho
+  
+     plot(xgrid, col = c("#A41743", "#127063")[as.numeric(ygrid)], pch = 20, cex = .2)
+      points(x, col = y+3, pch = 19)
+      points(x[svmfit$index,], pch = 5, cex = 2)
+      abline(beta0 / beta[2], -beta[1] / beta[2])
+      abline((beta0 - 1) / beta[2], -beta[1] / beta[2], lty = 2)
+      abline((beta0 + 1) / beta[2], -beta[1] / beta[2], lty = 2)
+```
+  
+&nbsp;
+<p style="text-align:justify";>Examples : for illustration you have examples of SVM with different kernel in the order what tey are stating earlier. you can observe that the SVM create a line who separate data in two parts, we have above points where realisations are 1 and below realisations wich are -1.</p>  
+&nbsp;
+```{r echo=FALSE,out.width = "45%", fig.align = 'center'}
 
-####__Inputs__
+
+      svmfit = svm(y ~ ., data = dat, kernel = "linear", cost = 50, scale = FALSE) 
+      plot(svmfit, dat,col = c("#A41743", "#127063"))
+      
+
+      svmfit = svm(y ~ ., data = dat, kernel = "polynomial", degree=3, coef0=0, cost = 50, scale = FALSE) 
+      plot(svmfit, dat, col = c("#A41743", "#127063"))
+
+      svmfit = svm(y ~ ., data = dat, kernel = "radial", cost = 50, scale = FALSE) 
+      plot(svmfit, dat, col = c("#A41743", "#127063"))
+
+      svmfit = svm(y ~ ., data = dat, kernel = "sigmoid",coef0=0, cost = 50, scale = FALSE) 
+      plot(svmfit, dat, col = c("#A41743", "#127063"))
+
+```
+  
+
 &nbsp;
 
-#####_Model to compare with svm_
+####<span style="color: #127063">__Inputs__</span>
 &nbsp;
-You have just to select the model with you would compare the SVM among:
+
+#####<span style="color: #127063">_Model to compare with svm_</span>
+&nbsp;
+<p style="text-align:justify";>You have just to select the model with you would compare the SVM among:
 
 * Logistic Regression
 * Decision Tree
 * Random Forest
 * Gradient Boosting
 * XGBoost
-
+</p>
 &nbsp;
 
-When you select another model of logistic regression, you have beside parameters than you can change if you would, but they are selected in a way to they are optimal when you choose your model. The list of parameters (with the default value as a reminder if you change that and want recover them) is :   
+
+<p style="text-align:justify";>When you select another model of logistic regression, you have beside parameters than you can change if you would, but they are selected in a way to they are optimal when you choose your model. The list of parameters (with the default value as a reminder if you change that and want recover them) is :   
 
 * for Decision Tree  
 Minsplit : represents the minimum number of observation in a node for a split to take place (5).  
@@ -72,39 +127,42 @@ Eta (0.278).
 Sub sample (0.56).  
 Min child weight (4).  
 Cold sample by tree (0.683).  
+</p>  
 &nbsp;
 
-#####_SVM Kernel_
+#####<span style="color: #127063">_SVM Kernel_</span>
 &nbsp;
-You can select your choice into the type of kernel :
+<p style="text-align:justify";>You can select your choice into the type of kernel :
 
 * Linear
 * Polynomial
 * Radial Basis
 * Sigmoid  
+</p>  
 
-The best kernel is selected by default, and is  linear. Optimal parameters are given but you can change that to observe the result.
-&nbsp;
 
-#####_Sample size (the larger the size chosen,the longer the processing time will be)_
-&nbsp;
-For more rapidity is in 1,000 observationsin the begining, but you can vary that with the cursor.
+<p style="text-align:justify";>The best kernel is selected by default, and is  linear. Optimal parameters are given but you can change that to observe the result.</p>
 &nbsp;
 
-#####_C_
+#####<span style="color: #127063">_Sample size (the larger the size chosen,the longer the processing time will be)_</span>
 &nbsp;
-As a reminder the optimal C  is 25.8.
-&nbsp;
-
-#####_Gamma_
-&nbsp;
-As a reminder the optimal gamma is 0.573.
+<p style="text-align:justify";>For more rapidity is in 1,000 observationsin the begining, but you can vary that with the cursor.</p>
 &nbsp;
 
-####__Outputs__
+#####<span style="color: #127063">_C_</span>
+&nbsp;
+<p style="text-align:justify";>As a reminder the optimal C  is 25.8.</p>
 &nbsp;
 
-You could observe following
+#####<span style="color: #127063">_Gamma_</span>
+&nbsp;
+<p style="text-align:justify";>As a reminder the optimal gamma is 0.573.</p>
+&nbsp;
+
+####<span style="color: #127063">__Outputs__</span>
+&nbsp;
+
+<p style="text-align:justify";>You could observe following
 
 * SVM : Gini coefficient
 * SVM : confusion matrix
@@ -112,12 +170,13 @@ You could observe following
 * Selected model : Gini coefficient
 * Selected model : Confusion matrix
 * Selected model : good classification rate
-* ROC Curve comparison between the SVM abd the selected model
+* ROC Curve comparison between the SVM abd the selected model</p>
 
-You have to be patient when you change the model selected to compare : Warning message can appear, but it's just for the loading time.
+
+<p style="text-align:justify";>You have to be patient when you change the model selected to compare : Warning message can appear, but it's just for the loading time.</p>
 &nbsp;
 
-###Comparison of each model's performance - ROC Curve 
+###<span style="color: #127063">Comparison of each model's performance - ROC Curve</span>
 
 &nbsp;
 ```{r echo = FALSE,  out.width = "45%", fig.align = 'center', fig.cap = "Comparison of each model's performance - ROC Curve"}
@@ -125,16 +184,16 @@ knitr::include_graphics("C:/Users/Caroline/Documents/M2/SVM/projet/projetSVM/ong
 ```
 &nbsp;
 
-####__Inputs__
+####<span style="color: #127063">__Inputs__</span>
 &nbsp;
 
-#####_Sample size (the larger the size chosen,the longer the processing time will be)_
+#####<span style="color: #127063">_Sample size (the larger the size chosen,the longer the processing time will be)_</span>
 &nbsp;
-For more rapidity is in 1,000 observations in the begining, but you can vary that with the cursor.
-&nbsp;
-
-####__Outputs__
+<p style="text-align:justify";>For more rapidity is in 1,000 observations in the begining, but you can vary that with the cursor.</p>
 &nbsp;
 
-You can observe in the same graphic the ROC Curve for each models with optimal parameters , and you can remark that it isn't easy to choose the best model regardless of the sample size because of the crossing. It's better to refer to the gini index or the good classification rate we have in the previous tab.  
+####<span style="color: #127063">__Outputs__</span>
+&nbsp;
+
+<p style="text-align:justify";>You can observe in the same graphic the ROC Curve for each models with optimal parameters , and you can remark that it isn't easy to choose the best model regardless of the sample size because of the crossing. It's better to refer to the gini index or the good classification rate we have in the previous tab.  </p>
 &nbsp;
