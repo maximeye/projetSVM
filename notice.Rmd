@@ -14,186 +14,153 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 
-###<span style="color: #127063">Data presentation</span>
-
-&nbsp;
-```{r echo = FALSE,  out.width = "45%", fig.align = 'center', fig.cap = "Data presentation"}
-knitr::include_graphics("C:/Users/Caroline/Documents/M2/SVM/projet/projetSVM/onglet1.png")
-```
-&nbsp;
-<p style="text-align:justify";>You have in the first place the dimension of the data table : first the number of observation and after the number of the variables.
-You then made a significant test of the variables : first by information gain and after by chi-square test on each of the variables.</p>
-
-
-<p style="text-align:justify";>Before continuing it is important to note that for models to work properly,the  <span style="color: #127063">SMOTE</span> function was used to resample the sample that had rare default (when class value is 1). This function creating other default observations using the probability to determine the values of the other variables. So you go from 284315 with the value of class 0 and 492 with the value of class 1 to 284315 with the value of class 0 and 283884 with the value of class 1.</p>
-&nbsp;
-
-###<span style="color: #127063">Comparison of SVM and another model</span>
-
-&nbsp;
-```{r echo = FALSE,  out.width = "45%", fig.align = 'center', fig.cap = "comparison of SVM and another model"}
-knitr::include_graphics("C:/Users/Caroline/Documents/M2/SVM/projet/projetSVM/onglet2.png")
-```
-&nbsp;
-<p style="text-align:justify";>Definition : the SVM model permit to partition the data creating a hyperplane who separate at best in 2 parts with the creation of a margin allowing sorting errrors. This model can use diferent kernel (linear, polynomial, radial basis, sigmoid).</p>
-&nbsp;
-```{r echo=FALSE,  out.width = "45%", fig.align = 'center'}
-  set.seed(10111)
-library(e1071)
-  x = matrix(rnorm(40), 20, 2)
-  y = rep(c(-1, 1), c(10, 10))
-  x[y == 1,] = x[y == 1,] + 1
-  dat = data.frame(x, y = as.factor(y))
-    svmfit = svm(y ~ ., data = dat, kernel = "linear", cost = 50, scale = FALSE) 
-  make.grid = function(x, n = 75) {
-    grange = apply(x, 2, range)
-    x1 = seq(from = grange[1,1], to = grange[2,1], length = n)
-    x2 = seq(from = grange[1,2], to = grange[2,2], length = n)
-    expand.grid(X1 = x1, X2 = x2)
-  }
-  xgrid = make.grid(x)
-  ygrid = predict(svmfit, xgrid)
-  beta = drop(t(svmfit$coefs)%*%x[svmfit$index,])
-  beta0 = svmfit$rho
-  
-     plot(xgrid, col = c("#A41743", "#127063")[as.numeric(ygrid)], pch = 20, cex = .2)
-      points(x, col = y+3, pch = 19)
-      points(x[svmfit$index,], pch = 5, cex = 2)
-      abline(beta0 / beta[2], -beta[1] / beta[2])
-      abline((beta0 - 1) / beta[2], -beta[1] / beta[2], lty = 2)
-      abline((beta0 + 1) / beta[2], -beta[1] / beta[2], lty = 2)
-```
-  
-&nbsp;
-<p style="text-align:justify";>Examples : for illustration you have examples of SVM with different kernel in the order what they are stating earlier. you can observe that the SVM create a line who separate data in two parts, we have above points where realisations are 1 and below realisations wich are -1.</p>  
-&nbsp;
-```{r echo=FALSE,out.width = "45%", fig.align = 'center'}
-
-
-      svmfit = svm(y ~ ., data = dat, kernel = "linear", cost = 50, scale = FALSE) 
-      plot(svmfit, dat,col = c("#A41743", "#127063"))
-      
-
-      svmfit = svm(y ~ ., data = dat, kernel = "polynomial", degree=3, coef0=0, cost = 50, scale = FALSE) 
-      plot(svmfit, dat, col = c("#A41743", "#127063"))
-
-      svmfit = svm(y ~ ., data = dat, kernel = "radial", cost = 50, scale = FALSE) 
-      plot(svmfit, dat, col = c("#A41743", "#127063"))
-
-      svmfit = svm(y ~ ., data = dat, kernel = "sigmoid",coef0=0, cost = 50, scale = FALSE) 
-      plot(svmfit, dat, col = c("#A41743", "#127063"))
-
-```
-  
+### <span style="color: #127063">Data presentation</span>
 
 &nbsp;
 
-####<span style="color: #127063">__Inputs__</span>
-&nbsp;
-
-#####<span style="color: #127063">_Model to compare with svm_</span>
-&nbsp;
-<p style="text-align:justify";>You have just to select the model with you would compare the SVM among:
-
-* Logistic Regression
-* Decision Tree
-* Random Forest
-* Gradient Boosting
-* XGBoost
-</p>
-&nbsp;
-
-
-<p style="text-align:justify";>When you select another model of logistic regression, you have beside parameters than you can change if you would, but they are selected in a way to they are optimal when you choose your model. The list of parameters (with the default value as a reminder if you change that and want recover them) is :   
-
-* for Decision Tree  
-Minsplit : represents the minimum number of observation in a node for a split to take place (5).  
-Minbucket : says the minimum number of observation I should keep in terminal nodes (15).  
-Cp : is the complexity parameter (0.001).  
-* for Random Forest
-Number of trees (157).  
-Node Size (12).  
-Mtry (9).  
-* For Gradient Boosting
-N trees (256).  
-interaction depth (5).  
-Min obs in node : refers to the minimum number of observations in a tree node (33).  
-shrinkage : is the regulation parameter which dictates how fast / slow the algorithm should move  (0.24).  
-* for XGBoost
-Nround (256).  
-Max depth (20).  
-Lambda (0.56).  
-Eta (0.278).  
-Sub sample (0.56).  
-Min child weight (4).  
-Cold sample by tree (0.683).  
-</p>  
-&nbsp;
-
-#####<span style="color: #127063">_SVM Kernel_</span>
-&nbsp;
-<p style="text-align:justify";>You can select your choice into the type of kernel :
-
-* Linear
-* Polynomial
-* Radial Basis
-* Sigmoid  
-</p>  
-
-
-<p style="text-align:justify";>The best kernel is selected by default, and is  linear. Optimal parameters are given but you can change that to observe the result.</p>
-&nbsp;
-
-#####<span style="color: #127063">_Sample size (the larger the size chosen,the longer the processing time will be)_</span>
-&nbsp;
-<p style="text-align:justify";>For more rapidity is in 1,000 observationsin the begining, but you can vary that with the cursor.</p>
-&nbsp;
-
-#####<span style="color: #127063">_C_</span>
-&nbsp;
-<p style="text-align:justify";>As a reminder the optimal C  is 25.8.</p>
-&nbsp;
-
-#####<span style="color: #127063">_Gamma_</span>
-&nbsp;
-<p style="text-align:justify";>As a reminder the optimal gamma is 0.573.</p>
-&nbsp;
-
-####<span style="color: #127063">__Outputs__</span>
-&nbsp;
-
-<p style="text-align:justify";>You could observe following
-
-* SVM : Gini coefficient
-* SVM : confusion matrix
-* SVM : good classification rate
-* Selected model : Gini coefficient
-* Selected model : Confusion matrix
-* Selected model : good classification rate
-* ROC Curve comparison between the SVM abd the selected model</p>
-
-
-<p style="text-align:justify";>You have to be patient when you change the model selected to compare : Warning message can appear, but it's just for the loading time.</p>
-&nbsp;
-
-###<span style="color: #127063">Comparison of each model's performance - ROC Curve</span>
+![Data presentation](onglet1.png)
 
 &nbsp;
-```{r echo = FALSE,  out.width = "45%", fig.align = 'center', fig.cap = "Comparison of each model's performance - ROC Curve"}
-knitr::include_graphics("C:/Users/Caroline/Documents/M2/SVM/projet/projetSVM/onglet3.png")
-```
+
+<p style="text-align:justify";>First, you have the dimension of the dataset. So we have 316295 observations and all the 26 the variables (the output & 25 explanatory variables).
+Then, you can observe two histograms, which represent on the left the importance of the 25 independant variables, given by the information gain ; and on the right side, the result of a significant test is shown, based on the Khi-2 test.</p>
+
+
+<p style="text-align:justify";>Before continuing, it's important to specify that for models to work properly, the  <span style="color: #127063">SMOTE</span> function was used to resample the original sample which had rare default (when the occurrence 1 is near to 1%).
+This function creates other observations with the 1 occurence, using the probability to determine the values of the other variables. So you go from 284315 with the value of class 0 and 492 with the value of class 1, to 284315 with the value of class 0 and 31980 with the value of class 1, because we smote to have 10% of the occurence 1.</p>
 &nbsp;
 
-####<span style="color: #127063">__Inputs__</span>
+### <span style="color: #127063">Comparison of SVM and another model</span>
+
 &nbsp;
 
-#####<span style="color: #127063">_Sample size (the larger the size chosen,the longer the processing time will be)_</span>
-&nbsp;
-<p style="text-align:justify";>For more rapidity is in 1,000 observations in the begining, but you can vary that with the cursor.</p>
+![Comparing of SVM with another Machine Learning model](onglet2.png)
+
 &nbsp;
 
-####<span style="color: #127063">__Outputs__</span>
+
+
+#### <span style="color: #127063">__Inputs__</span>
+
 &nbsp;
 
-<p style="text-align:justify";>You can observe in the same graphic the ROC Curve for each models with optimal parameters , and you can remark that it isn't easy to choose the best model regardless of the sample size because of the crossing. It's better to refer to the gini index or the good classification rate we have in the previous tab.  </p>
+
+##### <span style="color: #127063">_Model to compare with svm_</span>
+
+
+<p style="text-align:justify";>You just have to select the model you want to compare with the SVM, as the : </p>
+
+- Logistic Regression
+- Decision Tree
+- Random Forest
+- Gradient Boosting
+- XGBoost
+
+&nbsp;
+
+<p style="text-align:justify";>When you select another model than the logistic regression, beside,  you have parameters than you can change as you wish. They are selected in a way that they are optimal when you choose your model. The list of parameters (with the default value in brackets, as a reminder if you change that and want recover them) is : </p>
+
+* for the Decision Tree : </p>
+Minsplit : represents the minimum number of observations in a node for a split to take place (5) </p>
+Minbucket : says the minimum number of observations I should keep in terminal nodes (15) </p>
+Cp : it's the complexity parameter (0.001) </p>
+
+* for the Random Forest : </p>
+Number of trees (157) </p>  
+Node Size (12) </p>
+Mtry (9) </p>
+
+* for the Gradient Boosting : </p>
+N trees (256) </p>
+interaction depth (5) </p>
+Min obs in node : refers to the minimum number of observations in a tree node (33) </p>  
+shrinkage : it's the regulation parameter which dictates how fast / slow the algorithm should move  (0.24). </p>
+
+* for the XGBoost : </p>
+Nround (256) </p>
+Max depth (20) </p>
+Lambda (0.56) </p>
+Eta (0.278) </p>
+Sub sample (0.56) </p>
+Min child weight (4) </p>
+Cold sample by tree (0.683) </p>
+
+&nbsp;
+
+##### <span style="color: #127063">_SVM Kernel_</span>
+
+&nbsp;
+
+<p style="text-align:justify";>You can choose between those four kernels : </p>
+
+- Linear </p>
+- Polynomial </p>
+- Radial Basis </p>
+- Sigmoid </p>
+
+
+<p style="text-align:justify";>The best kernel is linear, and it's selected by default. The optimal parameters are given by default aswell, but you can change them as you like and observe the result.</p>
+
+&nbsp;
+
+##### <span style="color: #127063">_Sample size (the larger the size chosen, the longer the processing time will be)_</span>
+
+<p style="text-align:justify";>To get the results faster, the default observation value is set 1,000 observations, but you can aswell change it with the cursor.</p>
+
+&nbsp;
+
+##### <span style="color: #127063">_C_</span>
+
+<p style="text-align:justify";>As a reminder, the optimal C is 25.8. </p>
+
+&nbsp;
+
+##### <span style="color: #127063">_Gamma_</span>
+
+<p style="text-align:justify";>As a reminder, the optimal gamma is 0.573. </p>
+
+&nbsp;
+
+#### <span style="color: #127063">__Outputs__</span>
+
+&nbsp;
+
+<p style="text-align:justify";>You could observe the following : </p>
+
+- SVM : Gini coefficient </p>
+- SVM : confusion matrix </p>
+- SVM : good classification rate </p>
+- Selected model : Gini coefficient </p>
+- Selected model : Confusion matrix </p>
+- Selected model : good classification rate </p>
+- ROC Curve comparison between the SVM and the selected model </p>
+
+
+<p style="text-align:justify";>You have to be patient when you change the model selected to be compared to the SVM : <span style="color:red">Warning message can appear</span>, but it's just for the loading time. </p>
+&nbsp;
+
+### <span style="color: #127063">Comparison of each model's performance - ROC Curve</span>
+
+&nbsp;
+
+![Comparing model performance](onglet3.png)
+
+&nbsp;
+
+#### <span style="color: #127063">__Inputs__</span>
+
+&nbsp;
+
+##### <span style="color: #127063">_Sample size (the larger the size chosen,the longer the processing time will be)_</span>
+
+<p style="text-align:justify";>To get the results faster, the default observation value is set 1,000 observations, but you can aswell change it with the cursor.</p>
+
+&nbsp;
+
+#### <span style="color: #127063">__Outputs__</span>
+
+&nbsp;
+
+<p style="text-align:justify";>You can observe in the same graphic the ROC curve for each model, with the default optimal parameters.</p>
+You can see that it isn't easy to choose the best model regardless of the sample size because of the crossing. It's better to refer to the Gini index or the good classification rate we have in the previous tab.  </p>
 &nbsp;
