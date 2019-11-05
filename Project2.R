@@ -34,7 +34,7 @@ dat$Class=as.factor(dat$Class)
 attach(dat)
 
 # Reechantillonnage afin d'obtenir 50% de class = 0, 50% de class=1
-new=SMOTE(dat[,-31],dat[,31],K=3,dup_size = 0)
+new=SMOTE(dat[,-31],dat[,31],K=5,dup_size = 64)
 
 # Transformation du type de variable de class en factor (auparavant character)
 new$data$class=as.factor(new$data$class)
