@@ -44,6 +44,7 @@ This function creates other observations with the 1 occurence, using the probabi
 
 &nbsp;
 
+
 ##### <span style="color: #127063">_Model to compare with svm_</span>
 
 
@@ -56,7 +57,6 @@ This function creates other observations with the 1 occurence, using the probabi
 - XGBoost
 
 &nbsp;
-
 
 <p style="text-align:justify";>When you select another model than the logistic regression, beside,  you have parameters than you can change as you wish. They are selected in a way that they are optimal when you choose your model. The list of parameters (with the default value in brackets, as a reminder if you change that and want recover them) is : </p>
 

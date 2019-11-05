@@ -34,7 +34,7 @@ dat$Class=as.factor(dat$Class)
 attach(dat)
 
 # Reechantillonnage afin d'obtenir 50% de class = 0, 50% de class=1
-new=SMOTE(dat[,-31],dat[,31],K=3,dup_size = 0)
+new=SMOTE(dat[,-31],dat[,31],K=5,dup_size = 64)
 
 # Transformation du type de variable de class en factor (auparavant character)
 new$data$class=as.factor(new$data$class)
@@ -42,7 +42,7 @@ new$data$class=as.factor(new$data$class)
 
 # Exportation de la nouvelle table en CSV (optionnelle), utile pour ne pas avoir à refaire l'etape de rééchantillonnage à chaque fois.
 
-# write.csv(new$data,"/Users/Maxime/Documents/Cours/Master/M2/S1/SVM/Docs Projet/newdat.csv")
+ write.csv(new$data,"/Users/Maxime/Documents/Cours/Master/M2/S1/SVM/Docs Projet/newdat.csv")
 write.csv(new$data,"C:/Users/kevas/Desktop/Cours/M2/Support_Vector_Machine/Dossier_SVM/projetSVM/new.csv")
 table(new$data$class) # 284315 Class=0
                       # 283884 Class=1
@@ -57,7 +57,7 @@ data=read.csv("C:/Users/kevas/Desktop/projetSVM/new.csv",header=T,sep=",")
 data=read.csv("/Users/Maxime/Documents/Cours/Master/M2/M2S1/SVM/Docs Projet/new.csv",header=T,sep=',')
 data=data[,c(-1,-17,-15,-27,-24,-28)] # suppression des var les moins importantes
 saveRDS(data,"C:/Users/kevas/Desktop/Cours/M2/Support_Vector_Machine/Dossier_SVM/projetSVM/new.rds",compress=TRUE)
-saveRDS(data,"/Users/Maxime/Documents/Cours/Master/M2/M2S1/SVM/projetSVM/new.rds",compress=TRUE)
+saveRDS(new$data,"/Users/Maxime/Documents/Cours/Master/M2/M2S1/SVM/projetSVM/new.rds",compress=TRUE)
 
 
 
@@ -72,6 +72,7 @@ data=readRDS("/Users/Maxime/Documents/Cours/Master/M2/M2S1/SVM/projetSVM/new.rds
 data$class=as.factor(data$class)
 set.seed(12345)
 
+table(data$class)
 
 
 # Creation d'un echantillon d'apprentissage (55%), test (18%) & validation (27%) :
