@@ -65,7 +65,7 @@ library(e1071)
 ```
   
 &nbsp;
-<p style="text-align:justify";>Examples : for illustration you have examples of SVM with different kernel in the order what tey are stating earlier. you can observe that the SVM create a line who separate data in two parts, we have above points where realisations are 1 and below realisations wich are -1.</p>  
+<p style="text-align:justify";>Examples : for illustration you have examples of SVM with different kernel in the order what they are stating earlier. you can observe that the SVM create a line who separate data in two parts, we have above points where realisations are 1 and below realisations wich are -1.</p>  
 &nbsp;
 ```{r echo=FALSE,out.width = "45%", fig.align = 'center'}
 
