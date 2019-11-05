@@ -1,0 +1,135 @@
+---
+title: "Définitions & Informations about the methodology"
+author: "ROBLIN-TELLIER-YE"
+output: html_document
+---
+
+1. A brief description of Support Vector Machine (SVM) a supervised learning method
+
+The Support Vector Machine is an automatic supervised learning method, that can be used for regression or classification. 
+The SVM are most commonly used for classification.
+
+The principle of SVM is to determine a hyperplan which split the dataset into two classes. 
+
+```{r , echo=FALSE} 
+set.seed(10111)
+x = matrix(rnorm(40), 20, 2)
+y = rep(c(-1, 1), c(10, 10))
+x[y == 1,] = x[y == 1,] + 1
+#plot(x, col = y + 3, pch = 19)
+
+
+library(e1071)
+
+dat = data.frame(x, y = as.factor(y))
+svmfit = svm(y ~ ., data = dat, kernel = "linear", cost = 10, scale = FALSE)
+
+make.grid = function(x, n = 75) {
+  grange = apply(x, 2, range)
+  x1 = seq(from = grange[1,1], to = grange[2,1], length = n)
+  x2 = seq(from = grange[1,2], to = grange[2,2], length = n)
+  expand.grid(X1 = x1, X2 = x2)
+  
+  
+}
+xgrid = make.grid(x)
+
+ygrid = predict(svmfit, xgrid)
+a=plot(xgrid, col = c("red","blue")[as.numeric(ygrid)], pch = 20, cex = .2)
+points(x, col = y + 3, pch = 19)
+points(x[svmfit$index,], pch = 5, cex = 2)
+
+beta = drop(t(svmfit$coefs)%*%x[svmfit$index,])
+beta0 = svmfit$rho
+
+plot(xgrid, col = c("red", "blue")[as.numeric(ygrid)], pch = 20, cex = .2)
+points(x, col = y + 3, pch = 19)
+points(x[svmfit$index,], pch = 5, cex = 2)
+abline(beta0 / beta[2], -beta[1] / beta[2])
+abline((beta0 - 1) / beta[2], -beta[1] / beta[2], lty = 2)
+abline((beta0 + 1) / beta[2], -beta[1] / beta[2], lty = 2)
+
+```
+
+
+The points that are framed are called Support Vector. These cases are the closest points to the hyperplane. 
+
+The distance between the hyperplane and the closest points is called the margin. We want to determine a hyperplan and maximize the margin (larger the margins are, higher the rate of good classification will be for a new dataset).
+
+
+  
+
+
+
+2. Presentation of the different SVM kernels
+
+The SVM method use a linear classifier to solve a non linear problem, by enlarging the dimension of the representation space. This is called kernel trick. 
+
+There is the four common kernel used in SVM method : 
+
+Linear kernel :
+
+```{r echo=FALSE,out.width = "45%", fig.align = 'center'}
+      svmfit = svm(y ~ ., data = dat, kernel = "linear", cost = 50, scale = FALSE) 
+      plot(svmfit, dat,col = c("#A41743", "#127063"))
+```
+Radial Basis Function kernel :
+
+```{r echo=FALSE,out.width = "45%", fig.align = 'center'}
+      svmfit = svm(y ~ ., data = dat, kernel = "radial", cost = 50, scale = FALSE) 
+      plot(svmfit, dat, col = c("#A41743", "#127063"))
+```
+
+Polynomial kernel :
+
+```{r echo=FALSE,out.width = "45%", fig.align = 'center'}
+      svmfit = svm(y ~ ., data = dat, kernel = "polynomial", degree=3, coef0=0, cost = 50, scale = FALSE) 
+      plot(svmfit, dat, col = c("#A41743", "#127063"))
+```
+
+Sigmoid kernel :
+
+```{r echo=FALSE,out.width = "45%", fig.align = 'center'}
+      svmfit = svm(y ~ ., data = dat, kernel = "sigmoid",coef0=0, cost = 50, scale = FALSE) 
+      plot(svmfit, dat, col = c("#A41743", "#127063"))
+```
+
+
+
+
+3. Correction and adjustment made on the database
+
+Our initial database "creditcard.csv" contains 284 807 observations. 
+Among those observations, the dependant variable "Class" is equal to 0 (non fraud) for 284 315 observations and is equal to 1 (fraud) for 492 observations. 
+The interest event represent less than 1% in the data.
+We are facing to inbalanced data situation. 
+
+```{r , echo=FALSE} 
+   file="https://raw.githubusercontent.com/maximeye/projetSVM/master/creditcard.rds"
+    data=readRDS(file=url(file))
+    
+    table(data$Class) 
+```
+
+
+
+To solve this problem, we used the SMOTE method (Synthetic Minority Over-Sampling Technique).
+This method create artificial cases where the target is equal to 1 (interest event) using the caracteristics of the k nearest neighbors. 
+
+After appliying the SMOTE method, a new dataset is created with a proportion of 10% cases with fraud and 90% of non fraud (284 315 cases of non fraud and 31 980 of fraud).
+
+
+```{r , echo=FALSE} 
+   file="https://raw.githubusercontent.com/maximeye/projetSVM/master/new.rds"
+    data=readRDS(file=url(file))
+    
+    table(data$class) 
+```
+
+
+We split this new database in two parts : 
+- train : to build the model optimize the hyperparameters (about 70% of the data)
+- test : used to assess the model and use for comparison (30% of the data)
+
+
+

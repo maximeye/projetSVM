@@ -27,6 +27,10 @@ shinyServer(function(input, output) {
    #data=readRDS("/Users/Maxime/Documents/Cours/Master/M2/M2S1/SVM/projetSVM/new.rds")
    data$class=as.factor(data$class)
    set.seed(12345)
+   
+   
+   output$doc_to_display <- renderUI({
+      includeMarkdown("onglet1rmd.Rmd")})
   
    output$txt <- renderText({
      "Dimensions of the dataset : Numbers of observations & Numbers of variables"

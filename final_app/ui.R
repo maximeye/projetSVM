@@ -22,6 +22,10 @@ set.seed(12345)
 shinyUI(fluidPage(
   (navbarPage(title="Demonstrator : SVM performances",
               
+              tabPanel("Some definitions",
+                       uiOutput("doc_to_display")
+              ),
+              
               tabPanel("Data presentation",
                        
                        sidebarLayout(
