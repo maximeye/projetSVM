@@ -138,6 +138,9 @@ mean(submit2$class==submit2$class_Status)
 roclog.test=generateThreshVsPerfData(pred1.test, measures = list(fpr, tpr, acc))
 plotROCCurves(roclog.test)
 
+Gini=ineq(pred1.test,type = "Gini")
+Gini=Gini(pred1.test)
+
 
 
 
@@ -456,3 +459,6 @@ parallelStop()
 
 
 ### Compute AUC !!!
+
+
+

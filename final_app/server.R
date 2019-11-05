@@ -30,7 +30,7 @@ shinyServer(function(input, output) {
    
    
    output$doc_to_display <- renderUI({
-      includeMarkdown("onglet1rmd.Rmd")})
+      includeHTML("onglet1rmd.html")})
   
    output$txt <- renderText({
      "Dimensions of the dataset : Numbers of observations & Numbers of variables"
@@ -339,7 +339,7 @@ shinyServer(function(input, output) {
          final_svm=setHyperPars(learner=learner, par.vals=list(type="C-classification", kernel="linear", cost=cost, gamma=gamma, shrinking=TRUE))
          svm.model=train(final_svm, trainTask)
          predict.svm=predict(svm.model, testTask)
-         Gini=Gini(predict.svm$data$response)
+         Gini=Gini(predict.svm$data$prob.1)
        }
        else if (input$kernel=='radial'){
          getParamSet("classif.svm")
@@ -357,7 +357,7 @@ shinyServer(function(input, output) {
          final_svm=setHyperPars(learner=learner, par.vals=list(type="C-classification", kernel="radial", cost=cost, gamma=gamma, shrinking=TRUE))
          svm.model=train(final_svm, trainTask)
          predict.svm=predict(svm.model, testTask)
-         Gini=Gini(predict.svm$data$response)
+         Gini=Gini(predict.svm$data$prob.1)
        }
        else if (input$kernel=='polynomial'){
          getParamSet("classif.svm")
@@ -375,7 +375,7 @@ shinyServer(function(input, output) {
          final_svm=setHyperPars(learner=learner, par.vals=list(type="C-classification", kernel="polynomial", cost=cost, gamma=gamma, shrinking=TRUE))
          svm.model=train(final_svm, trainTask)
          predict.svm=predict(svm.model, testTask)
-         Gini=Gini(predict.svm$data$response)
+         Gini=Gini(predict.svm$data$prob.1)
        }
        else if (input$kernel=='sigmoid'){
          getParamSet("classif.svm")
@@ -393,7 +393,7 @@ shinyServer(function(input, output) {
          final_svm=setHyperPars(learner=learner, par.vals=list(type="C-classification", kernel="sigmoid", cost=cost, gamma=gamma, shrinking=TRUE))
          svm.model=train(final_svm, trainTask)
          predict.svm=predict(svm.model, testTask)
-         Gini=Gini(predict.svm$data$response)
+         Gini=Gini(predict.svm$data$prob.1)
        }
        return(Gini)
      }
@@ -667,6 +667,7 @@ shinyServer(function(input, output) {
          pred=predict(model, testTask)
          performance(pred, measures=acc)
          gini=Gini(pred$data$response)
+         gini=10*gini
          submit2=data.frame(class=test$class, class_Status=pred$data$response)
          tab=table(submit2$class,submit2$class_Status)
          clas= mean(submit2$class==submit2$class_Status)
@@ -689,6 +690,7 @@ shinyServer(function(input, output) {
          tun.rpart=train(tun.tree, trainTask)
          treetestpred=predict(tun.rpart, testTask)
          gini=Gini(treetestpred$data$response)
+         gini=10*gini
          submit3=data.frame(class=test$class, class_Status=treetestpred$data$response)
          tab=table(submit3$class,submit3$class_Status)
          clas=mean(submit3$class==submit3$class_Status)
@@ -713,6 +715,7 @@ shinyServer(function(input, output) {
          rforest=train(rf.tree, trainTask) 
          rfmodel=predict(rforest, testTask)
          gini=Gini(rfmodel$data$response)
+         gini=10*gini
          submit4=data.frame(class = test$class, class_Status=rfmodel$data$response)
          tab=table(submit4$class,submit4$class_Status)
          clas= mean(submit4$class==submit4$class_Status)
@@ -742,6 +745,7 @@ shinyServer(function(input, output) {
          to.gbm=train(final_gbm, trainTask)
          pr.gbm=predict(to.gbm, testTask)
          gini=Gini(pr.gbm$data$response)
+         gini=10*gini
          submit6=data.frame(class = test$class, class_Status = pr.gbm$data$response)
          tab=table(submit6$class,submit6$class_Status)
          clas= mean(submit6$class==submit6$class_Status)
@@ -775,7 +779,8 @@ shinyServer(function(input, output) {
          xg_new=setHyperPars(learner=xg_set, par.vals=list(nrounds=nround,max_depth=maxdepth,lambda=lambda,eta=eta,subsample=subsample,min_child_weight=minchildweight,colsample_bytree=colsamplebytree))
          xgmodel=train(xg_new, trainTask)
          predict.xg=predict(xgmodel, task=testTask)
-         gini=Gini(predict.xg$data$response)
+         gini=Gini(predict.xg$data$prob.1)
+         
          submit7=data.frame(class = test$class, class_Status = predict.xg$data$response)
          tab=table(submit7$class,submit7$class_Status)
          clas=mean(submit7$class==submit7$class_Status)
