@@ -3,12 +3,11 @@ title: "Informations about the methodology"
 output: html_document
 ---
  
-<script>
-   $(document).ready(function() {
-     $head = $('#header');
-     $head.prepend('<img src=\"MasterEsa.png\" style=\"float: right;width: 350px;\"/>')
-   });
-</script>
+```{r, echo=FALSE}
+htmltools::img(src = knitr::image_uri(file.path("MasterEsa.png")), 
+               alt = 'logo', 
+               style = 'position:absolute; top:0; right:0; padding:10px;')
+```
 
 
 <style type="text/css">
