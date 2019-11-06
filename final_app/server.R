@@ -31,6 +31,11 @@ shinyServer(function(input, output) {
    
    output$doc_to_display <- renderUI({
       includeHTML("onglet1rmd.html")})
+   
+   output$tab <- renderUI({
+         url <- a("User manual", href="https://mega.nz/#!TdlQDKaa!IpMkZYnvtzZML58jrf6AWiwYGlNJU04ybfM7yzPiURg")
+      tagList("Click to download:", url)
+   })
   
    output$txt <- renderText({
      "Dimensions of the dataset : Numbers of observations & Numbers of variables"
@@ -662,12 +667,11 @@ shinyServer(function(input, output) {
        
        if (input$law=='logit'){
          set.seed(12345)
-         logistic=makeLearner("classif.logreg", predict.type="response")
+         logistic=makeLearner("classif.logreg", predict.type="prob")
          model=train(logistic, trainTask)
          pred=predict(model, testTask)
          performance(pred, measures=acc)
-         gini=Gini(pred$data$response)
-         gini=10*gini
+         gini=Gini(pred$data$prob.1)
          submit2=data.frame(class=test$class, class_Status=pred$data$response)
          tab=table(submit2$class,submit2$class_Status)
          clas= mean(submit2$class==submit2$class_Status)
@@ -679,7 +683,7 @@ shinyServer(function(input, output) {
          cp=input$cp
          
          getParamSet("classif.rpart")
-         tree=makeLearner("classif.rpart", predict.type="response")
+         tree=makeLearner("classif.rpart", predict.type="prob")
          set_cv=makeResampleDesc("CV", iters=3)
          dtparam=makeParamSet(
            makeIntegerParam("minsplit", lower=5, upper=50),
@@ -689,8 +693,7 @@ shinyServer(function(input, output) {
          tun.tree=setHyperPars(tree, par.vals=list(minsplit=minsplit,minbucket=minbucket,cp=cp))
          tun.rpart=train(tun.tree, trainTask)
          treetestpred=predict(tun.rpart, testTask)
-         gini=Gini(treetestpred$data$response)
-         gini=10*gini
+         gini=Gini(treetestpred$data$prob.1)
          submit3=data.frame(class=test$class, class_Status=treetestpred$data$response)
          tab=table(submit3$class,submit3$class_Status)
          clas=mean(submit3$class==submit3$class_Status)
@@ -703,7 +706,7 @@ shinyServer(function(input, output) {
          mtry=input$mtry
          
          getParamSet("classif.randomForest")
-         rf=makeLearner("classif.randomForest", predict.type="response", par.vals=list(ntree=200, mtry=3))
+         rf=makeLearner("classif.randomForest", predict.type="prob", par.vals=list(ntree=200, mtry=3))
          rf$par.vals=list(importance=TRUE)
          rf_param=makeParamSet(
            makeIntegerParam("ntree",lower=50,upper=200),
@@ -714,8 +717,7 @@ shinyServer(function(input, output) {
          rf.tree=setHyperPars(rf, par.vals=list(ntree=ntree,mtry=mtry,nodesize=nodesize))
          rforest=train(rf.tree, trainTask) 
          rfmodel=predict(rforest, testTask)
-         gini=Gini(rfmodel$data$response)
-         gini=10*gini
+         gini=Gini(rfmodel$data$prob.1)
          submit4=data.frame(class = test$class, class_Status=rfmodel$data$response)
          tab=table(submit4$class,submit4$class_Status)
          clas= mean(submit4$class==submit4$class_Status)
@@ -729,7 +731,7 @@ shinyServer(function(input, output) {
          schrinkage=input$schrink
          
          getParamSet("classif.gbm")
-         g.gbm=makeLearner("classif.gbm", predict.type="response")
+         g.gbm=makeLearner("classif.gbm", predict.type="prob")
          rancontrol=makeTuneControlRandom(maxit=5)
          set_cv=makeResampleDesc("CV",iters=3)
          gbm_par=makeParamSet(
@@ -744,8 +746,7 @@ shinyServer(function(input, output) {
                                               shrinkage=schrinkage))
          to.gbm=train(final_gbm, trainTask)
          pr.gbm=predict(to.gbm, testTask)
-         gini=Gini(pr.gbm$data$response)
-         gini=10*gini
+         gini=Gini(pr.gbm$data$prob.1)
          submit6=data.frame(class = test$class, class_Status = pr.gbm$data$response)
          tab=table(submit6$class,submit6$class_Status)
          clas= mean(submit6$class==submit6$class_Status)

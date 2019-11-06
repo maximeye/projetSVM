@@ -22,14 +22,15 @@ set.seed(12345)
 shinyUI(fluidPage(
   (navbarPage(title="Demonstrator : SVM performances",
               
-              tabPanel("Some definitions",
+              tabPanel(p(icon("book-open"),"Some definitions"),
                        uiOutput("doc_to_display")
               ),
               
-              tabPanel("Data presentation",
+              tabPanel(p(icon("database"),"Data presentation"),
                        
                        sidebarLayout(
                          sidebarPanel(
+                           uiOutput("tab")
 
                          ),
                          
@@ -45,7 +46,7 @@ shinyUI(fluidPage(
                        )
               ),
               
-              tabPanel("Comparison between SVM and another model",
+              tabPanel(p(icon("project-diagram"),"Comparison between SVM and another model"),
                          
                          sidebarLayout(
                            
@@ -127,7 +128,7 @@ shinyUI(fluidPage(
                 
               ),
               
-              tabPanel("Comparison of each model's performance - ROC Curve",
+              tabPanel(p(icon("chart-bar"),"Comparison of each model's performance - ROC Curve"),
                 
                 sidebarLayout(
                   sidebarPanel(
