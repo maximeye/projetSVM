@@ -172,7 +172,7 @@ dtparam=makeParamSet(
 gridsearchcontrol=makeTuneControlGrid()
 
 # Hypertuning the parameters
-#stune=tuneParams(learner=tree, resampling=set_cv, task=validateTask, par.set=dtparam, control=gridsearchcontrol, measures=acc)
+stune=tuneParams(learner=tree, resampling=set_cv, task=validateTask, par.set=dtparam, control=gridsearchcontrol, measures=acc)
 
 # Checking the best parameter
 stune$x
