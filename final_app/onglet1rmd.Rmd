@@ -3,14 +3,43 @@ title: "Informations about the methodology"
 output: html_document
 ---
  
-1. A brief description of Support Vector Machine (SVM) a supervised learning method
+<script>
+   $(document).ready(function() {
+     $head = $('#header');
+     $head.prepend('<img src=\"MasterEsa.png\" style=\"float: right;width: 350px;\"/>')
+   });
+</script>
 
-The Support Vector Machine is an automatic supervised learning method, that can be used for regression or classification.  
-The SVM are most commonly used for classification.
 
-The principle of SVM is to determine a hyperplan which split the dataset into two classes. 
+<style type="text/css">
 
-```{r , echo=FALSE} 
+
+h1.title {
+  font-size: 32px;
+  color: Black;
+}
+</style>
+ 
+
+&nbsp;
+
+&nbsp;
+
+&nbsp;
+
+
+### <span style="color: #127063">A brief description of Support Vector Machine (SVM) a supervised learning method </span>
+
+&nbsp;
+
+<p style="text-align:justify";>The Support Vector Machine is an automatic supervised learning method, that can be used for regression or classification.  
+The SVM are most commonly used for classification.</p>
+
+&nbsp;
+
+<p style="text-align:justify";>The principle of SVM is to determine a hyperplan which split the dataset into two classes.</p>
+
+```{r, warning=FALSE , echo=FALSE, fig.align = 'center'}
 set.seed(10111)
 x = matrix(rnorm(40), 20, 2)
 y = rep(c(-1, 1), c(10, 10))
@@ -37,6 +66,37 @@ ygrid = predict(svmfit, xgrid)
 a=plot(xgrid, col = c("red","blue")[as.numeric(ygrid)], pch = 20, cex = .2)
 points(x, col = y + 3, pch = 19)
 points(x[svmfit$index,], pch = 5, cex = 2)
+```
+
+
+&nbsp;
+
+&nbsp;
+
+<p style="text-align:justify";>The points that are framed are called Support Vector. These cases are the closest points to the hyperplane. 
+The distance between the hyperplane and the closest points is called the margin.</p>
+
+&nbsp;
+
+<p style="text-align:justify";>We want to determine a hyperplan and maximize the margin (larger the margins are, higher the rate of good classification will be for a new dataset).</p>
+
+
+
+```{r, warning=FALSE , echo=FALSE, fig.align = 'center'}
+library(e1071)
+
+dat = data.frame(x, y = as.factor(y))
+svmfit = svm(y ~ ., data = dat, kernel = "linear", cost = 10, scale = FALSE)
+
+make.grid = function(x, n = 75) {
+  grange = apply(x, 2, range)
+  x1 = seq(from = grange[1,1], to = grange[2,1], length = n)
+  x2 = seq(from = grange[1,2], to = grange[2,2], length = n)
+  expand.grid(X1 = x1, X2 = x2)
+  
+  
+}
+xgrid = make.grid(x)
 
 beta = drop(t(svmfit$coefs)%*%x[svmfit$index,])
 beta0 = svmfit$rho
@@ -47,44 +107,49 @@ points(x[svmfit$index,], pch = 5, cex = 2)
 abline(beta0 / beta[2], -beta[1] / beta[2])
 abline((beta0 - 1) / beta[2], -beta[1] / beta[2], lty = 2)
 abline((beta0 + 1) / beta[2], -beta[1] / beta[2], lty = 2)
-
 ```
 
 
-The points that are framed are called Support Vector. These cases are the closest points to the hyperplane. 
-
-The distance between the hyperplane and the closest points is called the margin. We want to determine a hyperplan and maximize the margin (larger the margins are, higher the rate of good classification will be for a new dataset).  
+&nbsp;
 
 
 
+### <span style="color: #127063">Presentation of the different SVM kernels</span>
+ 
+&nbsp;
 
-2. Presentation of the different SVM kernels 
+<p style="text-align:justify";>The SVM method use a linear classifier to solve a non linear problem, by enlarging the dimension of the representation space.</p>
 
-The SVM method use a linear classifier to solve a non linear problem, by enlarging the dimension of the representation space. This is called kernel trick. 
+<p style="text-align:justify";>This is called kernel trick. </p>
 
-There is the four common kernel used in SVM method : 
+&nbsp;
 
-Linear kernel :
+<p style="text-align:justify";>There are four common kernels that are used in the SVM method, as the : </p>
+
+&nbsp;
+
+- <strong>Linear kernel</strong>
 
 ```{r echo=FALSE,out.width = "45%", fig.align = 'center'}
       svmfit = svm(y ~ ., data = dat, kernel = "linear", cost = 50, scale = FALSE) 
       plot(svmfit, dat,col = c("bisque", "lightblue"))
 ```
-Radial Basis Function kernel :
+
+- <strong>Radial Basis Function kernel</strong>
 
 ```{r echo=FALSE,out.width = "45%", fig.align = 'center'}
       svmfit = svm(y ~ ., data = dat, kernel = "radial", cost = 50, scale = FALSE) 
       plot(svmfit, dat, col = c("bisque", "lightblue"))
 ```
 
-Polynomial kernel :
+- <strong>Polynomial kernel</strong>
 
 ```{r echo=FALSE,out.width = "45%", fig.align = 'center'}
       svmfit = svm(y ~ ., data = dat, kernel = "polynomial", degree=3, coef0=0, cost = 50, scale = FALSE) 
       plot(svmfit, dat, col = c("bisque", "lightblue"))
 ```
 
-Sigmoid kernel :
+- <strong>Sigmoid kernel</strong>
 
 ```{r echo=FALSE,out.width = "45%", fig.align = 'center'}
       svmfit = svm(y ~ ., data = dat, kernel = "sigmoid",coef0=0, cost = 50, scale = FALSE) 
@@ -94,13 +159,13 @@ Sigmoid kernel :
 
 
   
+### <span style="color: #127063">Correction and adjustment made on the database </span>
 
-3. Correction and adjustment made on the database 
+&nbsp;
 
-Our initial database "creditcard.csv" contains 284 807 observations. 
-Among those observations, the dependant variable "Class" is equal to 0 (non fraud) for 284 315 observations and is equal to 1 (fraud) for 492 observations.   
-The interest event represent less than 1% in the data.
-We are facing to inbalanced data situation. 
+<p style="text-align:justify";>Our initial database <strong><em>creditcard.csv</em></strong> contains 284 807 observations. 
+Among those observations, the dependant variable <em>"Class"</em> is equal to 0 (non fraud) for 284 315 observations and is equal to 1 (fraud) for 492 observations.   
+The interest event represent less than 1% in the data, so we are facing to an imbalanced data situation.</p>
 
 ```{r , echo=FALSE} 
    file="https://raw.githubusercontent.com/maximeye/projetSVM/master/creditcard.rds"
@@ -109,12 +174,12 @@ We are facing to inbalanced data situation.
     table(data$Class) 
 ```
 
+&nbsp;
 
+<p style="text-align:justify";>To solve this problem, we used the SMOTE method (Synthetic Minority Over-Sampling Technique).
+This method create artificial cases where the target is equal to 1 (interest event) using the caracteristics of the <em>k-nearest neighbors</em>. 
 
-To solve this problem, we used the SMOTE method (Synthetic Minority Over-Sampling Technique).
-This method create artificial cases where the target is equal to 1 (interest event) using the caracteristics of the k nearest neighbors. 
-
-After appliying the SMOTE method, a new dataset is created with a proportion of 10% cases with fraud and 90% of non fraud (284 315 cases of non fraud and 31 980 of fraud).
+After applying the SMOTE method, a new dataset is created with a proportion of 10% cases with fraud and 90% of non fraud (284 315 cases of non fraud and 31 980 of fraud). </p>
 
 
 ```{r , echo=FALSE} 
@@ -125,11 +190,8 @@ After appliying the SMOTE method, a new dataset is created with a proportion of 
 ```
 
 
-We split this new database in two parts : 
+<p style="text-align:justify";>We split this new database in two parts : </p>
 
-- train : to build the model optimize the hyperparameters (about 70% of the data)
+- train : to build the model and optimize the hyperparameters (about 70% of the data)
 
 - test : used to assess the model and use for comparison (30% of the data)
-
-
-

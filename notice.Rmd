@@ -12,28 +12,15 @@ output:
 <script>
    $(document).ready(function() {
      $head = $('#header');
-     $head.prepend('<img src=\"MasterEsa.jpg\" style=\"float: right;width: 400px;\"/>')
+     $head.prepend('<img src=\"MasterEsa.png\" style=\"float: right;width: 350px;\"/>')
    });
 </script>
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-```
 
 &nbsp;
 
-&nbsp;
-
-
-### <span style="color: #127063">1<sup>st</sup> panel : Some definitions</span>
-
-
-
-
-
-
-
-
+<span style="color:red">Note : the loading of the application depends on the network connection.  
+Depending on the network speed, the application may take further time to load.</span>
 
 ### <span style="color: #127063">Data presentation</span>
 
@@ -55,13 +42,13 @@ Then, you can observe two histograms, which represent on the left the importance
 This function creates other observations with the 1 occurence, using the probability to determine the values of the other variables. So you go from 284315 with the value of class 0 and 492 with the value of class 1, to 284315 with the value of class 0 and 31980 with the value of class 1, because we smote to have 10% of the occurence 1.</p>
 &nbsp;
 
-### <span style="color: #127063">Comparison of SVM and another model</span>
+### <span style="color: #127063">Comparison of SVM with another model</span>
 
 &nbsp;
 
 <center>
 
-![Comparing SVM with another Machine Learning model](onglet2.png)
+![3<sup>rd</sup> panel : Comparing SVM with another Machine Learning model](onglet2.png)
 
 </center>
 
@@ -76,6 +63,7 @@ This function creates other observations with the 1 occurence, using the probabi
 
 ##### <span style="color: #127063">_Model to compare with svm_</span>
 
+&nbsp;
 
 <p style="text-align:justify";>You just have to select the model you want to compare with the SVM, as the : </p>
 
@@ -90,29 +78,29 @@ This function creates other observations with the 1 occurence, using the probabi
 <p style="text-align:justify";>When you select another model than the logistic regression, beside,  you have parameters than you can change as you wish. They are selected in a way that they are optimal when you choose your model. The list of parameters (with the default value in brackets, as a reminder if you change that and want recover them) is : </p>
 
 * for the Decision Tree : </p>
-Minsplit : represents the minimum number of observations in a node for a split to take place (5) </p>
-Minbucket : says the minimum number of observations I should keep in terminal nodes (15) </p>
-Cp : it's the complexity parameter (0.001) </p>
+Minsplit : represents the minimum number of observations in a node for a split to take place (35) </p>
+Minbucket : says the minimum number of observations I should keep in terminal nodes (10) </p>
+Cp : it's the complexity parameter (0.167) </p>
 
 * for the Random Forest : </p>
-Number of trees (157) </p>  
-Node Size (12) </p>
-Mtry (9) </p>
+Number of trees (108) </p>  
+Node Size (11) </p>
+Mtry 11 </p>
 
 * for the Gradient Boosting : </p>
-N trees (256) </p>
-interaction depth (5) </p>
-Min obs in node : refers to the minimum number of observations in a tree node (33) </p>  
-shrinkage : it's the regulation parameter which dictates how fast / slow the algorithm should move  (0.24). </p>
+N trees (414) </p>
+interaction depth (7) </p>
+Min obs in node : refers to the minimum number of observations in a tree node (17) </p>  
+shrinkage : it's the regulation parameter which dictates how fast / slow the algorithm should move  (0.268). </p>
 
 * for the XGBoost : </p>
-Nround (256) </p>
-Max depth (20) </p>
-Lambda (0.56) </p>
-Eta (0.278) </p>
-Sub sample (0.56) </p>
-Min child weight (4) </p>
-Cold sample by tree (0.683) </p>
+Nround (481) </p>
+Max depth (16) </p>
+Lambda (0.563) </p>
+Eta (0.183) </p>
+Sub sample (0.328) </p>
+Min child weight (1.83) </p>
+Cold sample by tree (0.41) </p>
 
 &nbsp;
 
@@ -132,21 +120,26 @@ Cold sample by tree (0.683) </p>
 
 &nbsp;
 
-##### <span style="color: #127063">_Sample size (the larger the size chosen, the longer the processing time will be)_</span>
+##### <span style="color: #127063">_Kernel_</span>
 
-<p style="text-align:justify";>To get the results faster, the default observation value is set 1,000 observations, but you can aswell change it with the cursor.</p>
+<p style="text-align:justify";>As a reminder, the optimal kernel is linear. </p>
 
 &nbsp;
 
 ##### <span style="color: #127063">_C_</span>
 
-<p style="text-align:justify";>As a reminder, the optimal C is 25.8. </p>
+<p style="text-align:justify";>As a reminder, the optimal C is 42.03045. </p>
 
 &nbsp;
 
-##### <span style="color: #127063">_Gamma_</span>
+##### <span style="color: #127063">_Sample size (the larger the size chosen, the longer the processing time will be)_</span>
 
-<p style="text-align:justify";>As a reminder, the optimal gamma is 0.573. </p>
+<p style="text-align:justify";>To get the results faster, the default observation value is set 1,000 observations, but you can aswell change it with the cursor.</p>
+
+Note that the sample size chosen has been split into two samples, with 70% of the data for the train dataset, and 30% for the test dataset.
+<span style="color:red">The performances displayed are based on the test sample. </span>
+
+&nbsp;
 
 &nbsp;
 
@@ -174,7 +167,7 @@ Cold sample by tree (0.683) </p>
 
 <center>
 
-![Comparing model performance](onglet3.png)
+![4<sup>th</sup> panel : Comparing model performance](onglet3.png)
 
 </center>
 
