@@ -2,4 +2,4 @@
 output: html_document
 ---
 
-<div><img src="MasterEsa.png" width="300px" align="right"></div>
+<div><img src="MasterEsa.png" width="250px" align="right"></div>
