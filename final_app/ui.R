@@ -91,8 +91,7 @@ shinyUI(fluidPage(
                              sliderInput(inputId='n', label='Sample size (More the sample size is large, longer the process time will be )',min=1000,max=30000,value=1000,step=100),
                              sliderInput(inputId='cost', label='C',min=1,max=100,value=25.8,step=0.1),
                              #sliderInput(inputId='gamma', label='Gamma',min=0,max=1,value=0.573,step=0.001)
-                             selectInput(inputId="srk", label="Shrinkage", choices=list("True"=T,"False"=F))
-                             
+
                              
                              
                            ),

@@ -311,8 +311,7 @@ shinyServer(function(input, output) {
      
      kernel=input$kernel
      cost=input$cost
-     srk=input$srk
-     
+
      taille_ech=input$n
      index=1:nrow(data)
      trainindex=sample(index,round(taille_ech*0.7))
@@ -326,7 +325,7 @@ shinyServer(function(input, output) {
      trainTask=normalizeFeatures(trainTask,method="standardize")
      testTask=normalizeFeatures(testTask,method="standardize")
      
-     gini.svm<- function(kernel,cost,srk){
+     gini.svm<- function(kernel,cost){
        
        if (input$kernel=="linear"){
          getParamSet("classif.svm")
@@ -341,7 +340,7 @@ shinyServer(function(input, output) {
            makeIntegerLearnerParam(id="degree", lower=1,upper=3 ,requires=quote(kernel == "polynomial")),
            makeNumericLearnerParam(id="gamma", lower=2^-3,upper=1, requires=quote(kernel != "linear")),
            makeLogicalLearnerParam(id="shrinking"))
-         final_svm=setHyperPars(learner=learner, par.vals=list(type="C-classification", kernel="linear", cost=cost, shrinking=srk))
+         final_svm=setHyperPars(learner=learner, par.vals=list(type="C-classification", kernel="linear", cost=cost, shrinking=TRUE))
          svm.model=train(final_svm, trainTask)
          predict.svm=predict(svm.model, testTask)
          Gini=Gini(predict.svm$data$prob.1)
@@ -403,7 +402,7 @@ shinyServer(function(input, output) {
        return(Gini)
      }
      
-     gini.svm(kernel,cost,srk)
+     gini.svm(kernel,cost)
      
      
      
@@ -421,8 +420,7 @@ shinyServer(function(input, output) {
    output$i2=renderPrint({
      kernel=input$kernel
      cost=input$cost
-     srk=input$srk
-     
+
      
      taille_ech=input$n
      index=1:nrow(data)
@@ -438,7 +436,7 @@ shinyServer(function(input, output) {
      testTask=normalizeFeatures(testTask,method="standardize")
      
      
-     table.svm=function(kernel,cost,srk){
+     table.svm=function(kernel,cost){
        if (input$kernel=='linear'){
          getParamSet("classif.svm")
          learner=makeLearner("classif.svm", predict.type="prob")
@@ -452,7 +450,7 @@ shinyServer(function(input, output) {
            makeIntegerLearnerParam(id="degree", lower=1,upper=3 ,requires=quote(kernel == "polynomial")),
            makeNumericLearnerParam(id="gamma", lower=2^-3,upper=1, requires=quote(kernel != "linear")),
            makeLogicalLearnerParam(id="shrinking"))
-         final_svm=setHyperPars(learner=learner, par.vals=list(type="C-classification", kernel="linear", cost=cost,  shrinking=FALSE))
+         final_svm=setHyperPars(learner=learner, par.vals=list(type="C-classification", kernel="linear", cost=cost,  shrinking=TRUE))
          svm.model=train(final_svm, trainTask)
          predict.svm=predict(svm.model, testTask)
          submit5=data.frame(class=test$class, class_status=predict.svm$data$response)
@@ -471,7 +469,7 @@ shinyServer(function(input, output) {
            makeIntegerLearnerParam(id="degree", lower=1,upper=3 ,requires=quote(kernel == "polynomial")),
            makeNumericLearnerParam(id="gamma", lower=2^-3,upper=1, requires=quote(kernel != "linear")),
            makeLogicalLearnerParam(id="shrinking"))
-         final_svm=setHyperPars(learner=learner, par.vals=list(type="C-classification", kernel="radial", cost=cost,shrinking=FALSE))
+         final_svm=setHyperPars(learner=learner, par.vals=list(type="C-classification", kernel="radial", cost=cost,shrinking=TRUE))
          svm.model=train(final_svm, trainTask)
          predict.svm=predict(svm.model, testTask)
          submit5=data.frame(class=test$class, class_status=predict.svm$data$response)
@@ -490,7 +488,7 @@ shinyServer(function(input, output) {
            makeIntegerLearnerParam(id="degree", lower=1,upper=3 ,requires=quote(kernel == "polynomial")),
            makeNumericLearnerParam(id="gamma", lower=2^-3,upper=1, requires=quote(kernel != "linear")),
            makeLogicalLearnerParam(id="shrinking"))
-         final_svm=setHyperPars(learner=learner, par.vals=list(type="C-classification", kernel="polynomial", cost=cost,  shrinking=FALSE))
+         final_svm=setHyperPars(learner=learner, par.vals=list(type="C-classification", kernel="polynomial", cost=cost,  shrinking=TRUE))
          svm.model=train(final_svm, trainTask)
          predict.svm=predict(svm.model, testTask)
          submit5=data.frame(class=test$class, class_status=predict.svm$data$response)
@@ -509,7 +507,7 @@ shinyServer(function(input, output) {
            makeIntegerLearnerParam(id="degree", lower=1,upper=3 ,requires=quote(kernel == "polynomial")),
            makeNumericLearnerParam(id="gamma", lower=2^-3,upper=1, requires=quote(kernel != "linear")),
            makeLogicalLearnerParam(id="shrinking"))
-         final_svm=setHyperPars(learner=learner, par.vals=list(type="C-classification", kernel="sigmoid", cost=cost,  shrinking=FALSE))
+         final_svm=setHyperPars(learner=learner, par.vals=list(type="C-classification", kernel="sigmoid", cost=cost,  shrinking=TRUE))
          svm.model=train(final_svm, trainTask)
          predict.svm=predict(svm.model, testTask)
          submit5=data.frame(class=test$class, class_status=predict.svm$data$response)
@@ -518,7 +516,7 @@ shinyServer(function(input, output) {
        return(matrix)
      }
      
-     table.svm(kernel,cost,srk)
+     table.svm(kernel,cost)
    })
    
    output$t3 = renderText({
@@ -533,8 +531,7 @@ shinyServer(function(input, output) {
    output$i3=renderPrint({
      kernel=input$kernel
      cost=input$cost
-     srk=input$srk
-     
+
      
      taille_ech=input$n
      index=1:nrow(data)
@@ -550,7 +547,7 @@ shinyServer(function(input, output) {
      testTask=normalizeFeatures(testTask,method="standardize")
      
      
-     mean.svm=function(kernel,cost,srk){
+     mean.svm=function(kernel,cost){
        if (input$kernel=='linear'){
          getParamSet("classif.svm")
          learner=makeLearner("classif.svm", predict.type="prob")
@@ -564,7 +561,7 @@ shinyServer(function(input, output) {
            makeIntegerLearnerParam(id="degree", lower=1,upper=3 ,requires=quote(kernel == "polynomial")),
            makeNumericLearnerParam(id="gamma", lower=2^-3,upper=1, requires=quote(kernel != "linear")),
            makeLogicalLearnerParam(id="shrinking"))
-         final_svm=setHyperPars(learner=learner, par.vals=list(type="C-classification", kernel="linear", cost=cost,  shrinking=FALSE))
+         final_svm=setHyperPars(learner=learner, par.vals=list(type="C-classification", kernel="linear", cost=cost,  shrinking=TRUE))
          svm.model=train(final_svm, trainTask)
          predict.svm=predict(svm.model, testTask)
          submit5=data.frame(class=test$class, class_status=predict.svm$data$response)
@@ -584,7 +581,7 @@ shinyServer(function(input, output) {
            makeIntegerLearnerParam(id="degree", lower=1,upper=3 ,requires=quote(kernel == "polynomial")),
            makeNumericLearnerParam(id="gamma", lower=2^-3,upper=1, requires=quote(kernel != "linear")),
            makeLogicalLearnerParam(id="shrinking"))
-         final_svm=setHyperPars(learner=learner, par.vals=list(type="C-classification", kernel="radial", cost=cost,  shrinking=FALSE))
+         final_svm=setHyperPars(learner=learner, par.vals=list(type="C-classification", kernel="radial", cost=cost,  shrinking=TRUE))
          svm.model=train(final_svm, trainTask)
          predict.svm=predict(svm.model, testTask)
          submit5=data.frame(class=test$class, class_status=predict.svm$data$response)
@@ -604,7 +601,7 @@ shinyServer(function(input, output) {
            makeIntegerLearnerParam(id="degree", lower=1,upper=3 ,requires=quote(kernel == "polynomial")),
            makeNumericLearnerParam(id="gamma", lower=2^-3,upper=1, requires=quote(kernel != "linear")),
            makeLogicalLearnerParam(id="shrinking"))
-         final_svm=setHyperPars(learner=learner, par.vals=list(type="C-classification", kernel="polynomial", cost=cost,  shrinking=FALSE))
+         final_svm=setHyperPars(learner=learner, par.vals=list(type="C-classification", kernel="polynomial", cost=cost,  shrinking=TRUE))
          svm.model=train(final_svm, trainTask)
          predict.svm=predict(svm.model, testTask)
          submit5=data.frame(class=test$class, class_status=predict.svm$data$response)
@@ -624,7 +621,7 @@ shinyServer(function(input, output) {
            makeIntegerLearnerParam(id="degree", lower=1,upper=3 ,requires=quote(kernel == "polynomial")),
            makeNumericLearnerParam(id="gamma", lower=2^-3,upper=1, requires=quote(kernel != "linear")),
            makeLogicalLearnerParam(id="shrinking"))
-         final_svm=setHyperPars(learner=learner, par.vals=list(type="C-classification", kernel="sigmoid", cost=cost,  shrinking=FALSE))
+         final_svm=setHyperPars(learner=learner, par.vals=list(type="C-classification", kernel="sigmoid", cost=cost,  shrinking=TRUE))
          svm.model=train(final_svm, trainTask)
          predict.svm=predict(svm.model, testTask)
          submit5=data.frame(class=test$class, class_status=predict.svm$data$response)
@@ -633,7 +630,7 @@ shinyServer(function(input, output) {
        }
        return(classif)
      }
-     mean.svm(kernel,cost,srk)
+     mean.svm(kernel,cost)
      
    })
    
@@ -1125,7 +1122,6 @@ shinyServer(function(input, output) {
      
      kernel=input$kernel
      cost=input$cost
-     srk=input$srk
      law=input$law
      
      
@@ -1143,7 +1139,7 @@ shinyServer(function(input, output) {
      testTask=normalizeFeatures(testTask,method="standardize")
      
      
-     roc1=function(kernel,cost,srk,law){
+     roc1=function(kernel,cost,law){
        
        if (input$law=='logit'){
          getParamSet("classif.svm")
@@ -1158,7 +1154,7 @@ shinyServer(function(input, output) {
            makeIntegerLearnerParam(id="degree", lower=1,upper=3 ,requires=quote(kernel == "polynomial")),
            makeNumericLearnerParam(id="gamma", lower=2^-3,upper=1, requires=quote(kernel != "linear")),
            makeLogicalLearnerParam(id="shrinking"))
-         final_svm=setHyperPars(learner=learner, par.vals=list(type="C-classification", kernel=kernel, cost=cost,  shrinking=FALSE))
+         final_svm=setHyperPars(learner=learner, par.vals=list(type="C-classification", kernel=kernel, cost=cost,  shrinking=TRUE))
          svm.model=train(final_svm, trainTask)
          predict.svm=predict(svm.model, testTask)
          submit5=data.frame(class=test$class, class_status=predict.svm$data$response)
@@ -1192,7 +1188,7 @@ shinyServer(function(input, output) {
            makeIntegerLearnerParam(id="degree", lower=1,upper=3 ,requires=quote(kernel == "polynomial")),
            makeNumericLearnerParam(id="gamma", lower=2^-3,upper=1, requires=quote(kernel != "linear")),
            makeLogicalLearnerParam(id="shrinking"))
-         final_svm=setHyperPars(learner=learner, par.vals=list(type="C-classification", kernel=kernel, cost=cost,  shrinking=FALSE))
+         final_svm=setHyperPars(learner=learner, par.vals=list(type="C-classification", kernel=kernel, cost=cost,  shrinking=TRUE))
          svm.model=train(final_svm, trainTask)
          predict.svm=predict(svm.model, testTask)
          submit5=data.frame(class=test$class, class_status=predict.svm$data$response)
@@ -1239,7 +1235,7 @@ shinyServer(function(input, output) {
            makeIntegerLearnerParam(id="degree", lower=1,upper=3 ,requires=quote(kernel == "polynomial")),
            makeNumericLearnerParam(id="gamma", lower=2^-3,upper=1, requires=quote(kernel != "linear")),
            makeLogicalLearnerParam(id="shrinking"))
-         final_svm=setHyperPars(learner=learner, par.vals=list(type="C-classification", kernel=kernel, cost=cost, shrinking=FALSE))
+         final_svm=setHyperPars(learner=learner, par.vals=list(type="C-classification", kernel=kernel, cost=cost, shrinking=TRUE))
          svm.model=train(final_svm, trainTask)
          predict.svm=predict(svm.model, testTask)
          submit5=data.frame(class=test$class, class_status=predict.svm$data$response)
@@ -1287,7 +1283,7 @@ shinyServer(function(input, output) {
            makeIntegerLearnerParam(id="degree", lower=1,upper=3 ,requires=quote(kernel == "polynomial")),
            makeNumericLearnerParam(id="gamma", lower=2^-3,upper=1, requires=quote(kernel != "linear")),
            makeLogicalLearnerParam(id="shrinking"))
-         final_svm=setHyperPars(learner=learner, par.vals=list(type="C-classification", kernel=kernel, cost=cost,  shrinking=FALSE))
+         final_svm=setHyperPars(learner=learner, par.vals=list(type="C-classification", kernel=kernel, cost=cost,  shrinking=TRUE))
          svm.model=train(final_svm, trainTask)
          predict.svm=predict(svm.model, testTask)
          submit5=data.frame(class=test$class, class_status=predict.svm$data$response)
@@ -1343,7 +1339,7 @@ shinyServer(function(input, output) {
            makeIntegerLearnerParam(id="degree", lower=1,upper=3 ,requires=quote(kernel == "polynomial")),
            makeNumericLearnerParam(id="gamma", lower=2^-3,upper=1, requires=quote(kernel != "linear")),
            makeLogicalLearnerParam(id="shrinking"))
-         final_svm=setHyperPars(learner=learner, par.vals=list(type="C-classification", kernel=kernel, cost=cost,  shrinking=FALSE))
+         final_svm=setHyperPars(learner=learner, par.vals=list(type="C-classification", kernel=kernel, cost=cost,  shrinking=TRUE))
          svm.model=train(final_svm, trainTask)
          predict.svm=predict(svm.model, testTask)
          submit5=data.frame(class=test$class, class_status=predict.svm$data$response)
@@ -1381,7 +1377,7 @@ shinyServer(function(input, output) {
      }
      
      
-     roc1(kernel,cost,srk,law)
+     roc1(kernel,cost,law)
      
    })
   
@@ -1430,7 +1426,7 @@ shinyServer(function(input, output) {
        makeIntegerLearnerParam(id="degree", lower=1,upper=3 ,requires=quote(kernel == "polynomial")),
        makeNumericLearnerParam(id="gamma", lower=2^-3,upper=1, requires=quote(kernel != "linear")),
        makeLogicalLearnerParam(id="shrinking"))
-     final_svm=setHyperPars(learner=learner, par.vals=list(type="C-classification", kernel='radial', cost=25.8,  shrinking=TRUE))
+     final_svm=setHyperPars(learner=learner, par.vals=list(type="C-classification", kernel='linear', cost=42.03045,  shrinking=TRUE))
      svm.model=train(final_svm, trainTask)
      predict.svm=predict(svm.model, testTask)
      submit5=data.frame(class=test$class, class_status=predict.svm$data$response)
@@ -1453,7 +1449,7 @@ shinyServer(function(input, output) {
        makeIntegerParam("minsplit", lower=5, upper=50),
        makeIntegerParam("minbucket", lower=5, upper=50),
        makeNumericParam("cp", lower=0.001, upper=0.5))
-     tun.tree=setHyperPars(tree, par.vals=list(minsplit=5,minbucket=15,cp=0.001))
+     tun.tree=setHyperPars(tree, par.vals=list(minsplit=35,minbucket=10,cp=0.167))
      tun.rpart=train(tun.tree, trainTask)
      treetestpred=predict(tun.rpart, testTask)
      submit3=data.frame(class=test$class, class_Status=treetestpred$data$response)
@@ -1470,7 +1466,7 @@ shinyServer(function(input, output) {
        makeIntegerParam("nodesize", lower=10, upper=26))
      rancontrol=makeTuneControlRandom(maxit=10)
      set_cv=makeResampleDesc("CV", iters=3)
-     rf.tree=setHyperPars(rf, par.vals=list(ntree=157,mtry=9,nodesize=12))
+     rf.tree=setHyperPars(rf, par.vals=list(ntree=108,mtry=11,nodesize=11))
      rforest=train(rf.tree, trainTask)
      rfmodeltest=predict(rforest, testTask)
      submit4=data.frame(class = test$class, class_Status=rfmodeltest$data$response)
@@ -1490,9 +1486,9 @@ shinyServer(function(input, output) {
        makeIntegerParam("n.minobsinnode", lower=10, upper=80),
        makeNumericParam("shrinkage",lower=0.01, upper=1))
      final_gbm=setHyperPars(learner=g.gbm,
-                            par.vals=list(distribution="bernoulli", n.trees=256,
-                                          interaction.depth=5, n.minobsinnode=33,
-                                          shrinkage=0.244))
+                            par.vals=list(distribution="bernoulli", n.trees=414,
+                                          interaction.depth=7, n.minobsinnode=17,
+                                          shrinkage=0.268))
      to.gbm=train(final_gbm, trainTask)
      pr.gbm.test=predict(to.gbm, testTask)
      submit6=data.frame(class = test$class, class_Status = pr.gbm.test$data$response)
@@ -1515,7 +1511,7 @@ shinyServer(function(input, output) {
        makeNumericParam("colsample_bytree",lower = 0.2,upper = 0.8))
      rancontrol=makeTuneControlRandom(maxit=5)
      set_cv=makeResampleDesc("CV",iters=3)
-     xg_new=setHyperPars(learner=xg_set, par.vals=list(nrounds=256,max_depth=20,lambda=0.56,eta=0.278,subsample=0.56,min_child_weight=3.84,colsample_bytree=0.683))
+     xg_new=setHyperPars(learner=xg_set, par.vals=list(nrounds=481,max_depth=16,lambda=0.563,eta=0.83,subsample=0.328,min_child_weight=1.83,colsample_bytree=0.41))
      xgmodel=train(xg_new, trainTask)
      predict.xg.test=predict(xgmodel, task=testTask)
      submit7=data.frame(class = test$class, class_Status = predict.xg.test$data$response)
