@@ -3,11 +3,13 @@ title: "Informations about the methodology"
 output: html_document
 ---
  
-```{r, echo=FALSE}
-htmltools::img(src = knitr::image_uri(file.path("MasterEsa.png")), 
-               alt = 'logo', 
-               style = 'position:absolute; top:0; right:0; padding:10px;')
-```
+
+<script>
+  $(document).ready(function() {
+    $head = $('#header');
+    $head.prepend('<div class="knitr source"><img src="MasterEsa.png" width="220px" align="right"   ></div>')
+  });
+</script>
 
 
 <style type="text/css">
@@ -20,7 +22,6 @@ h1.title {
 </style>
  
 
-&nbsp;
 
 &nbsp;
 
