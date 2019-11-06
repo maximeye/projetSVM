@@ -1,12 +1,11 @@
 ---
-title: "Définitions & Informations about the methodology"
-author: "ROBLIN-TELLIER-YE"
+title: "Informations about the methodology"
 output: html_document
 ---
-
+ 
 1. A brief description of Support Vector Machine (SVM) a supervised learning method
 
-The Support Vector Machine is an automatic supervised learning method, that can be used for regression or classification. 
+The Support Vector Machine is an automatic supervised learning method, that can be used for regression or classification.  
 The SVM are most commonly used for classification.
 
 The principle of SVM is to determine a hyperplan which split the dataset into two classes. 
@@ -54,14 +53,12 @@ abline((beta0 + 1) / beta[2], -beta[1] / beta[2], lty = 2)
 
 The points that are framed are called Support Vector. These cases are the closest points to the hyperplane. 
 
-The distance between the hyperplane and the closest points is called the margin. We want to determine a hyperplan and maximize the margin (larger the margins are, higher the rate of good classification will be for a new dataset).
-
-
-  
+The distance between the hyperplane and the closest points is called the margin. We want to determine a hyperplan and maximize the margin (larger the margins are, higher the rate of good classification will be for a new dataset).  
 
 
 
-2. Presentation of the different SVM kernels
+
+2. Presentation of the different SVM kernels 
 
 The SVM method use a linear classifier to solve a non linear problem, by enlarging the dimension of the representation space. This is called kernel trick. 
 
@@ -71,36 +68,37 @@ Linear kernel :
 
 ```{r echo=FALSE,out.width = "45%", fig.align = 'center'}
       svmfit = svm(y ~ ., data = dat, kernel = "linear", cost = 50, scale = FALSE) 
-      plot(svmfit, dat,col = c("#A41743", "#127063"))
+      plot(svmfit, dat,col = c("bisque", "lightblue"))
 ```
 Radial Basis Function kernel :
 
 ```{r echo=FALSE,out.width = "45%", fig.align = 'center'}
       svmfit = svm(y ~ ., data = dat, kernel = "radial", cost = 50, scale = FALSE) 
-      plot(svmfit, dat, col = c("#A41743", "#127063"))
+      plot(svmfit, dat, col = c("bisque", "lightblue"))
 ```
 
 Polynomial kernel :
 
 ```{r echo=FALSE,out.width = "45%", fig.align = 'center'}
       svmfit = svm(y ~ ., data = dat, kernel = "polynomial", degree=3, coef0=0, cost = 50, scale = FALSE) 
-      plot(svmfit, dat, col = c("#A41743", "#127063"))
+      plot(svmfit, dat, col = c("bisque", "lightblue"))
 ```
 
 Sigmoid kernel :
 
 ```{r echo=FALSE,out.width = "45%", fig.align = 'center'}
       svmfit = svm(y ~ ., data = dat, kernel = "sigmoid",coef0=0, cost = 50, scale = FALSE) 
-      plot(svmfit, dat, col = c("#A41743", "#127063"))
+      plot(svmfit, dat, col = c("bisque", "lightblue"))
 ```
 
 
 
+  
 
-3. Correction and adjustment made on the database
+3. Correction and adjustment made on the database 
 
 Our initial database "creditcard.csv" contains 284 807 observations. 
-Among those observations, the dependant variable "Class" is equal to 0 (non fraud) for 284 315 observations and is equal to 1 (fraud) for 492 observations. 
+Among those observations, the dependant variable "Class" is equal to 0 (non fraud) for 284 315 observations and is equal to 1 (fraud) for 492 observations.   
 The interest event represent less than 1% in the data.
 We are facing to inbalanced data situation. 
 
@@ -128,7 +126,9 @@ After appliying the SMOTE method, a new dataset is created with a proportion of 
 
 
 We split this new database in two parts : 
+
 - train : to build the model optimize the hyperparameters (about 70% of the data)
+
 - test : used to assess the model and use for comparison (30% of the data)
 
 
