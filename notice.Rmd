@@ -9,12 +9,12 @@ output:
   pdf_document: default
 ---
 
-<script>
-   $(document).ready(function() {
-     $head = $('#header');
-     $head.prepend('<img src=\"MasterEsa.png\" style=\"float: right;width: 350px;\"/>')
-   });
-</script>
+
+```{r, echo=FALSE}
+htmltools::img(src = knitr::image_uri(file.path("MasterEsa.png")), 
+               alt = 'logo', 
+               style = 'position:absolute; top:0; right:0; padding:10px;')
+```
 
 
 &nbsp;
@@ -38,8 +38,7 @@ Depending on the network speed, the application may take further time to load.</
 &nbsp;
 
 <p style="text-align:justify";>In a first part, we briefly explain the concept of SVMs and in a second part the different kernels.  
-In the last part we describe the various modifications made to the initial database are explained and the methodology used to build the demonstrator
-</p>
+In the last part, we describe the various modifications made to the initial database and the methodology used to build the demonstrator. </p>
 
 
 ### <span style="color: #127063">Data presentation</span>
@@ -48,7 +47,7 @@ In the last part we describe the various modifications made to the initial datab
 
 <center>
 
-![2<sup>nd</sup> panel : data presentation](onglet1.png)
+![2<sup>nd</sup> panel : Data presentation](onglet1.png)
 
 </center>
 
