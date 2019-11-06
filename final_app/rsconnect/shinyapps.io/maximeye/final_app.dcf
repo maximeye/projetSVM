@@ -5,8 +5,8 @@ account: maximeye
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 1327621
-bundleId: 2568333
+bundleId: 2568643
 url: https://maximeye.shinyapps.io/final_app/
-when: 1573046958.64454
+when: 1573053664.33595
 asMultiple: FALSE
 asStatic: FALSE
