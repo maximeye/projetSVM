@@ -36,11 +36,18 @@ shinyServer(function(input, output) {
          url <- a("User manual", href="https://mega.nz/#!TdlQDKaa!IpMkZYnvtzZML58jrf6AWiwYGlNJU04ybfM7yzPiURg")
       tagList("Click to download:", url)
    })
+   
+   output$dl <- renderText({
+      "(Right click -> Open in a new tab)"
+      
+   })
   
    output$txt <- renderText({
      "Dimensions of the dataset : Numbers of observations & Numbers of variables"
      
    })
+   
+   
    output$dim <- renderPrint({
      taille_ech=5000
      index=1:nrow(data)

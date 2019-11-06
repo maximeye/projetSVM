@@ -19,6 +19,13 @@ htmltools::img(src = knitr::image_uri(file.path("MasterEsa.png")),
 
 &nbsp;
 
+&nbsp;
+
+
+<strong>The goal of this demonstrator is to compare the SVM machine learning method with other machine learning methods.</strong>
+
+&nbsp;
+
 <span style="color:red">Note : the loading of the application depends on the network connection.  
 Depending on the network speed, the application may take further time to load.</span>
 
