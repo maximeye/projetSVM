@@ -1,6 +1,6 @@
 ---
-title: "MANUAL"
-author: "ROBLIN Caroline, TELLIER Kevin, YE Maxime"
+title: "User manual"
+author: "Made by : ROBLIN Caroline, TELLIER Kevin, YE Maxime"
 date: '`r format(Sys.time(), "%d %B %Y")`'
 output:
   html_document:
@@ -8,6 +8,13 @@ output:
     theme: journal
   pdf_document: default
 ---
+
+<script>
+   $(document).ready(function() {
+     $head = $('#header');
+     $head.prepend('<img src=\"MasterEsa.jpg\" style=\"float: right;width: 400px;\"/>')
+   });
+</script>
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
