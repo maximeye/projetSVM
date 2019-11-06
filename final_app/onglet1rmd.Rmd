@@ -1,15 +1,14 @@
 ---
 title: "Informations about the methodology"
-output: html_document
+
+output: 
+  html_document:
+    includes:
+      in_header: logo.html
 ---
  
 
-<script>
-  $(document).ready(function() {
-    $head = $('#header');
-    $head.prepend('<div class="knitr source"><img src="MasterEsa.png" width="220px" align="right"   ></div>')
-  });
-</script>
+
 
 
 <style type="text/css">
