@@ -151,9 +151,9 @@ Gini=Gini(pred1.test)
 
 # Making the decision tree
 tree=makeLearner("classif.rpart", predict.type="prob")
-
+tree$par.vals=list(importance=TRUE)
 # Set 3 fold cross validation
-set_cv=makeResampleDesc("CV", iters=3)
+set_cv=makeResampleDesc("CV", iters=5)
 
 # Searching for some hyperparameters
 dtparam=makeParamSet(
@@ -172,7 +172,7 @@ dtparam=makeParamSet(
 gridsearchcontrol=makeTuneControlGrid()
 
 # Hypertuning the parameters
-#stune=tuneParams(learner=tree, resampling=set_cv, task=validateTask, par.set=dtparam, control=gridsearchcontrol, measures=acc)
+stune=tuneParams(learner=tree, resampling=set_cv, task=validateTask, par.set=dtparam, control=gridsearchcontrol, measures=acc)
 
 # Checking the best parameter
 stune$x
@@ -213,8 +213,7 @@ plotROCCurves(roc_dt.test)
 
 # Create a learner
 rf=makeLearner("classif.randomForest", predict.type="prob", par.vals=list(ntree=200, mtry=3))
-rf$par.vals=list(importance=TRUE)
-
+rf$par.set
 
 # Set tunable parameters
 # Grid search to find hyperparameters
@@ -224,14 +223,14 @@ rf_param=makeParamSet(
                      makeIntegerParam("nodesize", lower=10, upper=26))
 
 # Let's do random search for 10 iterations
-rancontrol=makeTuneControlRandom(maxit=10)
+rancontrol=makeTuneControlRandom(maxit=30)
 
 # Set 3 fold cross validation
-set_cv=makeResampleDesc("CV", iters=3)
+set_cv=makeResampleDesc("CV", iters=5)
 
 
 # Hypertuning
-# rf_tune=tuneParams(learner=rf, resampling=set_cv, task=validateTask, par.set=rf_param, control=rancontrol, measures=acc)
+rf_tune=tuneParams(learner=rf, resampling=set_cv, task=validateTask, par.set=rf_param, control=rancontrol, measures=acc)
 
 
 # cv accuracy
@@ -272,10 +271,10 @@ plotROCCurves(rocrf.test)
 learner=makeLearner("classif.svm", predict.type="prob")
 
 # Resampling
-cv.svm=makeResampleDesc("CV", iters=3, stratify=TRUE)
+cv.svm=makeResampleDesc("CV", iters=30, stratify=TRUE)
 
 # Random search
-ctrl=makeTuneControlRandom(maxit=3)
+ctrl=makeTuneControlRandom(maxit=5)
 
 # Tuning the SVM Parameters
 
@@ -283,17 +282,17 @@ param.svm=makeParamSet(
   makeDiscreteLearnerParam(id="type",values=c("C-classification", "nu-classification")),
   makeDiscreteLearnerParam(id="kernel", values=c("linear", "polynomial", "radial", "sigmoid")),
   makeNumericLearnerParam(id="cost", lower=1,upper=100, requires=quote(type == "C-classification")),
-  makeNumericLearnerParam(id="nu", lower=0,upper=1, requires=quote(type == "nu-classification")),
+  makeNumericLearnerParam(id="nu", lower=0.001, upper=0.40, requires=quote(type == "nu-classification")),
   makeIntegerLearnerParam(id="degree", lower=1,upper=3 ,requires=quote(kernel == "polynomial")),
   makeNumericLearnerParam(id="gamma", lower=2^-3,upper=1, requires=quote(kernel != "linear")),
   makeLogicalLearnerParam(id="shrinking"))
 
 # Searching the optimal parameters
-# svm.res=tuneParams(learner, validateTask, resampling=cv.svm,
-#                   par.set=param.svm, control=ctrl,measures=acc)
+svm.res=tuneParams(learner, validateTask, resampling=cv.svm,
+                   par.set=param.svm, control=ctrl,measures=acc)
 
 # Parameters optimal values
-# svm.res$x
+svm.res$x
 # Best : type=C-classification, kernel=radial, cost=25.8, gamma=0.573, shrinking=TURE
 # acc.test.mean=0.9985397
 
@@ -328,10 +327,10 @@ plotROCCurves(rocsvm.test)
 g.gbm=makeLearner("classif.gbm", predict.type="prob")
 
 # Specify the tuning method
-rancontrol=makeTuneControlRandom(maxit=5)
+rancontrol=makeTuneControlRandom(maxit=30)
 
 # 3 fold CV
-set_cv=makeResampleDesc("CV",iters=3)
+set_cv=makeResampleDesc("CV",iters=5)
 
 
 # Set tunable parameters
@@ -339,19 +338,19 @@ gbm_par=makeParamSet(
                   makeDiscreteParam("distribution", values="bernoulli"),
                   makeIntegerParam("n.trees", lower=100, upper=500),
                   makeIntegerParam("interaction.depth", lower = 2, upper=10),
-                  makeIntegerParam("n.minobsinnode", lower=10, upper=80),
+                  makeIntegerParam("n.minobsinnode", lower=10, upper=50),
                   makeNumericParam("shrinkage",lower=0.01, upper=1))
 
 # n.minobsinnode refers to the minimum number of observations in a tree node
 # shrinkage is the regulation parameter which dictates how fast / slow the algorithm should move
 
 ### Tuning parameters
-# tune_gbm=tuneParams(learner = g.gbm, task = validateTask,resampling = set_cv,
-#                    measures = acc,par.set = gbm_par,control = rancontrol)
+tune_gbm=tuneParams(learner = g.gbm, task = validateTask,resampling = set_cv,
+                    measures = acc,par.set = gbm_par,control = rancontrol)
 
 
 # Checking CV accuracy
-#tune_gbm$y
+tune_gbm$y
 # acc.test.mean=0.9956825
 
 # Best : distribution="bernoulli", n.trees=256, interaction.depth=5, n.minobsinnode=33, shrinkage=0.244
@@ -410,13 +409,13 @@ xg_ps=makeParamSet(
 
 
 # Defining search function
-rancontrol=makeTuneControlRandom(maxit=5)
+rancontrol=makeTuneControlRandom(maxit=30)
 
 # 3 fold cross validation
-set_cv=makeResampleDesc("CV",iters=3)
+set_cv=makeResampleDesc("CV",iters=5)
 
 # Tuning parameters
-#xg_tune=tuneParams(learner=xg_set, task=validateTask, resampling=set_cv,measures=acc,par.set=xg_ps, control=rancontrol)
+xg_tune=tuneParams(learner=xg_set, task=validateTask, resampling=set_cv,measures=acc,par.set=xg_ps, control=rancontrol)
 
 # Setting parameters
 xg_new=setHyperPars(learner=xg_set, par.vals=list(nrounds=256,max_depth=20,lambda=0.56,eta=0.278,subsample=0.56,min_child_weight=3.84,colsample_bytree=0.683))
@@ -458,7 +457,7 @@ plotROCCurves(roc_compare)
 parallelStop()
 
 
-### Compute AUC !!!
+
 
 
 

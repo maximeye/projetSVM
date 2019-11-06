@@ -20,17 +20,35 @@ output:
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+&nbsp;
+
+&nbsp;
+
+
+### <span style="color: #127063">1<sup>st</sup> panel : Some definitions</span>
+
+
+
+
+
+
+
+
 
 ### <span style="color: #127063">Data presentation</span>
 
 &nbsp;
 
-![Data presentation](onglet1.png)
+<center>
+
+![2<sup>nd</sup> panel : data presentation](onglet1.png)
+
+</center>
 
 &nbsp;
 
-<p style="text-align:justify";>First, you have the dimension of the dataset. So we have 316295 observations and all the 26 the variables (the output & 25 explanatory variables).
-Then, you can observe two histograms, which represent on the left the importance of the 25 independant variables, given by the information gain ; and on the right side, the result of a significant test is shown, based on the Khi-2 test.</p>
+<p style="text-align:justify";>First, you have the dimension of the dataset. So we have 316295 observations and all the 31 the variables (the output & 30 explanatory variables).
+Then, you can observe two histograms, which represent on the left the importance of the 30 independant variables, given by the information gain ; and on the right side, the result of a significant test is shown, based on the Khi-2 test.</p>
 
 
 <p style="text-align:justify";>Before continuing, it's important to specify that for models to work properly, the  <span style="color: #127063">SMOTE</span> function was used to resample the original sample which had rare default (when the occurrence 1 is near to 1%).
@@ -41,7 +59,11 @@ This function creates other observations with the 1 occurence, using the probabi
 
 &nbsp;
 
-![Comparing of SVM with another Machine Learning model](onglet2.png)
+<center>
+
+![Comparing SVM with another Machine Learning model](onglet2.png)
+
+</center>
 
 &nbsp;
 
@@ -150,7 +172,11 @@ Cold sample by tree (0.683) </p>
 
 &nbsp;
 
+<center>
+
 ![Comparing model performance](onglet3.png)
+
+</center>
 
 &nbsp;
 
