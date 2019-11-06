@@ -26,6 +26,7 @@ h1.title {
 
 &nbsp;
 
+&nbsp;
 
 ### <span style="color: #127063">A brief description of Support Vector Machine (SVM) a supervised learning method </span>
 
