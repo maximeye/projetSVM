@@ -30,7 +30,8 @@ shinyUI(fluidPage(
                        
                        sidebarLayout(
                          sidebarPanel(
-                           uiOutput("tab")
+                           uiOutput("tab"),
+                           textOutput("dl")
 
                          ),
                          
