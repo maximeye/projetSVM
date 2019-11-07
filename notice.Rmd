@@ -10,13 +10,6 @@ output:
 ---
 
 
-```{r, echo=FALSE}
-htmltools::img(src = knitr::image_uri(file.path("MasterEsa.png")), 
-               alt = 'logo', 
-               style = 'position:absolute; top:0; right:0; padding:10px;')
-```
-
-
 &nbsp;
 
 <span style="color:red">Note : the loading of the application depends on the network connection.  
