@@ -1,31 +1,14 @@
 ---
 title: "Informations about the methodology"
-output: 
+output:
   html_document:
     includes:
       in_header: logo.html
 ---
- 
-
-
-<style type="text/css">
-
-
-h1.title {
-  font-size: 32px;
-  color: Black;
-}
-</style>
- 
-&nbsp;
 
 &nbsp;
 
-&nbsp;
-
-&nbsp;
-
-### <span style="color: #127063">A brief description of Support Vector Machine (SVM) a supervised learning method </span>
+### <span style="color: #127063">A brief description of Support Vector Machine (SVM), a supervised learning method </span>
 
 &nbsp;
 
