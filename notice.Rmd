@@ -12,6 +12,14 @@ output:
 
 &nbsp;
 
+&nbsp;
+
+
+<strong style="color:black">The purpose of our demonstrator is to compare the performance of the SVM machine learning method with other machine learning methods (Logistic Regression, Decision Tree, Random Forest, Gradient Boosting, Xgboost). </strong>
+
+&nbsp;
+
+
 <span style="color:red">Note : the loading of the application depends on the network connection.  
 Depending on the network speed, the application may take further time to load.</span>
 
