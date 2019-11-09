@@ -59,7 +59,7 @@ For a description of the implementation and details of the algorithms used, plea
 
 <p style="text-align:justify";><strong>Note that the following results are only valid for this database as part of fraud detection. In another problematic, we may have different results.</strong></p> 
 
-<p style="text-align:justify";>We've compared the SVM with the other Machine Learning methods that we used in our project. So we concluded that <strong>with the default parameters</strong> and >strong>for any kernel</strong>, the SVM has the better performances compared to the logistic regression, the decision tree, the gradient boosting and the XGBoost.</p> 
+<p style="text-align:justify";>We've compared the SVM with the other Machine Learning methods that we used in our project. So we concluded that <strong>with the default parameters</strong> and <strong>for any kernel</strong>, the SVM has the better performances compared to the logistic regression, the decision tree, the gradient boosting and the XGBoost.</p> 
 
 <p style="text-align:justify";>The SVM with the linear and the radial basis kernels has better performances than the random forest.</p> 
 
