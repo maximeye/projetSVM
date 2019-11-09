@@ -149,7 +149,7 @@ shinyServer(function(input, output) {
        {
          sliderInput("nodesize",
                      "Node Size",
-                     value = 10,
+                     value = 11,
                      min = 1,
                      max = 26)
        }
@@ -1535,6 +1535,10 @@ shinyServer(function(input, output) {
      
      
    })
+   
+   
+   output$doc_to_display2 <- renderUI({
+      includeHTML("onglet5rmd.html")})
    
   
   
