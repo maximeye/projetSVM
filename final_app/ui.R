@@ -142,5 +142,9 @@ shinyUI(fluidPage(
                   
                 
               )
-  )))))
+  ),
+  tabPanel(p(icon("comment"),"Conclusion"),
+           uiOutput("doc_to_display2")
+  )
+  ))))
 
