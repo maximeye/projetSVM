@@ -149,7 +149,7 @@ shinyServer(function(input, output) {
        {
          sliderInput("nodesize",
                      "Node Size",
-                     value = 10,
+                     value = 11,
                      min = 1,
                      max = 26)
        }
