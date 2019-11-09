@@ -1,5 +1,5 @@
 ---
-title: "User manual"
+title: "User Manual"
 author: "Made by : ROBLIN Caroline, TELLIER Kevin, YE Maxime"
 date: '`r format(Sys.time(), "%d %B %Y")`'
 output:
@@ -32,7 +32,7 @@ Depending on the network speed, the application may take further time to load.</
 
 <center>
 
-![1<sup>st</sup> panel : Brief description of SVM and methodology](onglet0.png)
+![<strong>1<sup>st</sup> panel : Brief description of SVM and methodology</strong>](onglet0.png)
 
 </center>
 
@@ -48,7 +48,7 @@ In the last part, we describe the various modifications made to the initial data
 
 <center>
 
-![2<sup>nd</sup> panel : Data presentation](onglet1.png)
+![<strong>2<sup>nd</sup> panel : Data presentation</strong>](onglet1.png)
 
 </center>
 
@@ -68,7 +68,7 @@ This function creates other observations with the 1 occurence, using the probabi
 
 <center>
 
-![3<sup>rd</sup> panel : Comparing SVM with another Machine Learning model](onglet2.png)
+![<strong>3<sup>rd</sup> panel : Comparing SVM with another Machine Learning model</strong>](onglet2.png)
 
 </center>
 
@@ -97,36 +97,34 @@ This function creates other observations with the 1 occurence, using the probabi
 
 <p style="text-align:justify";>When you select another model than the logistic regression, beside,  you have parameters than you can change as you wish. They are selected in a way that they are optimal when you choose your model. The list of parameters (with the default value in brackets, as a reminder if you change that and want recover them) is : </p>
 
-* for the Decision Tree : </p>
-Minsplit : represents the minimum number of observations in a node for a split to take place (35) </p>
-Minbucket : says the minimum number of observations I should keep in terminal nodes (10) </p>
-Cp : it's the complexity parameter (0.167) </p>
+* <strong>for the Decision Tree : </strong></p>
+  * <strong>Minsplit :</strong> represents the minimum number of observations in a node for a split to take place. (35) </p>
+  * <strong>Minbucket :</strong> says the minimum number of observations I should keep in terminal nodes. (10) </p>
+  * <strong>Cp :</strong> it's the complexity parameter. (0.167) </p>
 
-* for the Random Forest : </p>
-Number of trees (108) </p>  
-Node Size (11) </p>
-Mtry 11 </p>
+* <strong>for the Random Forest : </strong></p>
+  * <p style="text-align:justify";><strong>Number of trees :</strong> number of trees to grow. Larger number of trees produce more stable models and covariate importance estimates, but require more memory and a longer run time. (108) </p>  
+  * <p style="text-align:justify";><strong>Node Size :</strong> minimum size of terminal nodes. Setting this number larger causes smaller trees to be grown (and thus take less time). (11) </p>
+  * <strong>Mtry :</strong> number of variables available for splitting at each tree node. (11) </p>
 
-* for the Gradient Boosting : </p>
-N trees (414) </p>
-interaction depth (7) </p>
-Min obs in node : refers to the minimum number of observations in a tree node (17) </p>  
-shrinkage : it's the regulation parameter which dictates how fast / slow the algorithm should move  (0.268). </p>
+* <strong>for the Gradient Boosting :</strong> </p>
+  * <p style="text-align:justify";><strong>N trees :</strong> The total number of trees to fit. GBMs often require many trees; however, unlike random forests GBMs can overfit so the goal is to find the optimal number of trees that minimize the loss function of interest with cross validation. (414) </p>
+  * <strong>Interaction depth :</strong> Number of splits GBM has to perform on a tree (starting from a single node). (7) </p>
+  * <strong>Min obs in node :</strong> Refers to the minimum number of observations in a tree node. (17) </p>  
+  * <strong>Shrinkage :</strong> It's the regulation parameter which dictates how fast / slow the algorithm should move. (0.268) </p>
 
-* for the XGBoost : </p>
-Nround (481) </p>
-Max depth (16) </p>
-Lambda (0.563) </p>
-Eta (0.183) </p>
-Sub sample (0.328) </p>
-Min child weight (1.83) </p>
-Cold sample by tree (0.41) </p>
+* <strong>for the XGBoost :</strong> </p>
+  * <strong>Nround :</strong> It controls the maximum number of iterations. (481) </p>
+  * <strong>Max depth :</strong> It controls the depth of the tree. Larger the depth, more complex the model; higher chances of overfitting. (16) </p>
+  * <strong>Lambda :</strong> It controls L2 regularization (equivalent to Ridge regression) on weights. It is used to avoid overfitting. (0.563) </p>
+  * <p style="text-align:justify";><strong>Eta :</strong> It controls the learning rate, i.e., the rate at which our model learns patterns in data. After every round, it shrinks the feature weights to reach the best optimum. (0.183) </p>
+  * <strong>Sub sample :</strong> It controls the number of samples supplied to a tree. (0.328) </p>
+  * <strong>Min child weight :</strong> it blocks the potential feature interactions to prevent overfitting. (1.83) </p>
+  * <strong>Col sample by tree :</strong> It controls the number of variables supplied to a tree. (0.41) </p>
 
 &nbsp;
 
 ##### <span style="color: #127063">_SVM Kernel_</span>
-
-&nbsp;
 
 <p style="text-align:justify";>You can choose between those four kernels : </p>
 
@@ -165,7 +163,6 @@ Note that the sample size chosen has been split into two samples, with 70% of th
 
 #### <span style="color: #127063">__Outputs__</span>
 
-&nbsp;
 
 <p style="text-align:justify";>You could observe the following : </p>
 
@@ -183,11 +180,10 @@ Note that the sample size chosen has been split into two samples, with 70% of th
 
 ### <span style="color: #127063">Comparison of each model's performance - ROC Curve</span>
 
-&nbsp;
 
 <center>
 
-![4<sup>th</sup> panel : Comparing model performance](onglet3.png)
+![<strong>4<sup>th</sup> panel : Comparing model performance</strong>](onglet3.png)
 
 </center>
 
@@ -195,17 +191,13 @@ Note that the sample size chosen has been split into two samples, with 70% of th
 
 #### <span style="color: #127063">__Inputs__</span>
 
-&nbsp;
-
-##### <span style="color: #127063">_Sample size (the larger the size chosen,the longer the processing time will be)_</span>
+##### <span style="color: #127063">_Sample size (the larger the size chosen, the longer the processing time will be)_</span>
 
 <p style="text-align:justify";>To get the results faster, the default observation value is set 1,000 observations, but you can aswell change it with the cursor.</p>
 
 &nbsp;
 
 #### <span style="color: #127063">__Outputs__</span>
-
-&nbsp;
 
 <p style="text-align:justify";>You can observe in the same graphic the ROC curve for each model, with the default optimal parameters.</p>
 You can see that it isn't easy to choose the best model regardless of the sample size because of the crossing. It's better to refer to the Gini index or the good classification rate we have in the previous tab.  </p>
