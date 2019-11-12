@@ -39,7 +39,7 @@ Depending on the network speed, the application may take further time to load.</
 &nbsp;
 
 <p style="text-align:justify";>In a first tab, there are some informations about our project.  
-There is also a link to access the README file as well as a link to download the manual.</p>
+There is also a link to access the README file as well as a link to download the user manual.</p>
 
 &nbsp;
 
