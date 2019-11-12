@@ -1,9 +1,6 @@
 ---
 title: "Informations about the methodology"
-output:
-  html_document:
-    includes:
-      in_header: logo.html
+output: html_document
 ---
 
 &nbsp;
