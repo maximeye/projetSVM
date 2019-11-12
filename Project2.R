@@ -14,6 +14,7 @@ library(rpart)
 library(gbm)
 library(xgboost)
 library(ineq)
+library(pastecs)
 
 #paralléliser
 library(parallelMap)
@@ -110,6 +111,7 @@ validateTask=normalizeFeatures(validateTask,method="standardize")
 imp_feature=generateFilterValuesData(trainTask, method=c("information.gain","chi.squared"))
 plotFilterValues(imp_feature, n.show=20)
 
+round(stat.desc(train[,c(-31)]),2)
 
 
 
