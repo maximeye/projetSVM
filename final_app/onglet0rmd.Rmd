@@ -8,9 +8,9 @@ output:
 
 &nbsp;
 
-<p style="text-align:justify";>This project has been made by Caroline ROBLIN, Maxime YE and Kevin TELLIER, students at the <a href="https://www.univ-orleans.fr/deg/masters/ESA/" title="ESA Master"> ESA Master</a>'s degree, for the Big Data Analytics : Support Vector Machine course, instructed by <a href="https://sites.google.com/view/christophe-hurlin/home?authuser=0" title="Christophe Hurlin">Christophe Hurlin</a>.</p>
+<p style="text-align:justify";>This project has been made by Caroline ROBLIN, Maxime YE and Kevin TELLIER, students at the <a href="https://www.univ-orleans.fr/deg/masters/ESA/" title="ESA Master" target="_blank"> ESA Master</a>'s degree, for the Big Data Analytics : Support Vector Machine course, instructed by <a href="https://sites.google.com/view/christophe-hurlin/home?authuser=0" title="Christophe Hurlin" target="_blank">Christophe Hurlin</a>.</p>
 
-<p style="text-align:justify";>The datasets we used in this project are FREE and disponible <a href="https://www.kaggle.com/mlg-ulb/creditcardfraud" title="here">here</a>.</p>
+<p style="text-align:justify";>The datasets we used in this project are FREE and disponible <a href="https://www.kaggle.com/mlg-ulb/creditcardfraud" title="here" target="_blank">here</a>.</p>
 
 
 &nbsp;
@@ -25,8 +25,8 @@ output:
 
 <strong>For more informations :</strong>
 
-Open the <a href="https://github.com/maximeye/projetSVM/blob/master/README.md" title="README.md here">README.md here</a>. 
+Open the <a href="https://github.com/maximeye/projetSVM/blob/master/README.md" title="README.md here" target="_blank">README.md here</a>. 
 
-Get the <a href="https://www.google.com" title="usual manual here">usual manual here</a>.
+Get the <a href="https://www.google.com" title="usual manual here" target="_blank">usual manual here</a>.
 
 &nbsp;
