@@ -33,14 +33,18 @@ shinyServer(function(input, output) {
       includeHTML("onglet1rmd.html")})
    
    output$tab <- renderUI({
-         url <- a("User manual", href="https://mega.nz/#!TdlQDKaa!IpMkZYnvtzZML58jrf6AWiwYGlNJU04ybfM7yzPiURg")
-      tagList("Click to download:", url)
+         url <- a("README.md", href="https://github.com/maximeye/projetSVM/blob/master/README.md", target="_blank")
+      tagList("Open the ", url)
    })
    
-   output$dl <- renderText({
-      "(Right click -> Open in a new tab)"
+
       
-   })
+      output$tab2 <- renderUI({
+         url <- a("user manual", href="https://mega.nz/#!TdlQDKaa!IpMkZYnvtzZML58jrf6AWiwYGlNJU04ybfM7yzPiURg", target="_blank")
+         tagList("Download the ", url)
+      })
+      
+
   
    output$txt <- renderText({
      "Dimensions of the dataset : Numbers of observations & Numbers of variables"
