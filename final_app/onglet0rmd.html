@@ -7,6 +7,7 @@
 <meta charset="utf-8" />
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
 
 
@@ -254,9 +255,7 @@ h6 {
 </style>
 
 
-</head>
 
-<body>
 
 <style type="text/css">
 .main-container {
@@ -270,7 +269,6 @@ code {
 }
 img {
   max-width:100%;
-  height: auto;
 }
 .tabbed-pane {
   padding-top: 12px;
@@ -287,8 +285,6 @@ summary {
 </style>
 
 
-
-<div class="container-fluid main-container">
 
 <!-- tabsets -->
 
@@ -346,20 +342,17 @@ summary {
 }
 </style>
 
-<script>
-$(document).ready(function () {
-  window.buildTabsets("TOC");
-});
-
-$(document).ready(function () {
-  $('.tabset-dropdown > .nav-tabs > li').click(function () {
-    $(this).parent().toggleClass('nav-tabs-open')
-  });
-});
-</script>
-
 <!-- code folding -->
 
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
 
 
 
@@ -374,17 +367,17 @@ $(document).ready(function () {
 
 
 <p> </p>
-<p style="text-align:justify" ;>This project has been made by Caroline ROBLIN, Maxime YE and Kevin TELLIER, students at the <a href="https://www.univ-orleans.fr/deg/masters/ESA/" title="ESA Master"> ESA Master</a>&#39;s degree, for the Big Data Analytics : Support Vector Machine course, instructed by <a href="https://sites.google.com/view/christophe-hurlin/home?authuser=0" title="Christophe Hurlin">Christophe Hurlin</a>.</p>
-<p style="text-align:justify" ;>The datasets we used in this project are FREE and disponible <a href="https://www.kaggle.com/mlg-ulb/creditcardfraud" title="here">here</a>.</p>
+<p style="text-align:justify" ;>This project has been made by Caroline ROBLIN, Maxime YE and Kevin TELLIER, students at the <a href="https://www.univ-orleans.fr/deg/masters/ESA/" title="ESA Master" target="_blank"> ESA Master</a>'s degree, for the Big Data Analytics : Support Vector Machine course, instructed by <a href="https://sites.google.com/view/christophe-hurlin/home?authuser=0" title="Christophe Hurlin" target="_blank">Christophe Hurlin</a>.</p>
+<p style="text-align:justify" ;>The datasets we used in this project are FREE and disponible <a href="https://www.kaggle.com/mlg-ulb/creditcardfraud" title="here" target="_blank">here</a>.</p>
 <p> </p>
 <div id="a-little-resume-about-the-project" class="section level2">
 <h2><strong>A little resume about the project</strong></h2>
 <p style="text-align:justify" ;>The datasets contains transactions made by credit cards in September 2013 by european cardholders. This dataset presents transactions that occurred in two days, where we have 492 frauds out of 284,807 transactions. The dataset is highly unbalanced, the positive class (frauds) account for 0.172% of all transactions.</p>
-<p style="text-align:justify" ;>It contains only numerical input variables which are the result of a PCA transformation. Unfortunately, due to confidentiality issues, we cannot provide the original features and more background information about the data. Features V1, V2, ... V28 are the principal components obtained with PCA, the only features which have not been transformed with PCA are &#39;Time&#39; and &#39;Amount&#39;. Feature &#39;Time&#39; contains the seconds elapsed between each transaction and the first transaction in the dataset. The feature &#39;Amount&#39; is the transaction Amount, this feature can be used for example-dependant cost-senstive learning. Feature &#39;Class&#39; is the response variable and it takes value 1 in case of fraud and 0 otherwise.</p>
+<p style="text-align:justify" ;>It contains only numerical input variables which are the result of a PCA transformation. Unfortunately, due to confidentiality issues, we cannot provide the original features and more background information about the data. Features V1, V2, ... V28 are the principal components obtained with PCA, the only features which have not been transformed with PCA are 'Time' and 'Amount'. Feature 'Time' contains the seconds elapsed between each transaction and the first transaction in the dataset. The feature 'Amount' is the transaction Amount, this feature can be used for example-dependant cost-senstive learning. Feature 'Class' is the response variable and it takes value 1 in case of fraud and 0 otherwise.</p>
 <p> </p>
 <p><strong>For more informations :</strong></p>
-<p>Open the <a href="https://github.com/maximeye/projetSVM/blob/master/README.md" title="README.md here">README.md here</a>.</p>
-<p>Get the <a href="https://www.google.com" title="usual manual here">usual manual here</a>.</p>
+<p>Open the <a href="https://github.com/maximeye/projetSVM/blob/master/README.md" title="README.md here" target="_blank">README.md here</a>.</p>
+<p>Get the <a href="https://www.google.com" title="usual manual here" target="_blank">usual manual here</a>.</p>
 <p> </p>
 </div>
 
@@ -405,6 +398,23 @@ $(document).ready(function () {
 
 
 </script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open')
+  });
+});
+</script>
+
+<!-- code folding -->
+
 
 <!-- dynamically load mathjax for compatibility with self-contained -->
 <script>

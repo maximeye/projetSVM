@@ -32,6 +32,9 @@ shinyServer(function(input, output) {
    output$doc_to_display <- renderUI({
       includeHTML("onglet1rmd.html")})
    
+   output$doc <- renderUI({
+      includeHTML("onglet0rmd.html")})
+   
    output$tab <- renderUI({
          url <- a("README.md", href="https://github.com/maximeye/projetSVM/blob/master/README.md", target="_blank")
       tagList("Open the ", url)
