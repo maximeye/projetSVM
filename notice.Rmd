@@ -26,13 +26,31 @@ Depending on the network speed, the application may take further time to load.</
 &nbsp;
 
 
+### <span style="color: #127063">Project informations</span>  
+
+&nbsp;
+
+<center>
+
+![<strong>1<sup>st</sup> panel : Informations about the project</strong>](onglet00.png)
+
+</center>
+
+&nbsp;
+
+<p style="text-align:justify";>In a first tab, there are some informations about our project.  
+There is also a link to access the README file as well as a link to download the manual.</p>
+
+&nbsp;
+
+
 ### <span style="color: #127063">Explanations of the methodology</span>
 
 &nbsp;
 
 <center>
 
-![<strong>1<sup>st</sup> panel : Brief description of SVM and methodology</strong>](onglet0.png)
+![<strong>2<sup>nd</sup> panel : Brief description of SVM and methodology</strong>](onglet0.png)
 
 </center>
 
@@ -48,7 +66,7 @@ In the last part, we describe the various modifications made to the initial data
 
 <center>
 
-![<strong>2<sup>nd</sup> panel : Data presentation</strong>](onglet1.png)
+![<strong>3<sup>rd</sup> panel : Data presentation</strong>](onglet1.png)
 
 </center>
 
@@ -68,7 +86,7 @@ This function creates other observations with the 1 occurence, using the probabi
 
 <center>
 
-![<strong>3<sup>rd</sup> panel : Comparing SVM with another Machine Learning model</strong>](onglet2.png)
+![<strong>4<sup>th</sup> panel : Comparing SVM with another Machine Learning model</strong>](onglet2.png)
 
 </center>
 
@@ -183,7 +201,7 @@ Note that the sample size chosen has been split into two samples, with 70% of th
 
 <center>
 
-![<strong>4<sup>th</sup> panel : Comparing model performance</strong>](onglet3.png)
+![<strong>5<sup>th</sup> panel : Comparing model performance</strong>](onglet3.png)
 
 </center>
 
@@ -201,4 +219,22 @@ Note that the sample size chosen has been split into two samples, with 70% of th
 
 <p style="text-align:justify";>You can observe in the same graphic the ROC curve for each model, with the default optimal parameters.</p>
 You can see that it isn't easy to choose the best model regardless of the sample size because of the crossing. It's better to refer to the Gini index or the good classification rate we have in the previous tab.  </p>
+
+&nbsp;
+
+
+### <span style="color: #127063">Conclusion</span>  
+
+&nbsp;
+
+<center>
+
+![<strong>6<sup>th</sup> panel : Brief conclusion</strong>](onglet4.png)
+
+</center>
+
+&nbsp;
+
+<p style="text-align:justify";>In the last tab, there is a brief conclusion about our project on the fraud detection using the SVM method.</p>
+
 &nbsp;
