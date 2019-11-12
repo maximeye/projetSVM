@@ -12,7 +12,7 @@ output: html_document
 
 &nbsp;
 
-## <strong>A little resume about the project.</strong>
+## <strong>A little resume about the project</strong>
 
 <p style="text-align:justify";>The datasets contains transactions made by credit cards in September 2013 by european cardholders. This dataset presents transactions that occurred in two days, where we have 492 frauds out of 284,807 transactions. The dataset is highly unbalanced, the positive class (frauds) account for 0.172% of all transactions.</p>
 
@@ -20,9 +20,10 @@ output: html_document
 
 &nbsp;
 
-For more informations, check the README hyperlink.
+<strong>For more informations :</strong>
 
+Open the <a href="https://github.com/maximeye/projetSVM/blob/master/README.md" title="README.md here">README.md here</a>. 
 
+Get the <a href="https://www.google.com" title="usual manual here">usual manual here</a>.
 
-
-en rouge, liens 
+&nbsp;
