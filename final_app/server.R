@@ -57,6 +57,7 @@ shinyServer(function(input, output) {
    
    output$dim <- renderPrint({
      taille_ech=5000
+     set.seed(12345)
      index=1:nrow(data)
      trainindex=sample(index,round(taille_ech*0.7))
      train=data[trainindex,]
@@ -78,6 +79,7 @@ shinyServer(function(input, output) {
    
    output$name <- renderPlot({   
      taille_ech=5000
+     set.seed(12345)
      index=1:nrow(data)
      trainindex=sample(index,round(taille_ech*0.7))
      train=data[trainindex,]
@@ -327,6 +329,7 @@ shinyServer(function(input, output) {
      cost=input$cost
 
      taille_ech=input$n
+     set.seed(12345)
      index=1:nrow(data)
      trainindex=sample(index,round(taille_ech*0.7))
      train=data[trainindex,]
@@ -437,6 +440,7 @@ shinyServer(function(input, output) {
 
      
      taille_ech=input$n
+     set.seed(12345)
      index=1:nrow(data)
      trainindex=sample(index,round(taille_ech*0.7))
      train=data[trainindex,]
@@ -548,6 +552,7 @@ shinyServer(function(input, output) {
 
      
      taille_ech=input$n
+     set.seed(12345)
      index=1:nrow(data)
      trainindex=sample(index,round(taille_ech*0.7))
      train=data[trainindex,]
@@ -661,6 +666,7 @@ shinyServer(function(input, output) {
      
      
      taille_ech=input$n
+     set.seed(12345)
      index=1:nrow(data)
      trainindex=sample(index,round(taille_ech*0.7))
      train=data[trainindex,]
@@ -821,6 +827,7 @@ shinyServer(function(input, output) {
      
      
      taille_ech=input$n
+     set.seed(12345)
      index=1:nrow(data)
      trainindex=sample(index,round(taille_ech*0.7))
      train=data[trainindex,]
@@ -976,6 +983,7 @@ shinyServer(function(input, output) {
      
      
      taille_ech=input$n
+     set.seed(12345)
      index=1:nrow(data)
      trainindex=sample(index,round(taille_ech*0.7))
      train=data[trainindex,]
@@ -1140,6 +1148,7 @@ shinyServer(function(input, output) {
      
      
      taille_ech=input$n
+     set.seed(12345)
      index=1:nrow(data)
      trainindex=sample(index,round(taille_ech*0.7))
      train=data[trainindex,]
@@ -1404,6 +1413,7 @@ shinyServer(function(input, output) {
      
      
      taille_ech=nn
+     set.seed(12345)
      index=1:nrow(data)
      trainindex=sample(index,round(taille_ech*0.55))
      train=data[trainindex,]
