@@ -15,16 +15,12 @@ apt_packages:
 
 r_packages:
   - rsconnect
-  - GLU Library
-  - OpenGL
   - shiny
   - tidyverse
   - kableExtra
   - e1071
   - smotefamily
   - ggplot2
-  - rgl
-  - misc3d
   - ROCR
   - leaps
   - caTools
