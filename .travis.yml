@@ -18,6 +18,23 @@ r_packages:
   - shiny
   - tidyverse
   - kableExtra
+  - e1071
+  - smotefamily
+  - ggplot2
+  - rgl
+  - misc3d
+  - ROCR
+  - leaps
+  - caTools
+  - MASS
+  - ROCR
+  - mlr
+  - FSelector
+  - rpart
+  - gbm
+  - xgboost
+  - ggplot2
+  - ineq
   
 script:
   - R -f deploy.R
