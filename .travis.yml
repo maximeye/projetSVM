@@ -36,13 +36,3 @@ r_packages:
   
 script:
   - R -f deploy.R
-
-notifications:
-  email:
-   - maxime.ye@gmail.com
-   
-  email:
-    recipients:
-     - maxime.ye@gmail.com
-    on_success: <always|never|change>  # default: change
-    on_failure: <always|never|change>  # default: always
